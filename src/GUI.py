@@ -186,12 +186,12 @@ class Ui_frmSerialProperties(QtGui.QWidget):
         self.lblParity.setText("Parity:")
         
         self.checkYes = QtGui.QCheckBox(self.gbConfig)
-        self.checkYes.setGeometry(QtCore.QRect(80, 50, 41, 20))
+        self.checkYes.setGeometry(QtCore.QRect(70, 50, 51, 20))
         self.checkYes.setObjectName("checkYes")
         self.checkYes.setText("Yes")
         
         self.checkNo = QtGui.QCheckBox(self.gbConfig)
-        self.checkNo.setGeometry(QtCore.QRect(130, 50, 41, 20))
+        self.checkNo.setGeometry(QtCore.QRect(130, 50, 51, 20))
         self.checkNo.setObjectName("checkNo")
         self.checkNo.setText("No")
     
@@ -201,17 +201,17 @@ class Ui_frmSerialProperties(QtGui.QWidget):
             self.checkNo.setChecked(not self.serialConnection._parity)
         
         self.lblBaudRate = QtGui.QLabel(self.gbConfig)
-        self.lblBaudRate.setGeometry(QtCore.QRect(30, 90, 61, 20))
+        self.lblBaudRate.setGeometry(QtCore.QRect(7, 90, 71, 20))
         self.lblBaudRate.setObjectName("lblBaudRate")
         self.lblBaudRate.setText("BaudRate:")
         
         self.txtBaudRate = QtGui.QLineEdit(self.gbConfig)
-        self.txtBaudRate.setGeometry(QtCore.QRect(100, 90, 101, 22))
+        self.txtBaudRate.setGeometry(QtCore.QRect(100, 90, 100, 22))
         self.txtBaudRate.setObjectName("txtBaudRate")
         self.txtBaudRate.setText(self.serialConnection._baudRate)
         
         self.lblStopBits = QtGui.QLabel(self.gbConfig)
-        self.lblStopBits.setGeometry(QtCore.QRect(220, 90, 53, 16))
+        self.lblStopBits.setGeometry(QtCore.QRect(220, 90, 60, 22))
         self.lblStopBits.setObjectName("lblStopBits")
         self.lblStopBits.setText("StopBits:")
         
@@ -221,7 +221,7 @@ class Ui_frmSerialProperties(QtGui.QWidget):
         self.txtStopBits.setText(self.serialConnection._stopBits)
         
         self.lblDataBits = QtGui.QLabel(self.gbConfig)
-        self.lblDataBits.setGeometry(QtCore.QRect(320, 90, 53, 16))
+        self.lblDataBits.setGeometry(QtCore.QRect(320, 90, 60, 22))
         self.lblDataBits.setObjectName("lblDataBits")
         self.lblDataBits.setText("DataBits:")
         
