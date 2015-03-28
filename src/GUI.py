@@ -63,6 +63,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.menuEdit = QtGui.QMenu(self.menubar)
         self.menuEdit.setObjectName("menuEdit")
         self.menuEdit.setTitle("Connection")
+    
         
         self.menuAbout = QtGui.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
@@ -88,6 +89,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionSerial_Settings.setObjectName("actionSerial_Settings")
         self.actionSerial_Settings.setText("Serial Settings")
         self.menuEdit.addAction(self.actionSerial_Settings)
+        
+        self.actionConnect_Settings = QtGui.QAction(self)
+        self.actionConnect_Settings.setObjectName("actionConnect_Settings")
+        self.actionConnect_Settings.setText("Connect")
+        self.menuEdit.addAction(self.actionConnect_Settings)
         
         
         self.actionAbout = QtGui.QAction(self)
