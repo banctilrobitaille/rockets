@@ -6,7 +6,7 @@
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
-# toto
+#erfew
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
