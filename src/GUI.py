@@ -91,10 +91,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionSerial_Settings.setText("Serial Settings")
         self.menuConnection.addAction(self.actionSerial_Settings)
         
-        self.actionConnect_Settings = QtGui.QAction(self)
-        self.actionConnect_Settings.setObjectName("actionConnect_Settings")
-        self.actionConnect_Settings.setText("Connect")
-        self.menuConnection.addAction(self.actionConnect_Settings)
+        self.actionConnect = QtGui.QAction(self)
+        self.actionConnect.setObjectName("actionConnect")
+        self.actionConnect.setText("Connect")
+        self.menuConnection.addAction(self.actionConnect)
         
         
         self.actionAbout = QtGui.QAction(self)
