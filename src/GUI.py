@@ -60,10 +60,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.menuView.setObjectName("menuView")
         self.menuView.setTitle("View")
         
-        self.menuEdit = QtGui.QMenu(self.menubar)
-        self.menuEdit.setObjectName("menuEdit")
-        self.menuEdit.setTitle("Connection")
+
     
+        self.menuConnection = QtGui.QMenu(self.menubar)
+        self.menuConnection.setObjectName("menuConnection")
+        self.menuConnection.setTitle("Connection")
         
         self.menuAbout = QtGui.QMenu(self.menubar)
         self.menuAbout.setObjectName("menuAbout")
@@ -88,12 +89,12 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionSerial_Settings = QtGui.QAction(self)
         self.actionSerial_Settings.setObjectName("actionSerial_Settings")
         self.actionSerial_Settings.setText("Serial Settings")
-        self.menuEdit.addAction(self.actionSerial_Settings)
+        self.menuConnection.addAction(self.actionSerial_Settings)
         
         self.actionConnect_Settings = QtGui.QAction(self)
         self.actionConnect_Settings.setObjectName("actionConnect_Settings")
         self.actionConnect_Settings.setText("Connect")
-        self.menuEdit.addAction(self.actionConnect_Settings)
+        self.menuConnection.addAction(self.actionConnect_Settings)
         
         
         self.actionAbout = QtGui.QAction(self)
@@ -103,7 +104,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
-        self.menubar.addAction(self.menuEdit.menuAction())
+        self.menubar.addAction(self.menuConnection.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
         
         self.painter = QtGui.QPainter()
