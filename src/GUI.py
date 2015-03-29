@@ -15,6 +15,7 @@ import sys
 import math
 import PyQt4
 from PyQt4.Qt import QPen, QColor
+from MapWidget import MapnikWidget
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -119,6 +120,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.__yaw = AttitudeIndicator(self)
         self.__yaw.setGeometry(580,50,150,150)
         
+        self.map = MapnikWidget()
+        self.map.setGeometry(0,0,500,500)
+        self.map.open("world_style.xml")
+        self.map.show()
         
         QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
