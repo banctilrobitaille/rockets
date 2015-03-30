@@ -120,8 +120,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.__yaw = AttitudeIndicator(self)
         self.__yaw.setGeometry(580,50,150,150)
         
-        self.map = MapnikWidget()
-        self.map.setGeometry(0,0,500,500)
+        self.map = MapnikWidget(self)
+        self.map.setGeometry(20,230,400,300)
         self.map.open("world_style.xml")
         self.map.show()
         

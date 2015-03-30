@@ -2,54 +2,28 @@
 
 
 import mapnik
+import simplekml
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-
-
-# QColor for name with editable value
-EditableNameColor = Qt.blue
-
-def _build_nvp(name, value = None, editable_value = False):
-    n = QStandardItem(name)
-    n.setFlags(n.flags() & ~(Qt.ItemIsEditable))
-
-    if value == None:
-        return n
-
-    if type(value) == type('str'):
-        v = QStandardItem(value)
-    else:
-        v = QStandardItem(str(value))
-
-    if editable_value:
-        n.setForeground(EditableNameColor)
-    else:
-        v.setFlags(v.flags() & ~(Qt.ItemIsEditable))
-
-    return [n, v]
-
-def _write_attr(obj, name, value):
-    attr = getattr(obj, name)
-    if type(attr) == type('str'):
-        setattr(obj, name, value)
-    elif type(attr) == type(1):
-        setattr(obj, name, int(value))
-    elif type(attr) == type(mapnik.Color('black')):
-        setattr(obj, name, mapnik.Color(value))
-    elif type(attr) == type(True):
-        # '1'/'true'/'on' for True, other string for False
-        setattr(obj, name, value == '1' or value.lower() == 'true' or value.lower() == 'on')
-
-
-
 class MapnikWidget(QWidget):
 
-    def __init__(self, also_build_view = True, parent = None):
+    def __init__(self,parent, also_build_view = True):
         QWidget.__init__(self, parent)
-
-        self.map          = mapnik.Map(256, 256)
+        
+        self.kml = simplekml.Kml()
+        self.kml.newpoint(name="Quebec", coords=[(-74.0, 48.0)])
+        self.kml.save("GPS_tracking_data.kml")
+        self.map = mapnik.Map(15000, 15000, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+        self.style = mapnik.Style()
+        self.rule = mapnik.Rule()
+        self.point_symbolizer = mapnik.MarkersSymbolizer()
+        self.point_symbolizer.allow_overlap = True
+        self.point_symbolizer.opacity = 1
+        self.rule.symbols.append(self.point_symbolizer)
+        self.style.rules.append(self.rule)
+        self.map.append_style("GPS_tracking_points", self.style)
         self.qim          = QImage()
         self.startDragPos = QPoint()
         self.endDragPos   = QPoint()
@@ -57,97 +31,56 @@ class MapnikWidget(QWidget):
         self.drag         = False
         self.scale        = False
         self.total_scale  = 1.0
-
+        
+        self.layer = mapnik.Layer("GPS_tracking_points")
+        self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
+        self.layer.styles.append("GPS_tracking_points")
+        self.map.layers.append(self.layer)
+        self.map.zoom_all()
+        
         self.timer        = QTimer()
         self.timer.timeout.connect(self.updateMap)
 
         self.map_tree     = QStandardItemModel()
-
-        self.root         = _build_nvp('map')
-        self.envelopeItem = _build_nvp(str(self.map.envelope()))
-        self.widthItem    = _build_nvp(str(self.map.width))
-        self.heightItem   = _build_nvp(str(self.map.height))
-        self.layers       = _build_nvp('layers')
-
-        if also_build_view:
-            self.treeView     = QTreeView()
-            self.treeView.setModel(self.map_tree)
-
-
-    def buildMapTree(self):
-        self.map_tree.clear()
-        # recreate these data attributes, since the underlying
-        # qt4 lib may already delete the actual c++ object
-        # managed by map_tree on previous call.
-        self.root         = _build_nvp('map')
-        self.envelopeItem = _build_nvp(str(self.map.envelope()))
-        self.widthItem    = _build_nvp(str(self.map.width))
-        self.heightItem   = _build_nvp(str(self.map.height))
-        self.layers       = _build_nvp('layers')
-
-        self.map_tree.setHorizontalHeaderLabels(['name','value'])
-        self.root.appendRow(_build_nvp('srs', self.map.srs, True))
-        self.root.appendRow([_build_nvp('envelope'), self.envelopeItem])
-        self.root.appendRow(_build_nvp('background', self.map.background.to_hex_string(), True))
-        self.root.appendRow(_build_nvp('buffer_size', self.map.buffer_size, True))
-        self.root.appendRow(_build_nvp('aspect_fix_mode', self.map.aspect_fix_mode))
-        self.root.appendRow([_build_nvp('width'), self.widthItem])
-        self.root.appendRow([_build_nvp('height'), self.heightItem])
-
-        for i, layer in enumerate(self.map.layers):
-            status = 'off'
-            if layer.active:
-                status = 'on'
-            layer_item = _build_nvp(str(i)+'. ' + layer.name, status, True)
-            item = layer_item[0]
-            #item.appendRow(_build_nvp('name', layer.name))
-            #item.appendRow(_build_nvp('active', layer.active, True))
-            item.appendRow(_build_nvp('srs', layer.srs, True))
-            item.appendRow(_build_nvp('maxzoom', layer.maxzoom, True))
-            item.appendRow(_build_nvp('minzoom', layer.minzoom, True))
-            item.appendRow(_build_nvp('clear_label_cache', layer.clear_label_cache, True))
-            item.appendRow(_build_nvp('queryable', layer.queryable, True))
-            item.appendRow(_build_nvp('title', layer.title))
-            item.appendRow(_build_nvp('abstract', layer.abstract))
-
-            self.layers.appendRow(layer_item)
-
-        self.root.appendRow(self.layers)
-        self.map_tree.appendRow(self.root)
-
-
-    def updateMapTree(self):
-        for row in range(0, self.root.rowCount()):
-            name  = self.root.child(row, 0)
-            value = self.root.child(row, 1)
-            if name.foreground().color() == EditableNameColor: # skip non editable and non leaf item
-                _write_attr(self.map, str(name.text()), str(value.text()))
-
-        for row in range(0, self.layers.rowCount()):
-            layer = self.map.layers[row]
-            _write_attr(layer, 'active', str(self.layers.child(row, 1).text()))
-            layer_item = self.layers.child(row)
-            for srow in range(0, layer_item.rowCount()):
-                name  = layer_item.child(srow, 0)
-                value = layer_item.child(srow, 1)
-                if name.foreground().color() == EditableNameColor: # skip non editable and non leaf item
-                    _write_attr(layer, str(name.text()), str(value.text()))
-
-        self.updateMap()
+        
+  
 
     def open(self, xml):
         # recreate a Map, or the map object will be corrupted
         self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
-        self.buildMapTree()
-        self.zoom_all()
-
-    def close_map(self):
-        self.map = mapnik.Map(256, 256)
-        self.updateMap()
+        self.kml = simplekml.Kml()
+        self.kml.newpoint(name="Quebec", coords=[(-71.25, 46.8)])
+        self.kml.save("GPS_tracking_data.kml")
+        self.style = mapnik.Style()
+        self.rule = mapnik.Rule()
+        self.point_symbolizer = mapnik.MarkersSymbolizer()
+        self.point_symbolizer.allow_overlap = False
+        self.point_symbolizer.opacity = 1
+        self.rule.symbols.append(self.point_symbolizer)
+        self.style.rules.append(self.rule)
+        self.map.append_style("GPS_tracking_points", self.style)
+        self.qim          = QImage()
+        self.startDragPos = QPoint()
+        self.endDragPos   = QPoint()
+        self.zoomPos      = QPoint()
+        self.drag         = False
+        self.scale        = False
+        self.total_scale  = 1.0
+        
+        self.layer = mapnik.Layer("GPS_tracking_points")
+        self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
+        self.layer.styles.append("GPS_tracking_points")
+        self.map.layers.append(self.layer)
+        self.map.zoom_all()
+        
+        self.map.zoom(150.0)
+        self.map.scale()
+        #self.buildMapTree()
+        #self.zoom_all()
 
     def updateMap(self):
-        self.timer.stop()
+       # self.timer.stop()
 
         if self.drag:
             cx = int(0.5 * self.map.width)
@@ -178,9 +111,6 @@ class MapnikWidget(QWidget):
         self.qim.loadFromData(QByteArray(im.tostring('png')))
         self.update()
 
-        self.envelopeItem.setText(str(self.map.envelope()))
-        self.widthItem.setText(str(self.map.width))
-        self.heightItem.setText(str(self.map.height))
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -203,11 +133,8 @@ class MapnikWidget(QWidget):
         painter.setBrush(QColor(0, 0, 0, 100))
         painter.drawRect(0, 0, 256, 26)
         painter.setPen(QColor(0, 255 , 0))
-        painter.drawText(10, 19, 'Scale Denominator: ' + str(self.map.scale_denominator()))
+        painter.drawText(10, 19, 'Rockets Position')
 
-    def zoom_all(self):
-        self.map.zoom_all()
-        self.updateMap()
 
     def resizeEvent(self, event):
         self.map.resize(event.size().width(), event.size().height())
