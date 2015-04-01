@@ -14,6 +14,7 @@ from serialIO import  SerialConnection #, SerialUtility
 import sys
 import math
 from PyQt4.Qt import QPen, QColor
+from MapWidget import MapnikWidget
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -90,10 +91,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.actionSerial_Settings.setText("Serial Settings")
         self.menuConnection.addAction(self.actionSerial_Settings)
         
-        self.actionConnect_Settings = QtGui.QAction(self)
-        self.actionConnect_Settings.setObjectName("actionConnect_Settings")
-        self.actionConnect_Settings.setText("Connect")
-        self.menuConnection.addAction(self.actionConnect_Settings)
+        self.actionConnect = QtGui.QAction(self)
+        self.actionConnect.setObjectName("actionConnect")
+        self.actionConnect.setText("Connect")
+        self.menuConnection.addAction(self.actionConnect)
         
         
         self.actionAbout = QtGui.QAction(self)
@@ -118,6 +119,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.__yaw = AttitudeIndicator(self)
         self.__yaw.setGeometry(580,50,150,150)
         
+        self.map = MapnikWidget(self)
+        self.map.setGeometry(20,230,400,300)
+        self.map.open("world_style.xml")
+        self.map.show()
         
         QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
