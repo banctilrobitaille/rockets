@@ -62,7 +62,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.menuView.setTitle("View")
         
 
-    
         self.menuConnection = QtGui.QMenu(self.menubar)
         self.menuConnection.setObjectName("menuConnection")
         self.menuConnection.setTitle("Connection")
@@ -123,7 +122,11 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.map = MapnikWidget(self)
         self.map.setGeometry(20,230,400,300)
         self.map.open("world_style.xml")
-        self.map.show()
+        
+        self.tabWidget = PyQt4.Qt.QTabWidget(self)
+        self.tabWidget.addTab(self.map, "GPS TRACKING")
+        self.tabWidget.setGeometry(20,230,600,300)
+        self.tabWidget.show()
         
         QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()

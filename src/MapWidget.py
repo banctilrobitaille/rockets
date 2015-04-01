@@ -46,7 +46,6 @@ class MapnikWidget(QWidget):
   
 
     def open(self, xml):
-        # recreate a Map, or the map object will be corrupted
         self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
         self.kml = simplekml.Kml()
@@ -72,10 +71,9 @@ class MapnikWidget(QWidget):
         self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
         self.layer.styles.append("GPS_tracking_points")
         self.map.layers.append(self.layer)
-        self.map.zoom_all()
+       # self.map.zoom_all()
         
         self.map.zoom(150.0)
-        self.map.scale()
         #self.buildMapTree()
         #self.zoom_all()
 
