@@ -13,7 +13,6 @@ from PyQt4.Qwt5 import Qwt
 from serialIO import  SerialConnection #, SerialUtility
 import sys
 import math
-import PyQt4
 from PyQt4.Qt import QPen, QColor
 
 class baseStationApplication(QtGui.QApplication):
@@ -346,7 +345,7 @@ class AttitudeIndicatorNeedle(Qwt.QwtDialNeedle):
         Qwt.QwtDialNeedle.__init__(self)
         palette = QtGui.QPalette()
         #for colourGroup in QtGui.QColor.colorNames():
-         #   palette.setColor(colourGroup, QtGui.QPalette.Text, color)
+        #   palette.setColor(colourGroup, QtGui.QPalette.Text, color)
         #self.setPalette(palette)
 
     # __init__()
@@ -422,9 +421,3 @@ class SpeedoMeter(Qwt.QwtDial):
         painter.setPen(self.palette().color(QtGui.QPalette.Text))
         painter.drawText(
             rect, QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter, self.__label)
-
-
-if __name__ == "__main__":
-    
-    app = baseStationApplication(sys.argv)
-
