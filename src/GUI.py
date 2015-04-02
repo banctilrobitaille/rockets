@@ -14,7 +14,7 @@ from serialIO import  SerialConnection #, SerialUtility
 import sys
 import math
 import PyQt4
-from PyQt4.Qt import QPen, QColor
+from PyQt4.Qt import QPen, QColor, QIcon
 from MapWidget import MapnikWidget
 
 class baseStationApplication(QtGui.QApplication):
@@ -123,9 +123,12 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.map.setGeometry(20,230,400,300)
         self.map.open("world_style.xml")
         
+        self.testgraph = Qwt.QwtPlot(self)
+        
         self.tabWidget = PyQt4.Qt.QTabWidget(self)
-        self.tabWidget.addTab(self.map, "GPS TRACKING")
-        self.tabWidget.setGeometry(20,230,600,300)
+        self.tabWidget.addTab(self.map,QIcon("gps.png"),"GPS TRACKING")
+        self.tabWidget.addTab(self.testgraph,QIcon("graph.jpg"),"ON FLIGHT STATS")
+        self.tabWidget.setGeometry(20,230,500,300)
         self.tabWidget.show()
         
         QtCore.QMetaObject.connectSlotsByName(self)
