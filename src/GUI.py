@@ -10,7 +10,7 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
-from serialIO import  SerialConnection #, SerialUtility
+from serialIO import  SerialConnection, SerialUtility
 import sys
 import math
 
@@ -201,9 +201,10 @@ class Ui_frmSerialProperties(QtGui.QWidget):
         self.comboCOMPort = QtGui.QComboBox(self.gbConfig)
         self.comboCOMPort.setGeometry(QtCore.QRect(190, 20, 191, 31))
         self.comboCOMPort.setObjectName("comboCOMPort")
-        #self.comboCOMPort.addItems("COM1")#SerialUtility.ListComPort())
-        self.comboCOMPort.addItem("com1")
-        self.comboCOMPort.addItem("com2")
+        #self.comboCOMPort.addItems("COM1")
+        self.comboCOMPort.addItems(SerialUtility.serial_ports())
+        #self.comboCOMPort.addItem("com1")
+        #self.comboCOMPort.addItem("com2")
         
         self.lblListePort = QtGui.QLabel(self.gbConfig)
         self.lblListePort.setGeometry(QtCore.QRect(30, 20, 121, 20))
