@@ -6,7 +6,7 @@
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
-#erfew
+
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
@@ -16,6 +16,7 @@ import math
 import PyQt4
 from PyQt4.Qt import QPen, QColor, QIcon
 from MapWidget import MapnikWidget
+
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -74,6 +75,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.statusbar = QtGui.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
+        self.lblNotConnected = QtGui.QLabel("Not Connected")
+        self.lblNotConnected.setStyleSheet('QLabel {color: red}')
+        self.statusbar.addWidget(self.lblNotConnected)
         self.setStatusBar(self.statusbar)
         
         self.actionLoad_Log_File = QtGui.QAction(self)
@@ -138,6 +142,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.connect(self.actionSerial_Settings, QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
         self.connect(self.actionAbout, QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
+        self.connect(self.actionConnect, QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
        
     def __slotAbout_Clicked(self):
         
@@ -152,6 +157,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
     
     def __slotLoadLogFile_Clicked(self):
         pass
+    
+    def __slotConnect_Clicked(self):
+        pass
+        
     
     def __showSerialProperties(self):
         
