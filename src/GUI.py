@@ -6,15 +6,18 @@
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
-#erfew
+
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
 from serialIO import  SerialConnection #, SerialUtility
 import sys
 import math
-from PyQt4.Qt import QPen, QColor
+
+import PyQt4
+from PyQt4.Qt import QPen, QColor, QIcon
 from MapWidget import MapnikWidget
+
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -61,7 +64,6 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.menuView.setTitle("View")
         
 
-    
         self.menuConnection = QtGui.QMenu(self.menubar)
         self.menuConnection.setObjectName("menuConnection")
         self.menuConnection.setTitle("Connection")
@@ -74,6 +76,9 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.statusbar = QtGui.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
+        self.lblNotConnected = QtGui.QLabel("Not Connected")
+        self.lblNotConnected.setStyleSheet('QLabel {color: red}')
+        self.statusbar.addWidget(self.lblNotConnected)
         self.setStatusBar(self.statusbar)
         
         self.actionLoad_Log_File = QtGui.QAction(self)
@@ -122,7 +127,14 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.map = MapnikWidget(self)
         self.map.setGeometry(20,230,400,300)
         self.map.open("world_style.xml")
-        self.map.show()
+        
+        self.testgraph = Qwt.QwtPlot(self)
+        
+        self.tabWidget = PyQt4.Qt.QTabWidget(self)
+        self.tabWidget.addTab(self.map,QIcon("gps.png"),"GPS TRACKING")
+        self.tabWidget.addTab(self.testgraph,QIcon("graph.jpg"),"ON FLIGHT STATS")
+        self.tabWidget.setGeometry(20,230,500,300)
+        self.tabWidget.show()
         
         QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
@@ -131,6 +143,7 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.connect(self.actionSerial_Settings, QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
         self.connect(self.actionAbout, QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
+        self.connect(self.actionConnect, QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
        
     def __slotAbout_Clicked(self):
         
@@ -145,6 +158,10 @@ class Ui_MainWindow(QtGui.QMainWindow):
     
     def __slotLoadLogFile_Clicked(self):
         pass
+    
+    def __slotConnect_Clicked(self):
+        pass
+        
     
     def __showSerialProperties(self):
         
