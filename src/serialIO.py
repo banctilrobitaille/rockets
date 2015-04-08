@@ -2,9 +2,12 @@
 #import itertools
 
 
+
+
+
 #class SerialUtility(object):
     
-    
+   
     #def __init__(self):
         #pass
     
@@ -23,11 +26,50 @@
         #for i in itertools.count():
             #try:
                 #keyValue = winreg.EnumValue(regKey, i)
-               # COM_List.append(keyValue[1]+" "+keyValue[0])
+              # COM_List.append(keyValue[1]+" "+keyValue[0])
             #except EnvironmentError:
                 #break
             
         #return COM_List
+        
+import sys
+import glob
+import serial
+
+
+def serial_ports():
+
+
+    if sys.platform.startswith('win'):
+        ports = ['COM' + str(i + 1) for i in range(256)]
+
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this is to exclude your current terminal "/dev/tty"
+        ports = glob.glob('/dev/tty[A-Za-z]*')
+
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/tty.*')
+
+    else:
+        raise EnvironmentError('Unsupported platform')
+
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
+
+
+if __name__ == '__main__':
+    print(serial_ports())    
+        
+        
+        
+        
     
     
 class SerialConnection(object):
@@ -70,3 +112,5 @@ class SerialConnection(object):
     @parity.setter
     def parity(self, value):
         self._parity = value
+        
+    

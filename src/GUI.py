@@ -184,7 +184,9 @@ class Ui_frmSerialProperties(QtGui.QWidget):
         self.comboCOMPort = QtGui.QComboBox(self.gbConfig)
         self.comboCOMPort.setGeometry(QtCore.QRect(190, 20, 191, 31))
         self.comboCOMPort.setObjectName("comboCOMPort")
-        self.comboCOMPort.addItems("COM 1")#SerialUtility.ListComPort())
+        #self.comboCOMPort.addItems("COM1")#SerialUtility.ListComPort())
+        self.comboCOMPort.addItem("com1")
+        self.comboCOMPort.addItem("com2")
         
         self.lblListePort = QtGui.QLabel(self.gbConfig)
         self.lblListePort.setGeometry(QtCore.QRect(30, 20, 121, 20))
