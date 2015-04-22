@@ -3,7 +3,7 @@
 import sys
 import glob
 import serial
-
+from PyQt4 import QtGui
  
 
 
@@ -23,7 +23,7 @@ class SerialUtility(object):
 
         elif sys.platform.startswith('linux'):
             # this is to exclude your current terminal "/dev/tty"
-            ports = glob.glob('/dev/tty[A-Za-z0-9]*')
+            ports = glob.glob('/dev/tty[0-9]*')
 
         else:
             raise EnvironmentError('Unsupported platform')
@@ -36,6 +36,7 @@ class SerialUtility(object):
                 result.append(port)
             except (OSError, serial.SerialException):
                 pass
+                #QtGui.QMessageBox.about(self, "c", "B")
             return result
 
 
