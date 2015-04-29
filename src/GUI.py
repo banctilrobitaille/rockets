@@ -10,7 +10,7 @@
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
-from serialIO import  SerialConnection #, SerialUtility
+from serialIO import  SerialConnection, SerialUtility
 import sys
 import math
 import PyQt4
@@ -283,8 +283,7 @@ class Ui_frmSerialProperties(QtGui.QWidget):
         self.comboCOMPort.setObjectName("comboCOMPort")
         
         for port in serial.tools.list_ports.comports():
-            self.comboCOMPort.addItem(str(port))#SerialUtility.ListComPort())
-        
+            self.comboCOMPort.addItem(str(port))#SerialUtility.ListComPort())
         self.lblListePort = QtGui.QLabel(self.gbConfig)
         self.lblListePort.setGeometry(QtCore.QRect(30, 20, 121, 20))
         self.lblListePort.setObjectName("lblListePort")
@@ -447,6 +446,12 @@ class AttitudeIndicatorNeedle(Qwt.QwtDialNeedle):
 
     def __init__(self, color):
         Qwt.QwtDialNeedle.__init__(self)
+        palette = QtGui.QPalette()
+        #for colourGroup in QtGui.QColor.colorNames():
+        #   palette.setColor(colourGroup, QtGui.QPalette.Text, color)
+        #self.setPalette(palette)
+
+    # __init__()
     
     def draw(self, painter, center, length, direction, cg):
         direction *= math.pi / 180.0
@@ -519,9 +524,3 @@ class SpeedoMeter(Qwt.QwtDial):
         painter.setPen(self.palette().color(QtGui.QPalette.Text))
         painter.drawText(
             rect, QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter, self.__label)
-
-
-if __name__ == "__main__":
-    
-    app = baseStationApplication(sys.argv)
-
