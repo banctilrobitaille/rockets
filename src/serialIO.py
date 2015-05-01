@@ -1,3 +1,5 @@
+import serial
+
 #import winreg
 #import itertools
 import sys
@@ -68,12 +70,13 @@ if __name__ == '__main__':
         
     
     
-class SerialConnection(object):
-    
-    
+
+class SerialConnection(serial.Serial):
+
     def __init__(self):
         
-        self._baudRate = "57600"
+        serial.Serial.__init__(self)
+        self._baudRate = 57600
         self._stopBits = "1"
         self._dataBits = "8"
         self._parity = False
