@@ -163,19 +163,19 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.__speed = SpeedoMeter(self)
         self.__speed.setLabel("MPH")
         self.__speed.setDialRange(0.0, 700.0)
-        self.__speed.setDialScale(0, 10, 100)
+        self.__speed.setDialScale(0, 3, 100)
         self.__speed.setGeometry(60,40,130,130)
         
         self.__altitude = SpeedoMeter(self)
-        self.__altitude.setLabel("METERS")
-        self.__altitude.setDialRange(0.0, 9000.0)
-        self.__altitude.setDialScale(0, 5,1500)
+        self.__altitude.setLabel("x1000''")
+        self.__altitude.setDialRange(0.0, 27.0)
+        self.__altitude.setDialScale(0, 0,2)
         self.__altitude.setGeometry(200,40,130,130) 
         
         self.__accel = SpeedoMeter(self)
         self.__accel.setLabel("M/S2")
-        self.__accel.setDialRange(0.0, 150.0)
-        self.__accel.setDialScale(0, 10, 50)
+        self.__accel.setDialRange(0.0, 200.0)
+        self.__accel.setDialScale(0, 5, 50)
         self.__accel.setGeometry(340,40,130,130) 
         
         self.__compass = Qwt.QwtCompass(self)
@@ -194,12 +194,34 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.map.setGeometry(20,230,400,300)
         self.map.open("world_style.xml")
         
-        self.testgraph = Qwt.QwtPlot(self)
+        self.statFrame = QtGui.QFrame()
+        self.gridLayout = QtGui.QGridLayout()
+        self.speedPlot = Qwt.QwtPlot()
+        self.speedPlot.setTitle("Speed over Time")
+        self.speedPlot.setAxisTitle(0, "Speed(MPH)")
+        self.speedPlot.setAxisTitle(2, "Time(SEC)")
+        self.accelPlot = Qwt.QwtPlot()
+        self.accelPlot.setTitle("Acceleration over Time")
+        self.accelPlot.setAxisTitle(0, "Acceleration(MS2)")
+        self.accelPlot.setAxisTitle(2, "Time(SEC)")
+        self.altitudePlot = Qwt.QwtPlot()
+        self.altitudePlot.setTitle("Altitude over Time")
+        self.altitudePlot.setAxisTitle(0, "Altitude(x1000'')")
+        self.altitudePlot.setAxisTitle(2, "Time(SEC)")
+        self.temperaturePlot = Qwt.QwtPlot()
+        self.temperaturePlot.setTitle("Temperature over Time")
+        self.temperaturePlot.setAxisTitle(0, "Temperature(KELVIN)")
+        self.temperaturePlot.setAxisTitle(2, "Time(SEC)")
+        self.gridLayout.addWidget(self.speedPlot, 0,0)
+        self.gridLayout.addWidget(self.accelPlot, 0,1)
+        self.gridLayout.addWidget(self.altitudePlot, 1,0)
+        self.gridLayout.addWidget(self.temperaturePlot, 1,1)
+        self.statFrame.setLayout(self.gridLayout)
 
         
         self.tabWidget = PyQt4.Qt.QTabWidget(self)
         self.tabWidget.addTab(self.map,QIcon("gps.png"),"GPS TRACKING")
-        self.tabWidget.addTab(self.testgraph,QIcon("graph.jpg"),"ON FLIGHT STATS")
+        self.tabWidget.addTab(self.statFrame,QIcon("graph.jpg"),"ON FLIGHT STATS")
         self.tabWidget.setGeometry(20,250,500,300)
         self.tabWidget.show()
         
@@ -236,12 +258,16 @@ class Ui_MainWindow(QtGui.QMainWindow):
        # QtGui.QMessageBox.about(self, "About", )
         
         if self.tabWidget.currentIndex() != 0:
-        
-            self.tabWidget.setGeometry(20,250,600,300)
+            
+            self.resize(1100, 900)
+            self.__compass.setGeometry(900,710,140,140)
+            self.tabWidget.setGeometry(20,250,800,600)
             
         else:
             
             self.tabWidget.setGeometry(20,250,500,300)
+            self.__compass.setGeometry(600,410,140,140)
+            self.resize(800, 600)
     
     def __showSerialProperties(self):
         
@@ -483,7 +509,6 @@ class SpeedoMeter(Qwt.QwtDial):
 
     def __init__(self, *args):
         Qwt.QwtDial.__init__(self, *args)
-        #self.__label = "KM/H"
         self.setWrapping(False)
         self.setReadOnly(True)
         self.setOrigin(135.0)
@@ -498,8 +523,7 @@ class SpeedoMeter(Qwt.QwtDial):
             QtGui.QColor(QtGui.QColor.blue).light(130)))
 
         self.setScaleOptions(Qwt.QwtDial.ScaleTicks | Qwt.QwtDial.ScaleLabel)
-        #self.setScale(0,10,1000)
-        #self.setScaleTicks(2, 4, 8)
+
 
     
     def setLabel(self, text):
