@@ -18,7 +18,6 @@ from PyQt4.Qt import QPen, QColor, QIcon, QStringList, QPalette
 from MapWidget import MapnikWidget
 import serial.tools.list_ports
 from PyQt4.QtGui import QLCDNumber
-from PyKDE4.kdeui import KLed
 
 
 class baseStationApplication(QtGui.QApplication):
