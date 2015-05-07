@@ -14,12 +14,12 @@ from serialIO import  SerialConnection, SerialUtility
 import sys
 import math
 import PyQt4
-from PyQt4.Qt import QPen, QColor, QIcon, QStringList, QPalette
+from PyQt4.Qt import QPen, QColor, QIcon, QStringList, QPalette, QFont
 from MapWidget import MapnikWidget
 import serial.tools.list_ports
 from PyQt4.QtGui import QLCDNumber
 from PyKDE4.kdeui import KLed
-
+import dashboard
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -114,70 +114,12 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.menubar.addAction(self.menuConnection.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
         
+                
         self.painter = QtGui.QPainter()
         
-        self.lblPalette = QPalette()
-        self.lblPalette.setColor(palette.WindowText,QtGui.QColor(255,255,255))
-        
-        self.lblSpeed = QtGui.QLabel(self)
-        self.lblSpeed.setText("SPEED")
-        self.lblSpeed.setPalette(self.lblPalette)
-        self.lblSpeed.setGeometry(100, 15, 60,20)
-        self.lblSpeed.show()
-        
-        self.lblAltitude = QtGui.QLabel(self)
-        self.lblAltitude.setText("ALTITUDE")
-        self.lblAltitude.setPalette(self.lblPalette)
-        self.lblAltitude.setGeometry(230, 15, 70,20)
-        self.lblAltitude.show()
-        
-        self.lblAccel = QtGui.QLabel(self)
-        self.lblAccel.setText("ACCELERATION")
-        self.lblAccel.setPalette(self.lblPalette)
-        self.lblAccel.setGeometry(350, 15, 120,20)
-        self.lblAccel.show()
-        
-        self.lblPeak = QtGui.QLabel(self)
-        self.lblPeak.setText("PEAK REACHED")
-        self.lblPeak.setPalette(self.lblPalette)
-        self.lblPeak.setGeometry(585,25,120,20)
-        
-        self.lcdPalette = QPalette()    
-        self.lcdPalette.setColor(palette.WindowText, QtGui.QColor(0, 255, 0))
-        
-        self.lcdVitesse = QLCDNumber(self)
-        self.lcdVitesse.setPalette(self.lcdPalette)
-        self.lcdVitesse.setGeometry(75, 180, 100, 30)
-        self.lcdVitesse.show()
-        
-        self.lcdAltitude = QLCDNumber(self)
-        self.lcdAltitude.setPalette(self.lcdPalette)
-        self.lcdAltitude.setGeometry(215, 180, 100, 30)
-        self.lcdAltitude.show()
-        
-        self.lcdAltitude = QLCDNumber(self)
-        self.lcdAltitude.setPalette(self.lcdPalette)
-        self.lcdAltitude.setGeometry(355, 180, 100, 30)
-        self.lcdAltitude.show()
-        
-        self.__speed = SpeedoMeter(self)
-        self.__speed.setLabel("MPH")
-        self.__speed.setDialRange(0.0, 700.0)
-        self.__speed.setDialScale(0, 3, 100)
-        self.__speed.setGeometry(60,40,130,130)
-        
-        self.__altitude = SpeedoMeter(self)
-        self.__altitude.setLabel("x1000''")
-        self.__altitude.setDialRange(0.0, 27.0)
-        self.__altitude.setDialScale(0, 0,2)
-        self.__altitude.setGeometry(200,40,130,130) 
-        
-        self.__accel = SpeedoMeter(self)
-        self.__accel.setLabel("M/S2")
-        self.__accel.setDialRange(0.0, 200.0)
-        self.__accel.setDialScale(0, 5, 50)
-        self.__accel.setGeometry(340,40,130,130) 
-        
+        self.__dashboard = dashboard.Dashboard(self)
+       
+      
         self.__compass = Qwt.QwtCompass(self)
         self.rose = Qwt.QwtSimpleCompassRose(16,2)
         self.rose.setWidth(0.15)
@@ -196,26 +138,38 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         self.statFrame = QtGui.QFrame()
         self.gridLayout = QtGui.QGridLayout()
+        self.plotTitleFont = QFont("Helvetica", 11)
+        self.plotAxisFont = QFont("Helvetica", 8)
+        
         self.speedPlot = Qwt.QwtPlot()
-        self.speedPlot.setTitle("Speed over Time")
+        self.speedTitle = Qwt.QwtText("Speed over Time")
+        self.speedTitle.setFont(self.plotTitleFont)
+        self.speedPlot.setTitle(self.speedTitle)
         self.speedPlot.setAxisTitle(0, "Speed(MPH)")
         self.speedPlot.setAxisTitle(2, "Time(SEC)")
+        
         self.accelPlot = Qwt.QwtPlot()
-        self.accelPlot.setTitle("Acceleration over Time")
+        self.accelTitle = Qwt.QwtText("Acceleration Over Time")
+        self.accelTitle.setFont(self.plotTitleFont)
+        self.accelPlot.setTitle(self.accelTitle)
         self.accelPlot.setAxisTitle(0, "Acceleration(MS2)")
         self.accelPlot.setAxisTitle(2, "Time(SEC)")
+        
         self.altitudePlot = Qwt.QwtPlot()
         self.altitudePlot.setTitle("Altitude over Time")
         self.altitudePlot.setAxisTitle(0, "Altitude(x1000'')")
         self.altitudePlot.setAxisTitle(2, "Time(SEC)")
+        
         self.temperaturePlot = Qwt.QwtPlot()
         self.temperaturePlot.setTitle("Temperature over Time")
         self.temperaturePlot.setAxisTitle(0, "Temperature(KELVIN)")
         self.temperaturePlot.setAxisTitle(2, "Time(SEC)")
+        
         self.gridLayout.addWidget(self.speedPlot, 0,0)
         self.gridLayout.addWidget(self.accelPlot, 0,1)
         self.gridLayout.addWidget(self.altitudePlot, 1,0)
         self.gridLayout.addWidget(self.temperaturePlot, 1,1)
+        
         self.statFrame.setLayout(self.gridLayout)
 
         
@@ -259,14 +213,14 @@ class Ui_MainWindow(QtGui.QMainWindow):
         
         if self.tabWidget.currentIndex() != 0:
             
-            self.resize(1100, 900)
-            self.__compass.setGeometry(900,710,140,140)
-            self.tabWidget.setGeometry(20,250,800,600)
+            self.resize(800, 650)
+            #self.__compass.setGeometry(900,710,140,140)
+            self.tabWidget.setGeometry(20,250,750,350)
             
         else:
             
             self.tabWidget.setGeometry(20,250,500,300)
-            self.__compass.setGeometry(600,410,140,140)
+            #self.__compass.setGeometry(600,410,140,140)
             self.resize(800, 600)
     
     def __showSerialProperties(self):
@@ -390,161 +344,3 @@ class Ui_frmSerialProperties(QtGui.QWidget):
     def __slotBtnCancel_Clicked(self):
         self.close()
     
-
-class AttitudeIndicator(Qwt.QwtDial):
-
-    def __init__(self, *args):
-        Qwt.QwtDial.__init__(self, *args)
-        self.__gradient = 0.0
-        self.setMode(Qwt.QwtDial.RotateScale)
-        self.setWrapping(True)
-        self.setOrigin(270.0)
-        self.setScaleOptions(Qwt.QwtDial.ScaleTicks)
-        self.setScale(0, 0, 30.0)
-        self.setNeedle(AttitudeIndicatorNeedle(
-            self.palette().color(QtGui.QPalette.Text)))
-
-    # __init__()
-
-    def angle(self):
-        return self.value()
-
-    # angle()
-    
-    def setAngle(self, angle):
-        self.setValue(angle)
-
-    # setAngle()
-
-    def gradient(self):
-        return self.__gradient
-
-    # gradient()
-
-    def setGradient(self, gradient):
-        self.__gradient = gradient
-
-    # setGradient()
-    
-    def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Plus:
-            self.setGradient(self.gradient() + 0.05)
-        elif event.key() == QtCore.Qt.Key_Minus:
-            self.setGradient(self.gradient() - 0.05)
-        else:
-            Qwt.QwtDial.keyPressEvent(self, event)
-
-    # keyPressEvent()
-
-    def drawScale(self, painter, center, radius, origin, minArc, maxArc):
-        dir = (360.0 - origin) * math.pi / 180.0
-        offset = 4
-        p0 = Qwt.qwtPolar2Pos(center, offset, dir + math.pi)
-
-        w = self.contentsRect().width()
-
-        # clip region to swallow 180 - 360 degrees
-        pa = []
-        pa.append(Qwt.qwtPolar2Pos(p0, w, dir - math.pi/2))
-        pa.append(Qwt.qwtPolar2Pos(pa[-1], 2 * w, dir + math.pi/2))
-        pa.append(Qwt.qwtPolar2Pos(pa[-1], w, dir))
-        pa.append(Qwt.qwtPolar2Pos(pa[-1], 2 * w, dir - math.pi/2))
-
-        painter.save()
-        painter.setClipRegion(QtGui.QRegion(QtGui.QPolygon(pa)))
-        Qwt.QwtDial.drawScale(
-            self, painter, center, radius, origin, minArc, maxArc)
-        painter.restore()
-
-    # drawScale()
-    
-    def drawScaleContents(self, painter, center, radius):
-        dir = 360 - int(round(self.origin() - self.value()))
-        arc = 90 + int(round(self.gradient() * 90))
-        skyColor = QtGui.QColor(38, 151, 221)
-        painter.save()
-        painter.setBrush(skyColor)
-        painter.drawChord(
-            self.scaleContentsRect(), (dir - arc)*16, 2*arc*16)
-        painter.restore()
-
-class AttitudeIndicatorNeedle(Qwt.QwtDialNeedle):
-
-    def __init__(self, color):
-        Qwt.QwtDialNeedle.__init__(self)
-        palette = QtGui.QPalette()
-        #for colourGroup in QtGui.QColor.colorNames():
-        #   palette.setColor(colourGroup, QtGui.QPalette.Text, color)
-        #self.setPalette(palette)
-
-    # __init__()
-    
-    def draw(self, painter, center, length, direction, cg):
-        direction *= math.pi / 180.0
-        triangleSize = int(round(length * 0.1))
-
-        painter.save()
-
-        p0 = QtCore.QPoint(center.x() + 1, center.y() + 1)
-        p1 = Qwt.qwtPolar2Pos(p0, length - 2 * triangleSize - 2, direction)
-
-        pa = QtGui.QPolygon([
-            Qwt.qwtPolar2Pos(p1, 2 * triangleSize, direction),
-            Qwt.qwtPolar2Pos(p1, triangleSize, direction + math.pi/2),
-            Qwt.qwtPolar2Pos(p1, triangleSize, direction - math.pi/2),
-            ])
-
-        color = self.palette().color(cg, QtGui.QPalette.Text)
-        painter.setBrush(color)
-        painter.drawPolygon(pa)
-
-        painter.setPen(QtGui.QPen(color, 3))
-        painter.drawLine(
-            Qwt.qwtPolar2Pos(p0, length - 2, direction + math.pi/2),
-            Qwt.qwtPolar2Pos(p0, length - 2, direction - math.pi/2))
-
-        painter.restore()
-
-class SpeedoMeter(Qwt.QwtDial):
-
-    def __init__(self, *args):
-        Qwt.QwtDial.__init__(self, *args)
-        self.setWrapping(False)
-        self.setReadOnly(True)
-        self.setOrigin(135.0)
-        self.setScaleArc(0.0, 270.0)
-        #self.setSizeIncrement(0, 1000)
-        
-        
-        self.setNeedle(Qwt.QwtDialSimpleNeedle(
-            Qwt.QwtDialSimpleNeedle.Arrow,
-            True,
-            QtGui.QColor(QtGui.QColor.red),
-            QtGui.QColor(QtGui.QColor.blue).light(130)))
-
-        self.setScaleOptions(Qwt.QwtDial.ScaleTicks | Qwt.QwtDial.ScaleLabel)
-
-
-    
-    def setLabel(self, text):
-        self.__label = text
-        self.update()
-
-    
-    def label(self):
-        return self.__label
-
-    def setDialRange(self, minValue, maxValue):
-        self.setRange(minValue, maxValue)
-    
-    def setDialScale(self, minValue, midValue, maxValue):
-        self.setScale(minValue, midValue, maxValue)
-            
-    def drawScaleContents(self, painter, center, radius):
-        
-        painter.setPen(QPen(QColor(245,245,245), 3))
-        rect = QtCore.QRect(50, 0, 2 * radius, 2 * radius - 10)
-        rect.moveCenter(center)
-        painter.setPen(self.palette().color(QtGui.QPalette.Text))
-        painter.drawText(
-            rect, QtCore.Qt.AlignBottom | QtCore.Qt.AlignHCenter, self.__label)
