@@ -1,6 +1,7 @@
 import PyQt4
 from PyQt4.Qt import QPalette
 from PyQt4.Qwt5 import Qwt
+from PyQt4.uic.Compiler.qtproxies import QtGui
 
 ###DEBUT DE LA CLASSE Dashboard###
 class Dashboard(PyQt4.QtGui.QFrame):
@@ -24,6 +25,9 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__acceleration_dial = SpeedoMeter(self,"M/S2",0.0,200.0,0,5,50)
         self.__lcd_acceleration = DigitalNum(self, 0)
         
+        self.__lbl_battery = Label(self, "BATTERY ROCKETS")
+        #self.__lcd_battery = DigitalNum(self, 0)
+        
         
         self.placeTheElement()
         self.show()
@@ -41,6 +45,9 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lbl_acceleration.setGeometry(350, 15, 120,20)
         self.__acceleration_dial.setGeometry(340,40,130,130)
         self.__lcd_acceleration.setGeometry(355, 180, 100, 30)
+        
+        self.__lbl_battery.setGeometry(480, 15, 200,20)
+        #self.__lcd_battery.setGeometry(495, 180, 100, 30)
 
 ###FIN DE LA CLASSE Dashboard###
 
@@ -94,6 +101,11 @@ class DigitalNum(PyQt4.QtGui.QLCDNumber):
         self.show()
     
 ###FIN DE LA CLASSE DigitalMum###
+
+#class BatteryBar(PyQt4.QtGui.QProgressBar):
+    #def createProgressBar(self):
+        
+    
 
 ##DEBUT DE LA CLASSE Label###
 class Label(PyQt4.QtGui.QLabel):

@@ -20,6 +20,9 @@ import serial.tools.list_ports
 from PyQt4.QtGui import QLCDNumber
 from PyKDE4.kdeui import KLed
 import dashboard
+import compass
+import led
+
 
 class baseStationApplication(QtGui.QApplication):
         
@@ -118,19 +121,8 @@ class Ui_MainWindow(QtGui.QMainWindow):
         self.painter = QtGui.QPainter()
         
         self.__dashboard = dashboard.Dashboard(self)
-       
-      
-        self.__compass = Qwt.QwtCompass(self)
-        self.rose = Qwt.QwtSimpleCompassRose(16,2)
-        self.rose.setWidth(0.15)
-        self.__compass.setRose(self.rose)
-        self.__compass.setGeometry(600,410,140,140)
-        self.__compass.show()
-        
-        self.peakLED = KLed(self)
-        self.peakLED.setColor(QtGui.QColor(255,0,0))
-        self.peakLED.setGeometry(550,20,30,30)
-        self.peakLED.show()
+        self.__compass = compass.Compass(self)
+        self.__led = led.Led(self)
         
         self.map = MapnikWidget(self)
         self.map.setGeometry(20,230,400,300)
