@@ -1,50 +1,32 @@
 # -*- coding: utf-8 -*-
 
-
 import mapnik
 import simplekml
+import PyQt4
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
 
-class MapnikWidget(QWidget):
+class MapnikWidget(PyQt4.QtGui.QWidget):
 
     def __init__(self,parent, also_build_view = True):
-        QWidget.__init__(self, parent)
         
-        self.kml = simplekml.Kml()
-        self.kml.newpoint(name="Quebec", coords=[(-74.0, 48.0)])
-        self.kml.save("GPS_tracking_data.kml")
+        PyQt4.QtGui.QWidget.__init__(self, parent)
+        
         self.map = mapnik.Map(15000, 15000, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
-        self.style = mapnik.Style()
-        self.rule = mapnik.Rule()
-        self.point_symbolizer = mapnik.MarkersSymbolizer()
-        self.point_symbolizer.allow_overlap = True
-        self.point_symbolizer.opacity = 1
-        self.rule.symbols.append(self.point_symbolizer)
-        self.style.rules.append(self.rule)
-        self.map.append_style("GPS_tracking_points", self.style)
-        self.qim          = QImage()
-        self.startDragPos = QPoint()
-        self.endDragPos   = QPoint()
-        self.zoomPos      = QPoint()
+        self.qim          = PyQt4.QtGui.QImage()
+        self.startDragPos = PyQt4.QtCore.QPoint()
+        self.endDragPos   = PyQt4.QtCore.QPoint()
+        self.zoomPos      = PyQt4.QtCore.QPoint()
         self.drag         = False
         self.scale        = False
         self.total_scale  = 1.0
-        
-        self.layer = mapnik.Layer("GPS_tracking_points")
-        self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
-        self.layer.styles.append("GPS_tracking_points")
-        self.map.layers.append(self.layer)
         self.map.zoom_all()
         
-        self.timer        = QTimer()
+        self.timer        = PyQt4.QtCore.QTimer()
         self.timer.timeout.connect(self.updateMap)
 
-        self.map_tree     = QStandardItemModel()
+        self.map_tree     = PyQt4.QtGui.QStandardItemModel()
         
-  
-
+        
     def open(self, xml):
         self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
@@ -59,10 +41,10 @@ class MapnikWidget(QWidget):
         self.rule.symbols.append(self.point_symbolizer)
         self.style.rules.append(self.rule)
         self.map.append_style("GPS_tracking_points", self.style)
-        self.qim          = QImage()
-        self.startDragPos = QPoint()
-        self.endDragPos   = QPoint()
-        self.zoomPos      = QPoint()
+        self.qim          = PyQt4.QtGui.QImage()
+        self.startDragPos = PyQt4.QtCore.QPoint()
+        self.endDragPos   = PyQt4.QtCore.QPoint()
+        self.zoomPos      = PyQt4.QtCore.QPoint()
         self.drag         = False
         self.scale        = False
         self.total_scale  = 1.0
@@ -73,9 +55,7 @@ class MapnikWidget(QWidget):
         self.map.layers.append(self.layer)
        # self.map.zoom_all()
         
-        self.map.zoom(150.0)
-        #self.buildMapTree()
-        #self.zoom_all()
+        self.map.zoom(35.0)
 
     def updateMap(self):
        # self.timer.stop()
@@ -89,7 +69,7 @@ class MapnikWidget(QWidget):
         elif self.scale:
             # scale upon the mouse cursor position
             # build up the transformation matrix
-            ma = QMatrix()
+            ma = PyQt4.QtGui.QMatrix()
             # firstly, translate the cursor position to the origin
             ma.translate(self.zoomPos.x(), self.zoomPos.y())
             # then, do the normal scale upon origin
@@ -97,7 +77,7 @@ class MapnikWidget(QWidget):
             # finnaly, translate back to the cursor position
             ma.translate(-self.zoomPos.x(), -self.zoomPos.y())
 
-            rect = ma.mapRect(QRectF(0, 0, self.map.width, self.map.height))
+            rect = ma.mapRect(PyQt4.QtCore.QRectF(0, 0, self.map.width, self.map.height))
             env = mapnik.Envelope(rect.left(), rect.bottom(), rect.right(), rect.top())
             self.map.zoom_to_box(self.map.view_transform().backward(env))
 
@@ -106,12 +86,12 @@ class MapnikWidget(QWidget):
 
         im = mapnik.Image(self.map.width, self.map.height)
         mapnik.render(self.map, im)
-        self.qim.loadFromData(QByteArray(im.tostring('png')))
+        self.qim.loadFromData(PyQt4.QtCore.QByteArray(im.tostring('png')))
         self.update()
 
 
     def paintEvent(self, event):
-        painter = QPainter(self)
+        painter = PyQt4.QtGui.QPainter(self)
 
         if self.drag:
             painter.drawImage(self.endDragPos - self.startDragPos, self.qim)
@@ -127,10 +107,10 @@ class MapnikWidget(QWidget):
         else:
             painter.drawImage(0, 0, self.qim)
 
-        painter.setPen(QColor(0, 0, 0, 100))
-        painter.setBrush(QColor(0, 0, 0, 100))
+        painter.setPen(PyQt4.QtGui.QColor(0, 0, 0, 100))
+        painter.setBrush(PyQt4.QtGui.QColor(0, 0, 0, 100))
         painter.drawRect(0, 0, 256, 26)
-        painter.setPen(QColor(0, 255 , 0))
+        painter.setPen(PyQt4.QtGui.QColor(0, 255 , 0))
         painter.drawText(10, 19, 'Rockets Position')
 
 
@@ -148,7 +128,7 @@ class MapnikWidget(QWidget):
 
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == PyQt4.QtCore.Qt.LeftButton:
             self.startDragPos = event.pos()
             self.drag         = True
 
@@ -158,6 +138,6 @@ class MapnikWidget(QWidget):
             self.update()
 
     def mouseReleaseEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == PyQt4.QtCore.Qt.LeftButton:
             self.endDragPos = event.pos()
             self.updateMap()

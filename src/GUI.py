@@ -1,24 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Python34\Lib\site-packages\PyQt4\uic\serialProperties.ui'
-#
-# Created: Sat Feb 28 14:48:15 2015
-#      by: PyQt4 UI code generator 4.11.3
-#
-# WARNING! All changes made in this file will be lost!
-
-
+import UiMainWindow
 from PyQt4 import QtCore, QtGui
 from PyQt4.Qwt5 import Qwt
-from serialIO import  SerialConnection, SerialUtility
-import sys
-import math
+from serialIO import  SerialConnection
 import PyQt4
-from PyQt4.Qt import QPen, QColor, QIcon, QStringList, QPalette, QFont
+from PyQt4.Qt import QIcon, QFont
 from MapWidget import MapnikWidget
 import serial.tools.list_ports
-from PyQt4.QtGui import QLCDNumber
-from PyKDE4.kdeui import KLed
 import dashboard
 import compass
 import led
@@ -30,195 +19,9 @@ class baseStationApplication(QtGui.QApplication):
         
         QtGui.QApplication.__init__(self, args)
         self.serialConnection = SerialConnection()
-        self.mainWindow = Ui_MainWindow(self.serialConnection)
+        self.mainWindow = UiMainWindow.MainWindow(self.serialConnection)
         self.mainWindow.show()
         self.exec_()
-        
-    
-class Ui_MainWindow(QtGui.QMainWindow):
-
-    def __init__(self,serialConnection,parent=None):
-        
-        QtGui.QMainWindow.__init__(self, parent)
-        self.serialConnection = serialConnection
-        self.__setupUi()
-        
-    def __setupUi(self):
-        
-        self.setObjectName("MainWindow")
-        self.resize(800, 600)
-        self.setMouseTracking(False)
-        self.centralwidget = QtGui.QWidget(self)
-        self.centralwidget.setObjectName("centralwidget")
-        self.setCentralWidget(self.centralwidget)
-        palette = QtGui.QPalette()
-        palette.setColor(QtGui.QPalette.Background,QtCore.Qt.black)
-        self.setPalette(palette)
-        self.setWindowTitle("Station de Base RockETS v0.1")
-        
-        self.menubar = QtGui.QMenuBar(self)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 26))
-        self.menubar.setObjectName("menubar")
-        
-        self.menuFile = QtGui.QMenu(self.menubar)
-        self.menuFile.setObjectName("menuFile")
-        self.menuFile.setTitle("File")
-        
-        self.menuView = QtGui.QMenu(self.menubar)
-        self.menuView.setObjectName("menuView")
-        self.menuView.setTitle("View")
-        
-
-        self.menuConnection = QtGui.QMenu(self.menubar)
-        self.menuConnection.setObjectName("menuConnection")
-        self.menuConnection.setTitle("Connection")
-        
-        self.menuAbout = QtGui.QMenu(self.menubar)
-        self.menuAbout.setObjectName("menuAbout")
-        self.menuAbout.setTitle("Help")
-        
-        self.setMenuBar(self.menubar)
-        
-        self.statusbar = QtGui.QStatusBar(self)
-        self.statusbar.setObjectName("statusbar")
-        self.lblNotConnected = QtGui.QLabel("Not Connected")
-        self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-        self.statusbar.addWidget(self.lblNotConnected)
-        self.setStatusBar(self.statusbar)
-        
-        self.actionLoad_Log_File = QtGui.QAction(self)
-        self.actionLoad_Log_File.setObjectName("actionLoad_Log_File")
-        self.actionLoad_Log_File.setText("Load Log File")
-        self.menuFile.addAction(self.actionLoad_Log_File)
-        
-        self.actionDisplay_Settings = QtGui.QAction(self)
-        self.actionDisplay_Settings.setObjectName("actionDisplay_Settings")
-        self.actionDisplay_Settings.setText("Display Settings")
-        self.menuView.addAction(self.actionDisplay_Settings)
-        
-        self.actionSerial_Settings = QtGui.QAction(self)
-        self.actionSerial_Settings.setObjectName("actionSerial_Settings")
-        self.actionSerial_Settings.setText("Serial Settings")
-        self.menuConnection.addAction(self.actionSerial_Settings)
-        
-        self.actionConnect = QtGui.QAction(self)
-        self.actionConnect.setObjectName("actionConnect")
-        self.actionConnect.setText("Connect")
-        self.menuConnection.addAction(self.actionConnect)
-        
-        
-        self.actionAbout = QtGui.QAction(self)
-        self.actionAbout.setObjectName("actionAbout")
-        self.actionAbout.setText("About")
-        self.menuAbout.addAction(self.actionAbout)
-        
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuView.menuAction())
-        self.menubar.addAction(self.menuConnection.menuAction())
-        self.menubar.addAction(self.menuAbout.menuAction())
-        
-                
-        self.painter = QtGui.QPainter()
-        
-        self.__dashboard = dashboard.Dashboard(self)
-        self.__compass = compass.Compass(self)
-        self.__led = led.Led(self)
-        
-        self.map = MapnikWidget(self)
-        self.map.setGeometry(20,230,400,300)
-        self.map.open("world_style.xml")
-        
-        self.statFrame = QtGui.QFrame()
-        self.gridLayout = QtGui.QGridLayout()
-        self.plotTitleFont = QFont("Helvetica", 11)
-        self.plotAxisFont = QFont("Helvetica", 8)
-        
-        self.speedPlot = Qwt.QwtPlot()
-        self.speedTitle = Qwt.QwtText("Speed over Time")
-        self.speedTitle.setFont(self.plotTitleFont)
-        self.speedPlot.setTitle(self.speedTitle)
-        self.speedPlot.setAxisTitle(0, "Speed(MPH)")
-        self.speedPlot.setAxisTitle(2, "Time(SEC)")
-        
-        self.accelPlot = Qwt.QwtPlot()
-        self.accelTitle = Qwt.QwtText("Acceleration Over Time")
-        self.accelTitle.setFont(self.plotTitleFont)
-        self.accelPlot.setTitle(self.accelTitle)
-        self.accelPlot.setAxisTitle(0, "Acceleration(MS2)")
-        self.accelPlot.setAxisTitle(2, "Time(SEC)")
-        
-        self.altitudePlot = Qwt.QwtPlot()
-        self.altitudePlot.setTitle("Altitude over Time")
-        self.altitudePlot.setAxisTitle(0, "Altitude(x1000'')")
-        self.altitudePlot.setAxisTitle(2, "Time(SEC)")
-        
-        self.temperaturePlot = Qwt.QwtPlot()
-        self.temperaturePlot.setTitle("Temperature over Time")
-        self.temperaturePlot.setAxisTitle(0, "Temperature(KELVIN)")
-        self.temperaturePlot.setAxisTitle(2, "Time(SEC)")
-        
-        self.gridLayout.addWidget(self.speedPlot, 0,0)
-        self.gridLayout.addWidget(self.accelPlot, 0,1)
-        self.gridLayout.addWidget(self.altitudePlot, 1,0)
-        self.gridLayout.addWidget(self.temperaturePlot, 1,1)
-        
-        self.statFrame.setLayout(self.gridLayout)
-
-        
-        self.tabWidget = PyQt4.Qt.QTabWidget(self)
-        self.tabWidget.addTab(self.map,QIcon("gps.png"),"GPS TRACKING")
-        self.tabWidget.addTab(self.statFrame,QIcon("graph.jpg"),"ON FLIGHT STATS")
-        self.tabWidget.setGeometry(20,250,500,300)
-        self.tabWidget.show()
-        
-        QtCore.QMetaObject.connectSlotsByName(self)
-        self.__connectSlot()
-        
-    def __connectSlot(self):
-        
-        self.connect(self.actionSerial_Settings, QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
-        self.connect(self.actionAbout, QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
-        self.connect(self.actionConnect, QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
-        self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
-       
-    def __slotAbout_Clicked(self):
-        
-        QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
-    
-    def __slotSerialSettings_Clicked(self):
-        
-        self.__showSerialProperties()
-        
-    def __slotDisplaySettings_Clicked(self):
-        pass
-    
-    def __slotLoadLogFile_Clicked(self):
-        pass
-    
-    def __slotConnect_Clicked(self):
-        
-        pass
-    
-    def __slotTab_Changed(self):
-        
-       # QtGui.QMessageBox.about(self, "About", )
-        
-        if self.tabWidget.currentIndex() != 0:
-            
-            self.resize(800, 650)
-            #self.__compass.setGeometry(900,710,140,140)
-            self.tabWidget.setGeometry(20,250,750,350)
-            
-        else:
-            
-            self.tabWidget.setGeometry(20,250,500,300)
-            #self.__compass.setGeometry(600,410,140,140)
-            self.resize(800, 600)
-    
-    def __showSerialProperties(self):
-        
-        self.serialProperties = Ui_frmSerialProperties(self.serialConnection)
-        self.serialProperties.show()
         
 
 class Ui_frmSerialProperties(QtGui.QWidget):
