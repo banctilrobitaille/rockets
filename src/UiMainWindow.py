@@ -1,9 +1,9 @@
-import PyQt4.Qwt5
-from MapWidget import MapnikWidget
+import PyQt4
 import dashboard
 import compass
-import led
 import UiDataAnlalysis
+import UiSerialProperties
+import terminal
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
@@ -32,7 +32,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         self.__dashboard = dashboard.Dashboard(self)
         self.__compass = compass.Compass(self)
-        self.__led = led.Led(self)
     
         self.__graphTab = UiDataAnlalysis.GraphTab()
         self.__gpsTab = UiDataAnlalysis.GpsTab()
@@ -55,6 +54,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.menuView = Menu(self.menubar, "menuView", "View")
         self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")        
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
+        self.menuTerminal = Menu(self.menubar, "menuTerminal", "Terminal")
         self.setMenuBar(self.menubar)
     
     def __AddMenuAction(self):
@@ -70,6 +70,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         self.actionConnect = MenuAction(self,"actionConnect", "Connect")
         self.menuConnection.addAction(self.actionConnect)
+        
+        self.actionLaunchTerminal = MenuAction(self, "actionLaunchTerminal", "Launch Terminal")
+        self.menuConnection.addAction(self.actionLaunchTerminal)
         
         self.actionAbout = MenuAction(self,"actionAbout","About")
         self.menuAbout.addAction(self.actionAbout)
@@ -93,6 +96,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionSerial_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
+        self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
         self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
        
     def __slotAbout_Clicked(self):
@@ -113,6 +117,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         pass
     
+    def __slotLaunchTerminal_Clicked(self):
+        
+        self.terminal = terminal.embTerminal()
+        pass
+    
     def __slotTab_Changed(self):
         
         if self.tabWidget.currentIndex() != 0:
@@ -126,9 +135,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.resize(800, 600)
     
     def __showSerialProperties(self):
-        pass
-       # self.serialProperties = Ui_frmSerialProperties(self.serialConnection)
-       # self.serialProperties.show()
+
+        self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
+        self.serialProperties.show()
 
 
 class MenuBar(PyQt4.QtGui.QMenuBar):

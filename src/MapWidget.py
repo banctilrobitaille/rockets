@@ -53,10 +53,15 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
         self.layer.styles.append("GPS_tracking_points")
         self.map.layers.append(self.layer)
-       # self.map.zoom_all()
+        self.map.resize(500,300)
+        self.map.zoom(145.0)
+        self.updateMap()
+        #self.map.zoom_all()
         
-        self.map.zoom(35.0)
-
+        
+        
+        
+        
     def updateMap(self):
        # self.timer.stop()
 
@@ -67,6 +72,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
             self.map.pan(cx - dpos.x() ,cy - dpos.y())
             self.drag = False
         elif self.scale:
+            
             # scale upon the mouse cursor position
             # build up the transformation matrix
             ma = PyQt4.QtGui.QMatrix()
@@ -113,10 +119,11 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         painter.setPen(PyQt4.QtGui.QColor(0, 255 , 0))
         painter.drawText(10, 19, 'Rockets Position')
 
+    
+    #def resizeEvent(self, event):
+     #   self.map.resize(500, 300)
 
-    def resizeEvent(self, event):
-        self.map.resize(event.size().width(), event.size().height())
-        self.updateMap()
+      #  self.updateMap()
 
     def wheelEvent(self, event):
         self.zoomPos     = event.pos()

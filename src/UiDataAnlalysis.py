@@ -51,7 +51,7 @@ class GraphTab(DataFrame):
     def __init__(self):
         
         DataFrame.__init__(self)
-        
+
         self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)")
         self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)")
         self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')")
@@ -68,10 +68,9 @@ class GpsTab(DataFrame):
     def __init__(self):
         
         DataFrame.__init__(self)
-        
+
         self.__map = MapWidget.MapnikWidget(self)
         self.__map.open("world_style.xml")
         self.addWidget(self.__map, 0, 0)
-        
         
         
