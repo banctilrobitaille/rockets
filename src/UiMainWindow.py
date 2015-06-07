@@ -71,6 +71,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.actionConnect = MenuAction(self,"actionConnect", "Connect")
         self.menuConnection.addAction(self.actionConnect)
         
+        self.actionDisconnect = MenuAction(self,"actionDisconnect", "Disconnect")
+        self.menuConnection.addAction(self.actionDisconnect)
+        
         self.actionLaunchTerminal = MenuAction(self, "actionLaunchTerminal", "Launch Terminal")
         self.menuConnection.addAction(self.actionLaunchTerminal)
         
@@ -96,6 +99,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionSerial_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
+        self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
         self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
         self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
        
@@ -116,6 +120,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __slotConnect_Clicked(self):
         
         self.serialConnection.startCommunication()
+        
+    def __slotDisconnect_Clicked(self):
+        
+        self.serialConnection.stopCommunication()
     
     def __slotLaunchTerminal_Clicked(self):
         

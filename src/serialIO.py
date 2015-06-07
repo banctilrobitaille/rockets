@@ -14,10 +14,6 @@ class SerialConnection(serial.Serial):
         self.parity = serial.PARITY_NONE
         self.bytesize = serial.EIGHTBITS
         self.isConnected = False
-        
-    def isConnected(self):
-        
-        return self.isConnected
     
     def startCommunication(self):
         
@@ -25,11 +21,24 @@ class SerialConnection(serial.Serial):
             self.open()
             self.isConnected = True
             
-        except serial.serialutil.SerialException, e:
+        except serial.serialutil.SerialException:
         
             PyQt4.QtGui.QMessageBox.about(PyQt4.QtGui.QWidget(), "Error", "Unable to open the com port: " + str(self.port))
+    
+    def stopCommunication(self):
+        
+        if self.isConnected:
+            
+            try: 
+                self.close()
+                self.isConnected = False
+            except serial.serialutil.SerialException:
                 
-           
+                PyQt4.QtGui.QMessageBox.about(PyQt4.QtGui.QWidget(), "Error", "Unable to close the com port: " + str(self.port))
+        
+        else:
+                   
+            PyQt4.QtGui.QMessageBox.about(PyQt4.QtGui.QWidget(), "Oups", "No connection currently opened !")
         #while True:
            # data = self.readline().decode()
             #self.handleData(data)
