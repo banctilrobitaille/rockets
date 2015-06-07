@@ -1,5 +1,6 @@
 import PyQt4
-import serial.tools
+import serial
+from serialIO import SerialConnection
 
 class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     
@@ -34,8 +35,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.comboCOMPort.setGeometry(PyQt4.QtCore.QRect(190, 20, 191, 31))
         self.comboCOMPort.setObjectName("comboCOMPort")
         
-        for port in serial.tools.list_ports.comports():
-            self.comboCOMPort.addItem(str(port))#SerialUtility.ListComPort())
+        self.comboCOMPort.addItem("/dev/ttyS0")
 
         self.lblListePort = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblListePort.setGeometry(PyQt4.QtCore.QRect(30, 20, 121, 20))
@@ -51,16 +51,18 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.checkYes.setGeometry(PyQt4.QtCore.QRect(70, 50, 51, 20))
         self.checkYes.setObjectName("checkYes")
         self.checkYes.setText("Yes")
+        self.checkYes.setAutoExclusive(True)
         
         self.checkNo = PyQt4.QtGui.QCheckBox(self.gbConfig)
         self.checkNo.setGeometry(PyQt4.QtCore.QRect(130, 50, 51, 20))
         self.checkNo.setObjectName("checkNo")
         self.checkNo.setText("No")
+        self.checkNo.setAutoExclusive(True)
     
-        if self.serialConnection._parity:
-            self.checkYes.setChecked(self.serialConnection._parity)
+        if self.serialConnection.getParity() != serial.PARITY_NONE:
+            self.checkYes.setChecked(True)
         else:
-            self.checkNo.setChecked(not self.serialConnection._parity)
+            self.checkNo.setChecked(True)
         
         self.lblBaudRate = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblBaudRate.setGeometry(PyQt4.QtCore.QRect(7, 90, 71, 20))
@@ -70,7 +72,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtBaudRate = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtBaudRate.setGeometry(PyQt4.QtCore.QRect(100, 90, 100, 22))
         self.txtBaudRate.setObjectName("txtBaudRate")
-        self.txtBaudRate.setText(str(self.serialConnection._baudRate))
+        self.txtBaudRate.setText(str(self.serialConnection.getBaudrate()))
         
         self.lblStopBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblStopBits.setGeometry(PyQt4.QtCore.QRect(220, 90, 60, 22))
@@ -80,7 +82,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtStopBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtStopBits.setGeometry(PyQt4.QtCore.QRect(280, 90, 31, 22))
         self.txtStopBits.setObjectName("txtStopBits")
-        self.txtStopBits.setText(self.serialConnection._stopBits)
+        self.txtStopBits.setText(str(self.serialConnection.getStopbits()))
         
         self.lblDataBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblDataBits.setGeometry(PyQt4.QtCore.QRect(320, 90, 60, 22))
@@ -90,7 +92,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtDataBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtDataBits.setGeometry(PyQt4.QtCore.QRect(380, 90, 41, 22))
         self.txtDataBits.setObjectName("txtDataBits")
-        self.txtDataBits.setText(self.serialConnection._dataBits)
+        self.txtDataBits.setText(str(self.serialConnection.getByteSize()))
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
@@ -103,14 +105,14 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     def __slotBtnSave_Clicked(self):
         
         
-        self.serialConnection._baudRate = int(self.txtBaudRate.text())
-        self.serialConnection._dataBits = self.txtDataBits.text()
-        self.serialConnection._stopBits = self.txtStopBits.text()
+        self.serialConnection.baudrate = int(self.txtBaudRate.text())
+        self.serialConnection.dataBits = self.txtDataBits.text()
+        self.serialConnection.stopBits = self.txtStopBits.text()
         
         if self.checkYes.isChecked():
-            self.serialConnection._parity = True
+            self.serialConnection.parity = serial.PARITY_EVEN
         else:
-            self.serialConnection._parity = False
+            self.serialConnection.parity = serial.PARITY_NONE
         
         self.close()
     

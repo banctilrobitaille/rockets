@@ -115,7 +115,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __slotConnect_Clicked(self):
         
-        pass
+        self.serialConnection.startCommunication()
     
     def __slotLaunchTerminal_Clicked(self):
         
