@@ -11,7 +11,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
         self.serialConnection = serialConnection
+        self.serialConnection.addObserver(self)
+        self.connectedFlag = False
         self.__setupUi()
+        self.serialConnection.addObserver(self.__dashboard)
         
     def __setupUi(self):
         
@@ -146,8 +149,26 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
         self.serialProperties.show()
-
-
+    
+    def obsUpdate(self,*args):
+        
+        if self.serialConnection.isConnected != self.connectedFlag:
+            if self.serialConnection.isConnected:
+                self.connectedFlag = True
+                self.statusbar.removeWidget(self.lblNotConnected)
+                self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
+                self.lblNotConnected.setStyleSheet('QLabel {color: green}')
+                self.statusbar.addWidget(self.lblNotConnected)
+                self.statusbar.update()
+            else:
+                self.connectedFlag = False
+                self.statusbar.removeWidget(self.lblNotConnected)
+                self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
+                self.lblNotConnected.setStyleSheet('QLabel {color: red}')
+                self.statusbar.addWidget(self.lblNotConnected)
+                self.statusbar.update()
+                
+    
 class MenuBar(PyQt4.QtGui.QMenuBar):
     
     def __init__(self, parent, objectName):

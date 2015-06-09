@@ -25,13 +25,14 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__acceleration_dial = SpeedoMeter(self,"M/S2",0.0,200.0,0,5,50)
         self.__lcd_acceleration = DigitalNum(self, 0)
         
-        self.__lbl_battery = Label(self, "BATTERY ROCKETS")
-        #self.__lcd_battery = DigitalNum(self, 0)
-        
+        self.__lbl_thermo = Label(self, "TEMPERATURE")
+        self.__rocketTemp = Thermometer(self, 0, 100)
+        self.__lcd_thermo = DigitalNum(self, 0)
         
         self.placeTheElement()
         self.show()
-        
+    
+    
     def placeTheElement(self):
         
         self.__lbl_speed.setGeometry(100, 15, 60,20)
@@ -46,8 +47,19 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__acceleration_dial.setGeometry(340,40,130,130)
         self.__lcd_acceleration.setGeometry(355, 180, 100, 30)
         
-        self.__lbl_battery.setGeometry(480, 15, 200,20)
-        #self.__lcd_battery.setGeometry(495, 180, 100, 30)
+        self.__lbl_thermo.setGeometry(495, 15, 200,20)
+        self.__rocketTemp.setGeometry(505, 40, 50, 130)
+        self.__lcd_thermo.setGeometry(495, 180, 100, 30)
+    
+    def obsUpdate(self, speed, accel, alti):
+        
+        self.__speed_dial.setValue(speed)
+        self.__acceleration_dial.setValue(accel)
+        self.__altitude_dial.setValue(alti)
+        self.__lcd_speed.display(str(speed))
+        self.__lcd_acceleration.display(str(accel))
+        self.__lcd_altitude.display(str(alti))
+        
 
 ###FIN DE LA CLASSE Dashboard###
 
@@ -105,7 +117,17 @@ class DigitalNum(PyQt4.QtGui.QLCDNumber):
 #class BatteryBar(PyQt4.QtGui.QProgressBar):
     #def createProgressBar(self):
         
+class Thermometer(Qwt.QwtThermo):
     
+    def __init__(self,parent, minCelsius, maxCelsius):
+        
+        Qwt.QwtDial.__init__(self, parent)
+        thermoPalette = QPalette()
+        thermoPalette.setColor(thermoPalette.WindowText, PyQt4.QtGui.QColor(255, 255, 255))
+        self.setPalette(thermoPalette)
+        self.setRange(minCelsius, maxCelsius)
+        self.setScale(minCelsius, maxCelsius)
+        self.show
 
 ##DEBUT DE LA CLASSE Label###
 class Label(PyQt4.QtGui.QLabel):
