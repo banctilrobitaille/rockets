@@ -50,16 +50,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lbl_thermo.setGeometry(495, 15, 200,20)
         self.__rocketTemp.setGeometry(510, 40, 60, 130)
         self.__lcd_thermo.setGeometry(495, 180, 100, 30)
-    
-    def obsUpdate(self, speed, accel, alti):
-        
-        self.__speed_dial.setValue(speed)
-        self.__acceleration_dial.setValue(accel)
-        self.__altitude_dial.setValue(alti)
-        self.__lcd_speed.display(str(speed))
-        self.__lcd_acceleration.display(str(accel))
-        self.__lcd_altitude.display(str(alti))
-        
+            
 
 ###FIN DE LA CLASSE Dashboard###
 

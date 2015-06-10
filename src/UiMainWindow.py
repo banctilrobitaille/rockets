@@ -4,6 +4,7 @@ import compass
 import UiDataAnlalysis
 import UiSerialProperties
 import terminal
+import serialIO
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
@@ -11,10 +12,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
         self.serialConnection = serialConnection
-        self.serialConnection.addObserver(self)
-        self.connectedFlag = False
+        self.dataThread = serialIO.Thread(self.serialConnection)
         self.__setupUi()
-        self.serialConnection.addObserver(self.__dashboard)
         
     def __setupUi(self):
         
@@ -104,6 +103,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
         self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
+        self.dataThread.isconnected.connect(self.updateStatusBar)
+        self.dataThread.receivedata.connect(self.updateDashBoard)
         self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
        
     def __slotAbout_Clicked(self):
@@ -121,12 +122,13 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         pass
     
     def __slotConnect_Clicked(self):
+    
+        self.dataThread.startCommunication()
         
-        self.serialConnection.startCommunication()
         
     def __slotDisconnect_Clicked(self):
         
-        self.serialConnection.stopCommunication()
+        self.dataThread.stopCommunication()
     
     def __slotLaunchTerminal_Clicked(self):
         
@@ -150,24 +152,32 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
         self.serialProperties.show()
     
-    def obsUpdate(self,*args):
+    def updateStatusBar(self, isConnected):
         
-        if self.serialConnection.isConnected != self.connectedFlag:
-            if self.serialConnection.isConnected:
-                self.connectedFlag = True
-                self.statusbar.removeWidget(self.lblNotConnected)
-                self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
-                self.lblNotConnected.setStyleSheet('QLabel {color: green}')
-                self.statusbar.addWidget(self.lblNotConnected)
-                self.statusbar.update()
-            else:
-                self.connectedFlag = False
-                self.statusbar.removeWidget(self.lblNotConnected)
-                self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
-                self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-                self.statusbar.addWidget(self.lblNotConnected)
-                self.statusbar.update()
-                
+        if isConnected:
+            
+            self.statusbar.removeWidget(self.lblNotConnected)
+            self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
+            self.lblNotConnected.setStyleSheet('QLabel {color: green}')
+            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.update()
+        else:
+            
+            self.statusbar.removeWidget(self.lblNotConnected)
+            self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
+            self.lblNotConnected.setStyleSheet('QLabel {color: red}')
+            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.update()
+    
+    def updateDashBoard(self,data):
+        
+        PyQt4.QtGui.QMessageBox.about(self, "About", data)
+        #self.__dashboard.__speed_dial.setValue(speed)
+        #self.__dashboard.__acceleration_dial.setValue(accel)
+        #self.__dashboard.__altitude_dial.setValue(alti)
+        #self.__dashboard.__lcd_speed.display(str(speed))
+        #self.__dashbpard.__lcd_acceleration.display(str(accel))
+        #self.__dashboard.__lcd_altitude.display(str(alti))         
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     
