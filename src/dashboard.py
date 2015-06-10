@@ -1,7 +1,7 @@
 import PyQt4
 from PyQt4.Qt import QPalette
 from PyQt4.Qwt5 import Qwt
-from PyQt4.uic.Compiler.qtproxies import QtGui
+
 
 ###DEBUT DE LA CLASSE Dashboard###
 class Dashboard(PyQt4.QtGui.QFrame):
@@ -26,7 +26,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lcd_acceleration = DigitalNum(self, 0)
         
         self.__lbl_thermo = Label(self, "TEMPERATURE")
-        self.__rocketTemp = Thermometer(self, 0, 100)
+        self.__rocketTemp = Thermometer(self, 0, 100, 70)
         self.__lcd_thermo = DigitalNum(self, 0)
         
         self.placeTheElement()
@@ -48,7 +48,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lcd_acceleration.setGeometry(355, 180, 100, 30)
         
         self.__lbl_thermo.setGeometry(495, 15, 200,20)
-        self.__rocketTemp.setGeometry(505, 40, 50, 130)
+        self.__rocketTemp.setGeometry(510, 40, 60, 130)
         self.__lcd_thermo.setGeometry(495, 180, 100, 30)
     
     def obsUpdate(self, speed, accel, alti):
@@ -119,14 +119,19 @@ class DigitalNum(PyQt4.QtGui.QLCDNumber):
         
 class Thermometer(Qwt.QwtThermo):
     
-    def __init__(self,parent, minCelsius, maxCelsius):
+    def __init__(self,parent, minCelsius, maxCelsius, alarmLevel):
         
         Qwt.QwtDial.__init__(self, parent)
         thermoPalette = QPalette()
         thermoPalette.setColor(thermoPalette.WindowText, PyQt4.QtGui.QColor(255, 255, 255))
+        thermoPalette.setColor(thermoPalette.Text,PyQt4.QtGui.QColor(255, 255, 255))
+        thermoPalette.setColor(thermoPalette.ButtonText,PyQt4.QtGui.QColor(0, 255, 0))
+        thermoPalette.setColor(thermoPalette.Highlight,PyQt4.QtGui.QColor(0, 255, 0))
         self.setPalette(thermoPalette)
+        self.setAlarmLevel(alarmLevel)
         self.setRange(minCelsius, maxCelsius)
         self.setScale(minCelsius, maxCelsius)
+        self.setValue(95)
         self.show
 
 ##DEBUT DE LA CLASSE Label###
