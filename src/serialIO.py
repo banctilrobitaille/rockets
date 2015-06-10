@@ -1,6 +1,5 @@
 import serial
 import PyQt4
-from types import BooleanType
 import time
 
 class SerialConnection(serial.Serial):
@@ -22,8 +21,11 @@ class SerialConnection(serial.Serial):
     
     
     def handleData(self, data):
-    
-        return "data"
+        
+        self.i = self.i + 10
+        self.j = self.j + 10
+        self.k = self.k + 1
+        return [self.i, self.j, self.k]
         #self.trigger.emit(self.i, self.j, self.k)
       
     def readFromSerialPort(self):
@@ -36,7 +38,7 @@ class SerialConnection(serial.Serial):
 class Thread(PyQt4.QtCore.QThread):
     
     isconnected = PyQt4.QtCore.pyqtSignal(bool)
-    receivedata = PyQt4.QtCore.pyqtSignal(str)
+    receivedata = PyQt4.QtCore.pyqtSignal(int, int, int)
     
     def __init__(self, serialConnection):
         self.serialConnection = serialConnection
@@ -79,6 +81,6 @@ class Thread(PyQt4.QtCore.QThread):
             
             #if self.serialConnection.inWaiting() > 0:
             self.analysedData = self.serialConnection.readFromSerialPort()
-            self.receivedata.emit(self.analysedData)
+            self.receivedata.emit(self.analysedData[0], self.analysedData[1], self.analysedData[2])
             time.sleep(3)
             

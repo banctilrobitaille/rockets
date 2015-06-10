@@ -169,15 +169,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.statusbar.addWidget(self.lblNotConnected)
             self.statusbar.update()
     
-    def updateDashBoard(self,data):
+    def updateDashBoard(self,speed, accel, alti):
         
-        PyQt4.QtGui.QMessageBox.about(self, "About", data)
-        #self.__dashboard.__speed_dial.setValue(speed)
-        #self.__dashboard.__acceleration_dial.setValue(accel)
-        #self.__dashboard.__altitude_dial.setValue(alti)
-        #self.__dashboard.__lcd_speed.display(str(speed))
-        #self.__dashbpard.__lcd_acceleration.display(str(accel))
-        #self.__dashboard.__lcd_altitude.display(str(alti))         
+        self.__dashboard.updateValue(speed, accel, alti)        
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     
