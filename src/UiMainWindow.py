@@ -5,6 +5,9 @@ import UiDataAnlalysis
 import UiSerialProperties
 import terminal
 import serialIO
+import vtkRendering
+import vtk
+
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
@@ -34,6 +37,27 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         self.__dashboard = dashboard.Dashboard(self)
         self.__compass = compass.Compass(self)
+        self.__rocket = vtkRendering.rocketRendering(self)
+        
+        self.ren = vtk.vtkRenderer()
+        self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
+ 
+        self.reader = vtk.vtkSTLReader()
+        self.reader.SetFileName("original.stl")
+ 
+        # Create a mapper
+        mapper = vtk.vtkPolyDataMapper()
+        mapper.SetInputConnection(self.reader.GetOutputPort())
+ 
+        # Create an actor
+        actor = vtk.vtkActor()
+        actor.SetMapper(mapper)
+        
+        actor.GetProperty().SetColor(1,0,0)
+        actor.SetOrientation(100,0,0)
+        self.ren.AddActor(actor)
+        
     
         self.__graphTab = UiDataAnlalysis.GraphTab()
         self.__gpsTab = UiDataAnlalysis.GpsTab()
@@ -41,7 +65,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.tabWidget = PyQt4.Qt.QTabWidget(self)
         self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("gps.png"),"GPS TRACKING")
         self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("graph.jpg"),"ON FLIGHT STATS")
-        self.tabWidget.setGeometry(20,250,500,300)
+        self.tabWidget.setGeometry(20,15,500,300)
         self.tabWidget.show()
         
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
@@ -54,9 +78,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.menubar.setGeometry(PyQt4.QtCore.QRect(0, 0, 800, 26))
         self.menuFile = Menu(self.menubar, "menuFile", "File")        
         self.menuView = Menu(self.menubar, "menuView", "View")
-        self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")        
+        self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")
+        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")           
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
-        self.menuTerminal = Menu(self.menubar, "menuTerminal", "Terminal")
         self.setMenuBar(self.menubar)
     
     def __AddMenuAction(self):
@@ -79,12 +103,16 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.actionLaunchTerminal = MenuAction(self, "actionLaunchTerminal", "Launch Terminal")
         self.menuConnection.addAction(self.actionLaunchTerminal)
         
+        self.actionSetLocalPosition = MenuAction(self, "actionSetLocalPosition", "Set base station position")
+        self.menuGPS.addAction(self.actionSetLocalPosition)
+        
         self.actionAbout = MenuAction(self,"actionAbout","About")
         self.menuAbout.addAction(self.actionAbout)
         
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuConnection.menuAction())
+        self.menubar.addAction(self.menuGPS.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
     
     def __AddStatusBar(self):
@@ -103,6 +131,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
         self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
+        self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
         self.dataThread.isconnected.connect(self.updateStatusBar)
         self.dataThread.receivedata.connect(self.updateDashBoard)
         self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
@@ -135,17 +164,22 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.terminal = terminal.embTerminal()
         pass
     
+    def __slotSetLocalPosition_Clicked(self):
+        
+        self.__gpsTab.map.setBaseStation(-71, 46)
+        self.__gpsTab.map.setRocketPosition(-71, 60)
+        
     def __slotTab_Changed(self):
         
         if self.tabWidget.currentIndex() != 0:
             
-            self.resize(800, 650)
-            self.tabWidget.setGeometry(20,250,750,350)
+            #self.resize(800, 650)
+            self.tabWidget.setGeometry(20,15,750,350)
             
         else:
             
-            self.tabWidget.setGeometry(20,250,500,300)
-            self.resize(800, 600)
+            self.tabWidget.setGeometry(20,15,500,300)
+            #self.resize(800, 600)
     
     def __showSerialProperties(self):
 

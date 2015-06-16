@@ -69,8 +69,8 @@ class GpsTab(DataFrame):
         
         DataFrame.__init__(self)
 
-        self.__map = MapWidget.MapnikWidget(self)
-        self.__map.open("world_style.xml")
-        self.addWidget(self.__map, 0, 0)
+        self.map = MapWidget.MapnikWidget(self)
+        self.map.open("world_style.xml")
+        self.addWidget(self.map, 0, 0)
         
         

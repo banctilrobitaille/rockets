@@ -13,6 +13,7 @@ class baseStationApplication(PyQt4.QtGui.QApplication):
         self.serialConnection = SerialConnection()
         self.mainWindow = UiMainWindow.MainWindow(self.serialConnection)
         self.mainWindow.show()
+        self.mainWindow.iren.Initialize()
         self.exec_()
         
 

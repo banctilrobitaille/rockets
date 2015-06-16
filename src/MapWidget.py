@@ -12,6 +12,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         PyQt4.QtGui.QWidget.__init__(self, parent)
         
         self.map = mapnik.Map(15000, 15000, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+        self.kml = simplekml.Kml()
         self.qim          = PyQt4.QtGui.QImage()
         self.startDragPos = PyQt4.QtCore.QPoint()
         self.endDragPos   = PyQt4.QtCore.QPoint()
@@ -28,39 +29,53 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         
         
     def open(self, xml):
+        
         self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
-        self.kml = simplekml.Kml()
-        self.kml.newpoint(name="Quebec", coords=[(-71.25, 46.8)])
-        self.kml.save("GPS_tracking_data.kml")
-        self.style = mapnik.Style()
-        self.rule = mapnik.Rule()
-        self.point_symbolizer = mapnik.MarkersSymbolizer()
-        self.point_symbolizer.allow_overlap = False
-        self.point_symbolizer.opacity = 1
-        self.rule.symbols.append(self.point_symbolizer)
-        self.style.rules.append(self.rule)
-        self.map.append_style("GPS_tracking_points", self.style)
-        self.qim          = PyQt4.QtGui.QImage()
-        self.startDragPos = PyQt4.QtCore.QPoint()
-        self.endDragPos   = PyQt4.QtCore.QPoint()
-        self.zoomPos      = PyQt4.QtCore.QPoint()
-        self.drag         = False
-        self.scale        = False
-        self.total_scale  = 1.0
-        
-        self.layer = mapnik.Layer("GPS_tracking_points")
-        self.layer.datasource = mapnik.Ogr(file="GPS_tracking_data.kml", layer_by_index=0)
-        self.layer.styles.append("GPS_tracking_points")
-        self.map.layers.append(self.layer)
         self.map.resize(500,300)
         self.map.zoom(145.0)
         self.updateMap()
         #self.map.zoom_all()
         
+    def setBaseStation(self, longitude, latitude):
         
+        self.kml.newpoint(name="BaseStation", coords=[(longitude, latitude)])
+        self.kml.save("GPS_BaseStation.kml")
+        style = mapnik.Style()
+        rule = mapnik.Rule()
+        point_symbolizer = mapnik.MarkersSymbolizer()
+        point_symbolizer.filename = "home.svg"
+        point_symbolizer.transform = "scale(1)"
+        point_symbolizer.allow_overlap = True
+        point_symbolizer.opacity = 1
+        rule.symbols.append(point_symbolizer)
+        style.rules.append(rule)
+        self.map.append_style("GPS_BaseStation", style)
+        layer = mapnik.Layer("GPS_BaseStation")
+        layer.datasource = mapnik.Ogr(file="GPS_BaseStation.kml", layer_by_index=0)
+        layer.styles.append("GPS_BaseStation")
+        self.map.layers.append(layer)
+        self.updateMap()
+    
+    def setRocketPosition(self, longitude, latitude):
         
-        
+        self.kml.newpoint(name="Rocket", coords=[(longitude, latitude)])
+        self.kml.save("GPS_Rocket.kml")
+        style = mapnik.Style()
+        rule = mapnik.Rule()
+        point_symbolizer = mapnik.MarkersSymbolizer()
+        point_symbolizer.filename = "rocket.svg"
+        point_symbolizer.transform = "scale(0.2)"
+        point_symbolizer.allow_overlap = True
+        point_symbolizer.opacity = 1
+        rule.symbols.append(point_symbolizer)
+        style.rules.append(rule)
+        self.map.append_style("GPS_Rocket", style)
+        layer = mapnik.Layer("GPS_Rocket")
+        layer.datasource = mapnik.Ogr(file="GPS_Rocket.kml", layer_by_index=0)
+        layer.styles.append("GPS_Rocket")
+        self.map.layers.append(layer)
+        self.updateMap()
         
     def updateMap(self):
        # self.timer.stop()

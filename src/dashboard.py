@@ -11,7 +11,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         
         PyQt4.QtGui.QFrame.__init__(self, parent)
         
-        self.setGeometry(0,0,600,300)
+        self.setGeometry(0,360,600,300)
         
         self.__lbl_speed = Label(self, "SPEED")
         self.__speed_dial = SpeedoMeter(self,"MPH",0.0,700.0,0,3,100)
@@ -35,21 +35,21 @@ class Dashboard(PyQt4.QtGui.QFrame):
     
     def placeTheElement(self):
         
-        self.__lbl_speed.setGeometry(100, 15, 60,20)
-        self.__speed_dial.setGeometry(60,40,130,130)
-        self.__lcd_speed.setGeometry(75, 180, 100, 30)
+        self.__lbl_speed.setGeometry(60, 15, 60,20)
+        self.__speed_dial.setGeometry(20,40,130,130)
+        self.__lcd_speed.setGeometry(35, 180, 100, 30)
         
-        self.__lbl_altitude.setGeometry(230, 15, 70,20)
-        self.__altitude_dial.setGeometry(200,40,130,130)
-        self.__lcd_altitude.setGeometry(215, 180, 100, 30)
+        self.__lbl_altitude.setGeometry(190, 15, 70,20)
+        self.__altitude_dial.setGeometry(160,40,130,130)
+        self.__lcd_altitude.setGeometry(175, 180, 100, 30)
          
-        self.__lbl_acceleration.setGeometry(350, 15, 120,20)
-        self.__acceleration_dial.setGeometry(340,40,130,130)
-        self.__lcd_acceleration.setGeometry(355, 180, 100, 30)
+        self.__lbl_acceleration.setGeometry(315, 15, 120,20)
+        self.__acceleration_dial.setGeometry(300,40,130,130)
+        self.__lcd_acceleration.setGeometry(315, 180, 100, 30)
         
-        self.__lbl_thermo.setGeometry(495, 15, 200,20)
-        self.__rocketTemp.setGeometry(510, 40, 60, 130)
-        self.__lcd_thermo.setGeometry(495, 180, 100, 30)
+        self.__lbl_thermo.setGeometry(455, 15, 200,20)
+        self.__rocketTemp.setGeometry(470, 40, 60, 130)
+        self.__lcd_thermo.setGeometry(455, 180, 100, 30)
             
     def updateValue(self,speed, accel, alti):
         
