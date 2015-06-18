@@ -7,6 +7,7 @@ import terminal
 import serialIO
 import vtkRendering
 import vtk
+import UiGpsSettings
 
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
@@ -162,12 +163,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __slotLaunchTerminal_Clicked(self):
         
         self.terminal = terminal.embTerminal()
-        pass
     
     def __slotSetLocalPosition_Clicked(self):
         
-        self.__gpsTab.map.setBaseStation(-71, 46)
-        self.__gpsTab.map.setRocketPosition(-71, 60)
+        self.__showGPSProperties()
         
     def __slotTab_Changed(self):
         
@@ -185,6 +184,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
         self.serialProperties.show()
+    
+    def __showGPSProperties(self):
+
+        self.gpsProperties = UiGpsSettings.GpsSettingWindow(self.__gpsTab.map)
+        self.gpsProperties.show()
     
     def updateStatusBar(self, isConnected):
         

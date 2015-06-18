@@ -12,4 +12,4 @@ class rocketRendering(QtGui.QFrame):
         self.vl.addWidget(self.vtkWidget)
         self.setLayout(self.vl)
         
-        self.show()
+       # self.show()

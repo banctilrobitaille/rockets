@@ -30,8 +30,8 @@ class SerialConnection(serial.Serial):
       
     def readFromSerialPort(self):
         
-        #data = self.read(self.inWaiting())
-        return self.handleData("data")
+        data = self.read(self.inWaiting())
+        print(data)
             
 
         
@@ -48,7 +48,7 @@ class Thread(PyQt4.QtCore.QThread):
     def startCommunication(self):
         
         try:
-            #self.serialConnection.open()
+            self.serialConnection.open()
             self.serialConnection.isConnected = True
             self.isRunning = True
             self.start()
@@ -64,7 +64,7 @@ class Thread(PyQt4.QtCore.QThread):
             try: 
                 
                 self.isRunning = False
-                #self.serialConnection.close()
+                self.serialConnection.close()
                 self.serialConnection.isConnected = False
                 self.isconnected.emit(self.serialConnection.isConnected)
             except serial.serialutil.SerialException:
@@ -79,8 +79,8 @@ class Thread(PyQt4.QtCore.QThread):
         
         while self.isRunning == True: 
             
-            #if self.serialConnection.inWaiting() > 0:
-            self.analysedData = self.serialConnection.readFromSerialPort()
-            self.receivedata.emit(self.analysedData[0], self.analysedData[1], self.analysedData[2])
-            time.sleep(3)
+            if self.serialConnection.inWaiting() > 0:
+                self.analysedData = self.serialConnection.readFromSerialPort()
+                #self.receivedata.emit(self.analysedData[0], self.analysedData[1], self.analysedData[2])
+                
             
