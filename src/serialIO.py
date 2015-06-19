@@ -1,6 +1,8 @@
 import serial
 import PyQt4
 import time
+import binascii
+import re
 
 class SerialConnection(serial.Serial):
     
@@ -26,12 +28,32 @@ class SerialConnection(serial.Serial):
         self.j = self.j + 10
         self.k = self.k + 1
         return [self.i, self.j, self.k]
-        #self.trigger.emit(self.i, self.j, self.k)
+        self.trigger.emit(self.i, self.j, self.k)
+        data.encode()
       
     def readFromSerialPort(self):
         
         data = self.read(self.inWaiting())
-        print(data)
+        self.handleData(data)
+        
+#        pattern = re.compile('\\\\x[0-9]*[a-f]*', re.IGNORECASE)
+#        resultSet = pattern.findall(data)
+        
+#        for match in resultSet:
+#            print match.span()
+        
+#        print(data)
+        #if data.__len__() < 90 :
+        hexString = binascii.b2a_qp(data, quotetabs=0, istext=1, header=0)
+#        print(hexString)
+        
+        pattern = re.compile('\=[0-9]*[a-f]*', re.IGNORECASE)
+        resultSet = pattern.findall(hexString)
+        
+        for match in resultSet:
+            print binascii.b2a_hex(match[1:]).decode("hex")
+        
+        
             
 
         
