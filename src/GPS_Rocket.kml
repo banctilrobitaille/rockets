@@ -4,7 +4,7 @@
         <Placemark id="feat_4">
             <name>Rocket</name>
             <Point id="geom_1">
-                <coordinates>25,25,0.0</coordinates>
+                <coordinates>5,5,0.0</coordinates>
             </Point>
         </Placemark>
     </Document>
