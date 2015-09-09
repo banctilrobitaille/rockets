@@ -91,7 +91,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
     #    Description: Permet de mettre a jour les valeurs affichees par les 
     #    composants graphiques du dashboard selon les valeurs en parametres
     #
-    #    param: None
+    #    param: speed, accel, alti les nouvelles valeurs a afficher
     #    return: None
     """
     def updateValue(self,speed, accel, alti):
@@ -107,19 +107,41 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lcd_altitude.display(str(alti)) 
     
 
-        
-###DEBUT DE LA CLASSE SpeedoMEter###
+"""#
+# La classe Speedometer
+# Description:    Classe representant un cadrant qui affiche la vitesse de la fusee
+                  en temps reel
+#"""
 class SpeedoMeter(Qwt.QwtDial):
-
+    
+    """
+    #    Constructeur
+    #    Description: Constructeur de la classe Speedometer
+    #
+    #    param: label: le texte a afficher dans le cadran ex: MPH
+    #           rangeMin: La valeur de depart du cadran
+    #           rangeMax: La valeur maximale du cadran
+    #           scaleMin: Pas de trace pour les petits traits
+    #           scaleMid: Nombre de traits entre les grands traits
+    #           scaleMax: Pas de trace pour les grand traits
+    #
+    #    return: None
+    """
     def __init__(self, parent, label, rangeMin, rangeMax, scaleMin, scaleMid, scaleMax):
         
         Qwt.QwtDial.__init__(self, parent)
+        
+        """Initialisation du label affichant la metrique de mesure"""
         self.__label = label
-        self.setRange(rangeMin, rangeMax)
+        
+        """Parametrage de la valeur minimum et maximum du cadran"""
+        self.setRange(rangeMin, rangeMax) 
         self.setScale(scaleMin, scaleMid, scaleMax)
         self.setWrapping(False)
         self.setReadOnly(True)
         self.setOrigin(135.0)
+        
+        """Parametrage de la longueur d'arc en degre que parcourera l'aiguille"""
         self.setScaleArc(0.0, 270.0)
         self.setNeedle(Qwt.QwtDialSimpleNeedle(
             Qwt.QwtDialSimpleNeedle.Arrow,
@@ -128,8 +150,16 @@ class SpeedoMeter(Qwt.QwtDial):
             PyQt4.QtGui.QColor(PyQt4.QtGui.QColor.blue).light(130)))
         self.setScaleOptions(Qwt.QwtDial.ScaleTicks | Qwt.QwtDial.ScaleLabel)
         self.show()
-
-            
+     
+    """
+    #    Methode drawScaleContent
+    #    Description: Affichage de la metrique de mesure
+    #
+    #    param: painter: L'objet painter
+    #           center: Le centre du cadran 
+    #           radius: La rayon du cadran 
+    #    return: None
+    """           
     def drawScaleContents(self, painter, center, radius):
         
         painter.setPen(PyQt4.Qt.QPen(PyQt4.QtGui.QColor(245,245,245), 3))
@@ -139,10 +169,7 @@ class SpeedoMeter(Qwt.QwtDial):
         painter.drawText(
             rect, PyQt4.QtCore.Qt.AlignBottom | PyQt4.QtCore.Qt.AlignHCenter, self.__label)
 
-###FIN DE LA CLASSE SpeedoMeter###
 
-
-###DEBUT DE LA CLASSE DigitalNum###
 class DigitalNum(PyQt4.QtGui.QLCDNumber):
     
     lcd_palette = QPalette()   
