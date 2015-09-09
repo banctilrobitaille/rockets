@@ -241,13 +241,30 @@ class Thermometer(Qwt.QwtThermo):
         
         """Affichage de lobjet"""
         self.show
+        
 
-##DEBUT DE LA CLASSE Label###
+"""#
+# La classe Label
+# Description:    Classe representant un label de blanche . Celle ci sert
+#                 sert a afficher du texte.
+#               
+#"""
 class Label(PyQt4.QtGui.QLabel):
     
+    """Initialisation de la palette de couleur"""
     lbl_palette = QPalette()
+    
+    """La couleur du texte est blanche"""
     lbl_palette.setColor(lbl_palette.WindowText, PyQt4.QtGui.QColor(255, 255, 255))
     
+    """
+    #    Constructeur
+    #    Description: Constructeur de Label
+    #
+    #    param: parent: L'objet parent (conteneur)
+    #           text:   Le texte du label
+    #    return: None
+    """
     def __init__(self, parent, text):
         
         PyQt4.QtGui.QLabel.__init__(self, parent)
