@@ -5,7 +5,7 @@ from PyQt4.Qwt5 import Qwt
 """#############################################################################
 # 
 # Nom du module:          dashboard
-# Auteur:                 Benoit Anctil-Robitaille
+# Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
 # Date:                   8 Septembre 2015
 # Description:            Le module dashboard.py regroupe les classes necessaires
 #                         a laffichage des donnees de vols en temps reel telles

@@ -4,7 +4,7 @@ from PyQt4.Qwt5.Qwt import QwtCompass
 """#############################################################################
 # 
 # Nom du module:          Compass
-# Auteur:                 Benoit Anctil-Robitaille
+# Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
 # Date:                   8 Septembre 2015
 # Description:            Le module compass.py regroupe les classes necessaire
 #                         a laffichage dun compas. Celui ci affiche la direction
