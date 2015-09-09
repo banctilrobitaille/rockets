@@ -110,7 +110,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
 """#
 # La classe Speedometer
 # Description:    Classe representant un cadrant qui affiche la vitesse de la fusee
-                  en temps reel
+#                 en temps reel
 #"""
 class SpeedoMeter(Qwt.QwtDial):
     
@@ -153,7 +153,7 @@ class SpeedoMeter(Qwt.QwtDial):
      
     """
     #    Methode drawScaleContent
-    #    Description: Affichage de la metrique de mesure
+    #    Description: Affichage de la metrique de mesure ex: MPH
     #
     #    param: painter: L'objet painter
     #           center: Le centre du cadran 
@@ -169,7 +169,13 @@ class SpeedoMeter(Qwt.QwtDial):
         painter.drawText(
             rect, PyQt4.QtCore.Qt.AlignBottom | PyQt4.QtCore.Qt.AlignHCenter, self.__label)
 
-
+"""#
+# La classe DigitalNum
+# Description:    Classe representant un affichage numerique. Celle ci sert
+#                 sert a afficher les valeurs afficher par les cadrants de
+#                 vitesse, acceleration, altitude, temperature etc.
+#               
+#"""
 class DigitalNum(PyQt4.QtGui.QLCDNumber):
     
     lcd_palette = QPalette()   
