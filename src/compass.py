@@ -1,21 +1,21 @@
 from PyQt4.Qwt5 import Qwt
 from PyQt4.Qwt5.Qwt import QwtCompass
 
-##############################################################################
+"""#############################################################################
 # 
-# Module Name:            Compass
+# Nom du module:          Compass
 # Auteur:                 Benoit Anctil-Robitaille
 # Date:                   8 Septembre 2015
 # Description:            Le module compass.py regroupe les classes necessaire
 #                         a laffichage dun compas. Celui ci affiche la direction
 #                         (Nord-Sud-Est-Ouest)de la fusee durant le vol.
 #
-##############################################################################
+##############################################################################"""
 
-#
+"""#
 # La classe Compass
 # Description:    Classe representant un objet de type QwtCompass
-#
+#"""
 class Compass(QwtCompass):
 
     def __init__(self, *args):

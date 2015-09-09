@@ -2,8 +2,23 @@ import PyQt4
 from PyQt4.Qt import QPalette
 from PyQt4.Qwt5 import Qwt
 
+"""#############################################################################
+# 
+# Nom du module:          dashboard
+# Auteur:                 Benoit Anctil-Robitaille
+# Date:                   8 Septembre 2015
+# Description:            Le module dashboard.py regroupe les classes necessaires
+#                         a laffichage des donnees de vols en temps reel telles
+#                         que les classes Speedometer, DigitalNum et Thermometer.
+#
+##############################################################################"""
 
-###DEBUT DE LA CLASSE Dashboard###
+"""#
+# La classe dashboard
+# Description:    Classe representant un dashboard affichant les donnnees de
+#                 de vol en temps reel. L'initialisation des composants du 
+#                 dashboard et leur affichage se font dans cette classe.
+#"""
 class Dashboard(PyQt4.QtGui.QFrame):
     
     
@@ -11,56 +26,86 @@ class Dashboard(PyQt4.QtGui.QFrame):
         
         PyQt4.QtGui.QFrame.__init__(self, parent)
         
+        """Positionnement du frame du dashboard"""
         self.setGeometry(0,360,600,300)
         
+        """Initialisation du cadran de la vitesse, du cadran numerique et label descriptif"""
         self.__lbl_speed = Label(self, "SPEED")
         self.__speed_dial = SpeedoMeter(self,"MPH",0.0,700.0,0,3,100)
         self.__lcd_speed = DigitalNum(self, 0)
         
+        """Initilisation du cadran de laltitude, du cadran numerique et label descriptif"""
         self.__lbl_altitude = Label(self, "ALTITUDE")
         self.__altitude_dial = SpeedoMeter(self,"x1000''",0.0,27.0,0,0,2)
         self.__lcd_altitude = DigitalNum(self, 0)
         
+        """Initialisation du cadran de lacceleration, du cadran numerique et label descriptif"""
         self.__lbl_acceleration = Label(self, "ACCELERATION")
         self.__acceleration_dial = SpeedoMeter(self,"M/S2",0.0,200.0,0,5,50)
         self.__lcd_acceleration = DigitalNum(self, 0)
         
+        """Initialisation du cadran numerique et label descriptif"""
         self.__lbl_thermo = Label(self, "TEMPERATURE")
         self.__rocketTemp = Thermometer(self, 0, 100, 70)
         self.__lcd_thermo = DigitalNum(self, 0)
         
+        """Positionnement des elements"""
         self.placeTheElement()
+        
+        """Affichage des elements"""
         self.show()
     
     
+    """
+    #    Methode placeTheElement
+    #    Description: Positionne les elements du dashboard selon des
+    #    coordonnees fixes et absolues
+    #
+    #    param: None
+    #    return: None
+    """
     def placeTheElement(self):
         
+        """Positionnement des elements de vitesse"""
         self.__lbl_speed.setGeometry(60, 15, 60,20)
         self.__speed_dial.setGeometry(20,40,130,130)
         self.__lcd_speed.setGeometry(35, 180, 100, 30)
         
+        """Positionnement des elements daltitude"""
         self.__lbl_altitude.setGeometry(190, 15, 70,20)
         self.__altitude_dial.setGeometry(160,40,130,130)
         self.__lcd_altitude.setGeometry(175, 180, 100, 30)
          
+        """Positionnement des elements dacceleration"""
         self.__lbl_acceleration.setGeometry(315, 15, 120,20)
         self.__acceleration_dial.setGeometry(300,40,130,130)
         self.__lcd_acceleration.setGeometry(315, 180, 100, 30)
         
+        """Posiotionnement des elements thermometre"""
         self.__lbl_thermo.setGeometry(455, 15, 200,20)
         self.__rocketTemp.setGeometry(470, 40, 60, 130)
         self.__lcd_thermo.setGeometry(455, 180, 100, 30)
-            
+
+    """
+    #    Methode updateValue
+    #    Description: Permet de mettre a jour les valeurs affichees par les 
+    #    composants graphiques du dashboard selon les valeurs en parametres
+    #
+    #    param: None
+    #    return: None
+    """
     def updateValue(self,speed, accel, alti):
         
+        """Mise a jour des valeurs a afficher"""
         self.__speed_dial.setValue(speed)
         self.__acceleration_dial.setValue(accel)
         self.__altitude_dial.setValue(alti)
+        
+        """Affichage des nouvelles valeurs"""
         self.__lcd_speed.display(str(speed))
         self.__lcd_acceleration.display(str(accel))
         self.__lcd_altitude.display(str(alti)) 
     
-###FIN DE LA CLASSE Dashboard###
 
         
 ###DEBUT DE LA CLASSE SpeedoMEter###
