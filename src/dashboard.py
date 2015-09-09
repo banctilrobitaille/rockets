@@ -178,6 +178,7 @@ class SpeedoMeter(Qwt.QwtDial):
 #"""
 class DigitalNum(PyQt4.QtGui.QLCDNumber):
     
+    """Palette de couleur verte"""
     lcd_palette = QPalette()   
     lcd_palette.setColor(lcd_palette.WindowText, PyQt4.QtGui.QColor(0, 255, 0))
     
@@ -185,30 +186,60 @@ class DigitalNum(PyQt4.QtGui.QLCDNumber):
         
         PyQt4.QtGui.QLCDNumber.__init__(self, parent)
         
+        """Affectation de la palette de couleur a lobjet parent"""
         self.setPalette(self.lcd_palette)
+        
+        """Affichage du widget"""
         self.display(value)
         self.show()
-    
-###FIN DE LA CLASSE DigitalMum###
-
-#class BatteryBar(PyQt4.QtGui.QProgressBar):
-    #def createProgressBar(self):
         
+    
+"""#
+# La classe Thermometer
+# Description:    Classe representant un thermometre. Celle ci sert
+#                 sert a afficher la temperature interne et/ou externe
+#                 de la fusee
+#               
+#"""      
 class Thermometer(Qwt.QwtThermo):
     
+    """
+    #    Constructeur
+    #    Description: Constructeur de Thermometer
+    #
+    #    param: parent: L'objet parent (conteneur)
+    #           minCelsius: Valeur minimum du thermometre en celsius
+    #           maxCelsius: Valeur maximale du thermometre en celsius
+    #           alarmLevel: Valeur a laquelle la couleur de linducateur change
+    #    return: None
+    """
     def __init__(self,parent, minCelsius, maxCelsius, alarmLevel):
         
         Qwt.QwtDial.__init__(self, parent)
         thermoPalette = QPalette()
+        
+        """Couleur des lignes indicatrices"""
         thermoPalette.setColor(thermoPalette.WindowText, PyQt4.QtGui.QColor(255, 255, 255))
+        
+        """Couleur des chiffres indicateurs"""
         thermoPalette.setColor(thermoPalette.Text,PyQt4.QtGui.QColor(255, 255, 255))
+        
+        """Couleur en dessous de la valeur alarmLevel"""
         thermoPalette.setColor(thermoPalette.ButtonText,PyQt4.QtGui.QColor(0, 255, 0))
+        
+        """Couleur sous la valeur alarmLevel"""
         thermoPalette.setColor(thermoPalette.Highlight,PyQt4.QtGui.QColor(0, 255, 0))
+        
+        """Application de la palette de couleur"""
         self.setPalette(thermoPalette)
+        
+        """Parametrage du niveau dalarme et de la graduation"""
         self.setAlarmLevel(alarmLevel)
         self.setRange(minCelsius, maxCelsius)
         self.setScale(minCelsius, maxCelsius)
-        self.setValue(95)
+        #self.setValue(95)
+        
+        """Affichage de lobjet"""
         self.show
 
 ##DEBUT DE LA CLASSE Label###
