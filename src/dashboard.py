@@ -272,4 +272,3 @@ class Label(PyQt4.QtGui.QLabel):
         self.setPalette(self.lbl_palette)
         self.show()
     
-###FIN DE LA CLASSE Label###

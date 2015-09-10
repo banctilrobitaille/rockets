@@ -1,6 +1,16 @@
 import PyQt4.Qwt5
 import MapWidget
-        
+
+"""#############################################################################
+# 
+# Nom du module:          UiDataAnalysis
+# Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
+# Date:                   8 Septembre 2015
+# Description:            Le module UiDataAnalysis.py regroupe les classes necessaires
+#                         a laffichage des composants danalyse de donnees en temps reel
+#                         tels que les graphiques et laffichage des coordonnees GPS.
+#
+##############################################################################"""
 class DataFrame(PyQt4.QtGui.QFrame):
     
     def __init__(self):
