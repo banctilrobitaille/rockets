@@ -1,6 +1,15 @@
 import PyQt4
 
-
+"""#############################################################################
+# 
+# Nom du module:          UiGpsSettings
+# Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
+# Date:                   8 Septembre 2015
+# Description:            Le module UiGpsSetting.py regroupe les classes necessaires
+#                         a laffichage de la fenetre permettant la modification des
+#                         parametres de la position GPS.
+#
+##############################################################################"""
 class GpsSettingWindow(PyQt4.QtGui.QWidget):
     
     def __init__(self,map,parent=None):
@@ -9,6 +18,14 @@ class GpsSettingWindow(PyQt4.QtGui.QWidget):
         self.map = map
         self.__setupUi()
     
+    """
+    #    Methode __setupUi
+    #    Description: Methode initialisant les composants graphiques
+    #                 de la fenetre et les positionne.
+    #
+    #    param:  None
+    #    return: None
+    """  
     def __setupUi(self):
         
         self.setObjectName("frmGpsSetting")
@@ -39,12 +56,14 @@ class GpsSettingWindow(PyQt4.QtGui.QWidget):
         self.txtLatitude.setGeometry(PyQt4.QtCore.QRect(160, 50,100, 22))
         self.txtLatitude.setObjectName("txtLatitude")
         self.txtLatitude.setText(str(self.map.baseStation_Latitude))
-
+        
+        """Initialisation et posistionnement du bouton <Cancel> """
         self.btnCancel = PyQt4.QtGui.QPushButton(self.gbConfig)
         self.btnCancel.setGeometry(PyQt4.QtCore.QRect(320, 80, 93, 28))
         self.btnCancel.setObjectName("btnCancel")
         self.btnCancel.setText("Cancel")
         
+        """Initialisation et positionnement du bouton <Save>"""
         self.btnSave = PyQt4.QtGui.QPushButton(self.gbConfig)
         self.btnSave.setGeometry(PyQt4.QtCore.QRect(210, 80, 93, 28))
         self.btnSave.setObjectName("btnSave")
