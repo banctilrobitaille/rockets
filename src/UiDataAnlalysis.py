@@ -101,32 +101,49 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.yAxisTitle.setFont(font)
         self.setAxisTitle(0, self.yAxisTitle)
         
-        
+"""#
+# La classe GraphTab
+# Description:    Classe representant un frame contenant les differents graphiques
+#                 daffichage.
+#"""  
 class GraphTab(DataFrame):
     
     def __init__(self):
         
+        """Initialiation de lobjet parent"""
         DataFrame.__init__(self)
-
+        
+        """Initialisation des differents graphiques realtime"""
         self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)")
         self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)")
         self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')")
         self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(KELVIN)")
         
+        """Ajout des widgets dans le frame selon un gridlayout"""
         self.addWidget(self.speedPlot, 0, 0)
         self.addWidget(self.accelPlot, 0, 1)
         self.addWidget(self.altitudePlot, 1, 0)
         self.addWidget(self.temperaturePlot, 1, 1)
         
-        
+"""#
+# La classe GPSTab
+# Description:    Classe representant un frame contenant laffichage de la map GPS
+#                 
+#"""  
 class GpsTab(DataFrame):
     
     def __init__(self):
         
+        """Initialisation de lobjet parent"""
         DataFrame.__init__(self)
-
+        
+        """Initialisation de la map GPS"""
         self.map = MapWidget.MapnikWidget(self)
+        
+        """Ouverture de la carte a afficher"""
         self.map.open("world_style.xml")
+        
+        """Ajout du widget au frame daffichage (objet courant(self))"""
         self.addWidget(self.map, 0, 0)
         
         
