@@ -1,10 +1,14 @@
 import serial
 import PyQt4
-import time
 import binascii
 import re
 
+"""#
+# La classe SerialConnection
+# Description:    Classe representant une connexion serie
+#"""
 class SerialConnection(serial.Serial):
+    
     
     trigger = PyQt4.QtCore.pyqtSignal(int,int,int)
     
@@ -56,10 +60,15 @@ class SerialConnection(serial.Serial):
         
             
 
-        
+"""#
+# La classe thread
+# Description:    Classe representant un thread
+#"""        
 class Thread(PyQt4.QtCore.QThread):
     
+    """Sends signal when connected to update the GUI"""
     isconnected = PyQt4.QtCore.pyqtSignal(bool)
+    """Sends signal when data is received to update the GUI"""
     receivedata = PyQt4.QtCore.pyqtSignal(int, int, int)
     
     def __init__(self, serialConnection):
