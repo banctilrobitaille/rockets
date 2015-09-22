@@ -72,13 +72,30 @@ class GpsSettingWindow(PyQt4.QtGui.QWidget):
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
         
+    """
+    #    Methode __connectSlot
+    #    Description: Methode qui associe les differents boutons du GUI
+    #                 au fonction a des methodes
+    #
+    #    param:  None
+    #    return: None
+    """  
     def __connectSlot(self):
         
         self.connect(self.btnCancel, PyQt4.QtCore.SIGNAL("clicked()"), self.__slotBtnCancel_Clicked)
         self.connect(self.btnSave, PyQt4.QtCore.SIGNAL("clicked()"), self.__slotBtnSave_Clicked)
     
+    """
+    #    Methode __slotBtnSave_Clicked
+    #    Description: Methode appele lorsque le bouton save est clique. Les donnees
+    #                 representees dans la fenetre sont mis a jour
+    #
+    #    param:  None
+    #    return: None
+    """  
     def __slotBtnSave_Clicked(self):
         
+        """Mise a jour des attributs de la carte selon les donnees entrees"""
         self.map.baseStation_Longitude = int(self.txtLongitude.text())
         self.map.baseStation_Latitude = int(self.txtLatitude.text())
         self.map.rocket_Longitude = self.map.rocket_Longitude + 5
@@ -87,8 +104,16 @@ class GpsSettingWindow(PyQt4.QtGui.QWidget):
         self.map.setRocketPosition()
         
         self.close()
-    
+        
+    """
+    #    Methode __slotBtnCancel_Clicked
+    #    Description: Methode appele lorsque le bouton cancel est clique
+    #
+    #    param:  None
+    #    return: None
+    """  
     def __slotBtnCancel_Clicked(self):
         
+        """Fermeture de la fenetre"""
         self.close()
     

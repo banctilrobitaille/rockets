@@ -154,7 +154,7 @@ class Thread(PyQt4.QtCore.QThread):
                 self.serialConnection.close()
                 """Mise a jour de letat de la connexion serie"""
                 self.serialConnection.isConnected = False
-                """Signalement dun changement detat de la connexion"""
+                """Signalement dun changement detat de la connexion serie"""
                 self.isconnected.emit(self.serialConnection.isConnected)
             except serial.serialutil.SerialException:
                 
