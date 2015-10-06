@@ -4,7 +4,7 @@
         <Placemark id="feat_3">
             <name>BaseStation</name>
             <Point id="geom_0">
-                <coordinates>-76,46,0.0</coordinates>
+                <coordinates>73,-46,0.0</coordinates>
             </Point>
         </Placemark>
     </Document>

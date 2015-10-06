@@ -10,6 +10,12 @@ import PyQt4
 #                         parametres de la position GPS.
 #
 ##############################################################################"""
+
+"""#
+# La classe GpsSettingWindow
+# Description:    Classe representant une fenetre de configuration pour
+#                 les parametres GPS
+#"""
 class GpsSettingWindow(PyQt4.QtGui.QWidget):
     
     def __init__(self,map,parent=None):
