@@ -107,7 +107,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         """Positionnement de la barre de menu au haut de linterface"""
         self.menubar.setGeometry(PyQt4.QtCore.QRect(0, 0, 800, 26))
         self.menuFile = Menu(self.menubar, "menuFile", "File")        
-        self.menuView = Menu(self.menubar, "menuView", "View")
+        self.menuView = Menu(self.menubar, "menuView", "view")
         self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")
         self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")           
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
