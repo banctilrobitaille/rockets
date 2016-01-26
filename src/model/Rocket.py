@@ -29,7 +29,7 @@ class Rocket(object):
     
     
     """The model constructor, default value are provided if not given"""
-    def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,id=None,state=None):
+    def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None):
         
         self.__acceleration = acceleration
         self.__speed = speed
@@ -37,7 +37,7 @@ class Rocket(object):
         self.__temperature = temperature
         self.__direction = direction
         self.__coords = coords
-        self.__ID = id
+        self.__ID = ID
         self.__currentState = state
         
     
