@@ -18,18 +18,27 @@
 #"""
 class Rocket(object):
     
-    state = {'INITIALIZING' : 0, 'ON_THE_PAD' : 1, 'IN_FLIGHT' : 2,
-              'DROGUE_DESCENT' : 3, 'MAIN_DESCENT' : 4, 'ON_THE_GROUND' : 5}
     
-    def __init__(self):
+    """The state provided by the rocket during the flight"""
+    STATE = {'INITIALIZING'     : 0,
+             'ON_THE_PAD'       : 1,
+             'IN_FLIGHT'        : 2,
+             'DROGUE_DESCENT'   : 3,
+             'MAIN_DESCENT'     : 4,
+             'ON_THE_GROUND'    : 5}
+    
+    
+    """The model constructor, default value are provided if not given"""
+    def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,id=None,state=None):
         
-        self.acceleration = 0
-        self.speed = 0
-        self.altitude = 0
-        self.temperature = 0
-        self.direction = ""
-        self.coords = [0.0,0.0]
-        self.currentState = self.state['INITIALIZING']
+        self.__acceleration = acceleration
+        self.__speed = speed
+        self.__altitude = altitude
+        self.__temperature = temperature
+        self.__direction = direction
+        self.__coords = coords
+        self.__ID = id
+        self.__currentState = state
         
     
     @property
@@ -87,3 +96,11 @@ class Rocket(object):
     @currentState.setter
     def currentState(self, currentState):
         self.__currentState = currentState
+        
+    @property
+    def ID(self):
+        return self.__ID
+    
+    @ID.setter
+    def ID(self, ID):
+        self.__ID = ID
