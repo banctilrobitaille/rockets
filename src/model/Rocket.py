@@ -86,7 +86,7 @@ class Rocket(object):
         return self.__coords
     
     @coords.setter
-    def coords(self,*coords):
+    def coords(self,coords):
         self.__coords = coords
     
     @property

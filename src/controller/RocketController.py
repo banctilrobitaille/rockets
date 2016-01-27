@@ -50,11 +50,13 @@ class RocketController(object):
     
     def updateRocketCoords(self,coords):
         
-        
+        self.__rocketModel.coords(coords)
     
     def updateRocketID(self, ID):
-        pass
+        
+        self.__rocketModel.ID(ID)
     
     def updateRocketState(self,state):
-        pass
+        
+        self.__rocketModel.currentState(state)
     

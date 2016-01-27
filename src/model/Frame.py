@@ -8,15 +8,19 @@ Created on 2016-01-04
 
 class Frame(object):
     
-    COMMAND = {'GETTELEMETRY' : bitarray('0'), 'ACK' : bitarray('10'), 'NACK' : bitarray('110'),
-               'DISCOVER' : bitarray('1110'), 'GETLOG' : bitarray('1111')}
+    '''Command that can be send to the rockets. Compresssed with Huffman algorithm'''
+    COMMAND = {'GETTELEMETRY'   : bitarray('0'),
+               'ACK'            : bitarray('10'),
+               'NACK'           : bitarray('110'),
+               'DISCOVER'       : bitarray('1110'),
+               'GETLOG'         : bitarray('1111')}
     
+    '''Constant length of a frame'''
     LENGTH = 100
     
-    #def __init__(self, rocketID, length, cmd, data, crc):
-    def __init__(self,*arg,**kwarg): 
-      
-      pass
+    def __init__(self, byteArray): 
+
+        pass
     
     @property
     def rocketID(self):

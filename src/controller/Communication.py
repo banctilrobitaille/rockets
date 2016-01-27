@@ -10,8 +10,11 @@ Created on 2016-01-11
 
 class SerialController():
     
-    command = {'GETTELEMETRY' : bitarray('0'), 'ACK' : bitarray('10'), 'NACK' : bitarray('110'),
-        'DISCOVER' : bitarray('1110'), 'GETLOG' : bitarray('1111')}
+    command = {'GETTELEMETRY' : bitarray('0'),
+               'ACK'          : bitarray('10'),
+               'NACK'         : bitarray('110'),
+               'DISCOVER'     : bitarray('1110'),
+               'GETLOG'       : bitarray('1111')}
     
     def __init__(self,SerialConnection):
         
@@ -49,7 +52,7 @@ class SerialReader(PyQt4.QtCore.QThread):
     
     def dataReceived(self):
         
-        self.__frame = Frame(self.__serialConnection.read(Frame.LENGTH))
+        self.__frame = Frame(self.__serialConnection.read(size=Frame.LENGTH))
     
     def handleData(self):
         
