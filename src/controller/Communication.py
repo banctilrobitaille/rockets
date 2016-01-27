@@ -53,13 +53,22 @@ class SerialReader(PyQt4.QtCore.QThread):
     def running(self,value):
         self.__running = value
     
+    
     def dataReceived(self):
         
-        self.__frame = Frame(self.__serialConnection.read(size=Frame.LENGTH))
+        self.__frame = Frame.fromByteArray(self.__serialConnection.read(size=Frame.LENGTH))
     
     def handleData(self):
         
-        self.__rocketController.updateRocketData()
+        rocketData = self.__frame.data
+        self.__rocketController.updateRocketData(rocketData['speed'],
+                                                 rocketData['altitude'],
+                                                 rocketData['acceleration'],
+                                                 rocketData['temperature'],
+                                                 rocketData['direction'],
+                                                 rocketData['coords'],
+                                                 rocketData['ID'],
+                                                 rocketData['state'])
     
     def run(self):
         
