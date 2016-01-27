@@ -9,7 +9,7 @@ Created on 2016-01-04
 class SerialConnection(serial.Serial):
 
     
-    def __init__(self, port="/dev/ttyS0", baudrate=5600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
+    def __init__(self, port="/dev/ttyS0", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
         
         super.__init__(self)
         self.port = port

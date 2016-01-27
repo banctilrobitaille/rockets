@@ -16,11 +16,13 @@ class SerialController():
                'DISCOVER'     : bitarray('1110'),
                'GETLOG'       : bitarray('1111')}
     
-    def __init__(self,SerialConnection):
+    def __init__(self,serialConnection, rocketController):
         
         serial.Serial.__init__(self)
-        self.__serialConnection = SerialConnection
-        self.__serialReader = SerialReader(self.__serialConnection)
+        self.__serialConnection = serialConnection
+        self.__rocketController = rocketController
+        self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
+        
         
     
     def startReadingData(self):
@@ -37,10 +39,11 @@ class SerialReader(PyQt4.QtCore.QThread):
     
     __running = False
     
-    def __init__(self,SerialConnection):
+    def __init__(self,serialConnection, rocketController):
         
         super.__init__(self)
-        self.__serialConnection = SerialConnection
+        self.__serialConnection = serialConnection
+        self.__rocketController = rocketController
     
     @property
     def running(self):
@@ -56,7 +59,7 @@ class SerialReader(PyQt4.QtCore.QThread):
     
     def handleData(self):
         
-        pass
+        self.__rocketController.updateRocketData()
     
     def run(self):
         
