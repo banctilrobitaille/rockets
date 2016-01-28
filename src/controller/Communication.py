@@ -2,6 +2,7 @@ import serial
 import bitarray
 import PyQt4
 from model.Frame import Frame
+from model.SerialConnection import SerialConnection
 '''
 Created on 2016-01-11
 
@@ -24,6 +25,33 @@ class SerialController():
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
         
         
+    def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
+        
+        self.updateSerialConnectionPort(port)
+        self.updateSerialConnectionBaudrate(baudrate)
+        self.updateSerialConnectionStopbits(stopbits)
+        self.updateSerialConnectionParity(parity)
+        self.updateSerialConnectionByteSize(bytesize)
+    
+    def updateSerialConnectionPort(self,port):
+        
+        self.__serialConnection.port(port)
+        
+    def updateSerialConnectionBaudrate(self, baudrate):
+        
+        self.__serialConnection.baurate(baudrate)
+        
+    def updateSerialConnectionStopbits(self, stopbits):
+        
+        self.__serialConnection.stopbits(stopbits)
+        
+    def updateSerialConnectionParity(self, parity):
+        
+        self.__serialConnection.parity(parity)
+        
+    def updateSerialConnectionByteSize(self, bytesize):
+        
+        self.__serialConnection.bytesize(bytesize)
     
     def startReadingData(self):
         
