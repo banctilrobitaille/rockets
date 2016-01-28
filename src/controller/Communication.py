@@ -120,22 +120,56 @@ class SerialController(PyQt4.QtCore.QObject):
         
         self.__serialConnection.parity = parity
         self.parityChanged.emit(parity)
-        
+    
+    
+    """
+    #    Methode updateSerialConnectionByteSize
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour le nombre de bits envoyés par la connexion serie
+    #
+    #    param:       bytesize, le nombre de bits envoyé ex: serial.EIGHTBITS
+    #    return: None
+    """ 
     def updateSerialConnectionByteSize(self, bytesize):
         
         self.__serialConnection.bytesize = bytesize
         self.bytesizeChanged(bytesize)
+        
     
+    """
+    #    Methode startReadingData
+    #    Description: Methode demarrant un thread de lecture de donnees
+    #                 sur le port serie
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
     def startReadingData(self):
         
         self.__serialReader.running = True
         self.__serialReader.start()
     
+    """
+    #    Methode stopReadingData
+    #    Description: Methode qui arrete le thread de lecture de donnees
+    #                 sur le port serie
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
     def stopReadingData(self):
         
         self.__serialReader.running = False
 
-
+"""#
+# La classe SerialReader
+# Description:    Classe representant un thread de lecture de donnees
+#                 sur le port serie. Celle-ci cree des frames et met a 
+#                 jour les attributs du model Rocket selon les donnees
+#                 recues.
+#"""
 class SerialReader(PyQt4.QtCore.QThread):
     
     __running = False
