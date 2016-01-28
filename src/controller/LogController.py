@@ -1,3 +1,5 @@
+import xml.etree.ElementTree as ET
+import time, datetime
 '''
 Created on 2016-01-27
 
@@ -5,13 +7,15 @@ Created on 2016-01-27
 '''
 
 class LogController(object):
-    '''
-    classdocs
-    '''
 
 
     def __init__(self, params):
-        '''
-        Constructor
-        '''
+        
+        pass
+    
+    def writeLogToFile(self, path):
+        pass
+    
+    def readLogFromFile(self, path):
+        pass
         
