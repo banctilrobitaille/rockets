@@ -1,5 +1,5 @@
-from PyQt4.QtCore import pyqtSignal, QObject
 import serial 
+
 
 '''
 Created on 2016-01-04
@@ -9,6 +9,7 @@ Created on 2016-01-04
 
 class SerialConnection(serial.Serial):
     
+    __INSTANCE = None
     
     def __init__(self, port="/dev/ttyS0", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
         
@@ -66,3 +67,11 @@ class SerialConnection(serial.Serial):
     @isConnected.setter
     def isConnected(self,isConnected):
         self.__isConnected = isConnected
+        
+    @staticmethod
+    def getInstance():
+        
+        if SerialConnection.__INSTANCE is None:
+            SerialConnection.__INSTANCE = SerialConnection()
+            
+        return SerialConnection.__INSTANCE

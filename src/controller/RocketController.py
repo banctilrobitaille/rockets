@@ -10,7 +10,7 @@ class RocketController(object):
 
     def __init__(self, rocketModel):
         
-        self.__rocketModel = Rocket()
+        self.__rocketModel = rocketModel
   
   
     def updateRocketData(self,speed, altitude, acceleration, temperature, direction, coords, ID, state ):
@@ -27,36 +27,33 @@ class RocketController(object):
     
     def updateRocketSpeed(self,speed):
         
-        self.__rocketModel.speed(speed)
-    
+        self.__rocketModel.speed = speed
     
     def updateRocketAltitude(self,altitude):
         
-        self.__rocketModel.altitude(altitude)
-    
+        self.__rocketModel.altitude = altitude
     
     def updateRocketAcceleration(self,acceleration):
         
-        self.__rocketModel.acceleration(acceleration)
-    
+        self.__rocketModel.acceleration = acceleration
     
     def updateRocketTemperature(self,temperature):
         
-        self.__rocketModel.temperature(temperature)
+        self.__rocketModel.temperature = temperature
     
     def updateRocketDirection(self,direction):
         
-        self.__rocketModel.direction(direction)
+        self.__rocketModel.direction = direction
     
     def updateRocketCoords(self,coords):
         
-        self.__rocketModel.coords(coords)
+        self.__rocketModel.coords = coords
     
     def updateRocketID(self, ID):
         
-        self.__rocketModel.ID(ID)
+        self.__rocketModel.ID = ID
     
     def updateRocketState(self,state):
         
-        self.__rocketModel.currentState(state)
+        self.__rocketModel.currentState = state
     

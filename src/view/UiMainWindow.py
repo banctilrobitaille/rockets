@@ -6,8 +6,8 @@ import UiSerialProperties
 import vtkRendering
 import vtk
 import UiGpsSettings
-from model.SerialConnection import SerialConnection
-from controller.Communication import SerialController
+from model.Rocket import Rocket
+from controller.RocketController import RocketController
 from PyQt4.Qt import pyqtSlot
 
 """#############################################################################
@@ -25,11 +25,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __init__(self,serialConnection,parent=None):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
-        self.serialConnection = SerialConnection()
-        self.serialController = SerialController(self.serialConnection, None)
-        self.serialController.baudrateChanged.connect(self.on_baudrateChanged)
-        self.serialController.updateSerialConnectionBaudrate(300)
-        #self.dataThread = serialIO.Thread(self.serialConnection)
         self.__setupUi()
 
     """

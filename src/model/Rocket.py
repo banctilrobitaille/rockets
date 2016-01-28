@@ -1,23 +1,26 @@
+import PyQt4
 """#############################################################################
 # 
 # Nom du module:          Rocket
 # Auteur:                 Benoit Anctil-Robitaille
 # Date:                   5 janvier 2016
-# Description:            Le module Rocket.py inclus les classes et méthodes
-#                         permettant d'affecter ou lire les différents états
-#                         de la fusée en vol.
+# Description:            Le module Rocket.py inclus les classes et methodes
+#                         permettant d'affecter ou lire les differents etats
+#                         de la fusee en vol.
 #
 ##############################################################################"""
 
 
 """#
 # La classe Rocket
-# Description:    Classe representant la fusée en vol. Cette classe fournie
-#                 l'interface nécessaire à l'affectation et lecture des 
-#                 données de la fusée.
+# Description:    Classe representant la fusee en vol. Cette classe fournie
+#                 l'interface necessaire a l'affectation et lecture des 
+#                 donnees de la fusee.
 #"""
-class Rocket(object):
+
+class Rocket(PyQt4.QtCore.QObject):
     
+    __INSTANCE = None
     
     """The state provided by the rocket during the flight"""
     STATE = {'INITIALIZING'     : 0,
@@ -31,6 +34,7 @@ class Rocket(object):
     """The model constructor, default value are provided if not given"""
     def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None):
         
+        super(PyQt4.QtCore.QObject, self).__init__()
         self.__acceleration = acceleration
         self.__speed = speed
         self.__altitude = altitude
@@ -104,3 +108,11 @@ class Rocket(object):
     @ID.setter
     def ID(self, ID):
         self.__ID = ID
+        
+    @staticmethod
+    def getInstance():
+        
+        if Rocket.__INSTANCE is None:
+            Rocket.__INSTANCE = Rocket()
+            
+        return Rocket.__INSTANCE
