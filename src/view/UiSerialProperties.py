@@ -1,6 +1,6 @@
 import PyQt4
 import serial
-from serialIO import SerialConnection
+from controller.Communication import SerialController
 
 class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     

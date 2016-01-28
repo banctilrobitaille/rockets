@@ -10,11 +10,11 @@ Created on 2016-01-11
 
 class SerialController():
     
-    command = {'GETTELEMETRY' : bitarray('0'),
-               'ACK'          : bitarray('10'),
-               'NACK'         : bitarray('110'),
-               'DISCOVER'     : bitarray('1110'),
-               'GETLOG'       : bitarray('1111')}
+    #command = {'GETTELEMETRY' : bitarray('0'),
+     #          'ACK'          : bitarray('10'),
+      #         'NACK'         : bitarray('110'),
+       #        'DISCOVER'     : bitarray('1110'),
+        #       'GETLOG'       : bitarray('1111')}
     
     def __init__(self,serialConnection, rocketController):
         

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import mapnik
 import simplekml
 import PyQt4
@@ -98,8 +97,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         self.updateMap()
         
     def updateMap(self):
-       # self.timer.stop()
-
+       
         if self.drag:
             cx = int(0.5 * self.map.width)
             cy = int(0.5 * self.map.height)
@@ -154,11 +152,6 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         painter.setPen(PyQt4.QtGui.QColor(0, 255 , 0))
         painter.drawText(10, 19, 'Rockets Position')
 
-    
-    #def resizeEvent(self, event):
-     #   self.map.resize(500, 300)
-
-      #  self.updateMap()
 
     def wheelEvent(self, event):
         self.zoomPos     = event.pos()

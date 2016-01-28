@@ -3,8 +3,6 @@ import dashboard
 import compass
 import UiDataAnlalysis
 import UiSerialProperties
-import terminal
-import serialIO
 import vtkRendering
 import vtk
 import UiGpsSettings
@@ -25,7 +23,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
         self.serialConnection = serialConnection
-        self.dataThread = serialIO.Thread(self.serialConnection)
+        #self.dataThread = serialIO.Thread(self.serialConnection)
         self.__setupUi()
 
     """
@@ -65,7 +63,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
  
         self.reader = vtk.vtkSTLReader()
-        self.reader.SetFileName("original.stl")
+        self.reader.SetFileName("VTK_Files/original.stl")
  
         # Create a mapper
         mapper = vtk.vtkPolyDataMapper()
@@ -84,8 +82,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__gpsTab = UiDataAnlalysis.GpsTab()
         
         self.tabWidget = PyQt4.Qt.QTabWidget(self)
-        self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("gps.png"),"GPS TRACKING")
-        self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("graph.jpg"),"ON FLIGHT STATS")
+        self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("Image_Files/gps.png"),"GPS TRACKING")
+        self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("Image_Files/graph.jpg"),"ON FLIGHT STATS")
         self.tabWidget.setGeometry(20,15,500,300)
         self.tabWidget.show()
         
@@ -202,11 +200,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         """Association entre le signal leve lors du changement detat de la connexion serie et la methode
         updateStatusBar qui met a jour letat de la connexion affiche dans la 
         barre detat"""
-        self.dataThread.isconnected.connect(self.updateStatusBar)
+        #self.dataThread.isconnected.connect(self.updateStatusBar)
         
         """"Association entre le signal leve lors de la reception de donnees et la methode
         updateDashBoard qui met a jour laffichage real time des donnees de vol"""
-        self.dataThread.receivedata.connect(self.updateDashBoard)
+        #self.dataThread.receivedata.connect(self.updateDashBoard)
         
         """Association entre un changement de tab du widget tabWidget et la methode
         __slotTab_Changed qui redimensionne le tabWidget"""
@@ -237,7 +235,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __slotLaunchTerminal_Clicked(self):
         
-        self.terminal = terminal.embTerminal()
+        pass
+        #self.terminal = terminal.embTerminal()
     
     def __slotSetLocalPosition_Clicked(self):
         

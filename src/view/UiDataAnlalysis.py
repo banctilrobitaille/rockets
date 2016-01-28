@@ -141,7 +141,7 @@ class GpsTab(DataFrame):
         self.map = MapWidget.MapnikWidget(self)
         
         """Ouverture de la carte a afficher"""
-        self.map.open("world_style.xml")
+        self.map.open("Mapnik_Files/world_style.xml")
         
         """Ajout du widget au frame daffichage (objet courant(self))"""
         self.addWidget(self.map, 0, 0)
