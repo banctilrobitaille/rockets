@@ -6,8 +6,6 @@ import UiSerialProperties
 import vtkRendering
 import vtk
 import UiGpsSettings
-from model.Rocket import Rocket
-from controller.RocketController import RocketController
 from PyQt4.Qt import pyqtSlot
 
 """#############################################################################

@@ -22,6 +22,17 @@ class Rocket(PyQt4.QtCore.QObject):
     
     __INSTANCE = None
     
+    """Signal to update the view"""
+    accerelationChanged = PyQt4.QtCore.pyqtSignal(float)
+    speedChanged = PyQt4.QtCore.pyqtSignal(float)
+    altitudeChanged = PyQt4.QtCore.pyqtSignal(float)
+    temperatureChanged = PyQt4.QtCore.pyqtSignal(float)
+    directionChanged = PyQt4.QtCore.pyqtSignal(int)
+    coordsChanged = PyQt4.QtCore.pyqtSignal(float,float)
+    idChanged = PyQt4.QtCore.pyqtSignal(int)
+    stateChanged = PyQt4.QtCore.pyqtSignal(str)
+
+    
     """The state provided by the rocket during the flight"""
     STATE = {'INITIALIZING'     : 0,
              'ON_THE_PAD'       : 1,
@@ -52,6 +63,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @acceleration.setter
     def acceleration(self, acceleration):
         self.__acceleration = acceleration
+        self.accerelationChanged.emit(acceleration)
         
     @property
     def speed(self):
@@ -60,6 +72,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @speed.setter
     def speed(self,speed):
         self.__speed = speed
+        self.speedChanged.emit(speed)
         
     @property 
     def altitude(self):
@@ -68,6 +81,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @altitude.setter
     def altitude(self,altitude):
         self.__altitude = altitude
+        self.altitudeChanged.emit(altitude)
         
     @property
     def temperature(self):
@@ -76,6 +90,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @temperature.setter
     def temperature(self,temperature):
         self.__temperature = temperature
+        self.temperatureChanged.emit(temperature)
         
     @property
     def direction(self):
@@ -84,6 +99,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @direction.setter
     def direction(self,direction):
         self.__direction = direction
+        self.directionChanged.emit(direction)
         
     @property
     def coords(self):
@@ -92,7 +108,8 @@ class Rocket(PyQt4.QtCore.QObject):
     @coords.setter
     def coords(self,coords):
         self.__coords = coords
-    
+        self.coordsChanged(self.__coords['longitude'], self.__coords['latitude'])
+        
     @property
     def currentState(self):
         return self.__currentState
@@ -100,6 +117,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @currentState.setter
     def currentState(self, currentState):
         self.__currentState = currentState
+        self.stateChanged.emit(currentState)
         
     @property
     def ID(self):
@@ -108,6 +126,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @ID.setter
     def ID(self, ID):
         self.__ID = ID
+        self.idChanged.emit(ID)
         
     @staticmethod
     def getInstance():
