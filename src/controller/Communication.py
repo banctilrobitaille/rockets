@@ -1,25 +1,31 @@
 import serial
-import bitarray
 import PyQt4
 from model.Frame import Frame
-from model.SerialConnection import SerialConnection
 '''
 Created on 2016-01-11
 
 @author: rockets
 '''
 
-class SerialController():
+class SerialController(PyQt4.QtCore.QObject):
     
     #command = {'GETTELEMETRY' : bitarray('0'),
-     #          'ACK'          : bitarray('10'),
-      #         'NACK'         : bitarray('110'),
-       #        'DISCOVER'     : bitarray('1110'),
-        #       'GETLOG'       : bitarray('1111')}
+    #          'ACK'          : bitarray('10'),
+    #         'NACK'         : bitarray('110'),
+    #        'DISCOVER'     : bitarray('1110'),
+    #       'GETLOG'       : bitarray('1111')}
+    
+    """Signal to connect the model to the view"""
+    portChanged = PyQt4.QtCore.pyqtSignal(str)
+    baudrateChanged = PyQt4.QtCore.pyqtSignal(int)
+    stopbitsChanged = PyQt4.QtCore.pyqtSignal(float)
+    parityChanged = PyQt4.QtCore.pyqtSignal(str)
+    bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
+    stateChanged = PyQt4.QtCore.pyqtSignal(bool)
     
     def __init__(self,serialConnection, rocketController):
         
-        serial.Serial.__init__(self)
+        super(PyQt4.QtCore.QObject,self).__init__()
         self.__serialConnection = serialConnection
         self.__rocketController = rocketController
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
@@ -35,23 +41,28 @@ class SerialController():
     
     def updateSerialConnectionPort(self,port):
         
-        self.__serialConnection.port(port)
+        self.__serialConnection.port = port
+        self.portChanged.emit(port)
         
     def updateSerialConnectionBaudrate(self, baudrate):
         
-        self.__serialConnection.baurate(baudrate)
+        self.__serialConnection.baudrate = baudrate
+        self.baudrateChanged.emit(baudrate)
         
     def updateSerialConnectionStopbits(self, stopbits):
         
-        self.__serialConnection.stopbits(stopbits)
+        self.__serialConnection.stopbits = stopbits
+        self.stopbitsChanged.emit(stopbits)
         
     def updateSerialConnectionParity(self, parity):
         
-        self.__serialConnection.parity(parity)
+        self.__serialConnection.parity = parity
+        self.parityChanged.emit(parity)
         
     def updateSerialConnectionByteSize(self, bytesize):
         
-        self.__serialConnection.bytesize(bytesize)
+        self.__serialConnection.bytesize = bytesize
+        self.bytesizeChanged(bytesize)
     
     def startReadingData(self):
         
@@ -69,7 +80,6 @@ class SerialReader(PyQt4.QtCore.QThread):
     
     def __init__(self,serialConnection, rocketController):
         
-        super.__init__(self)
         self.__serialConnection = serialConnection
         self.__rocketController = rocketController
     

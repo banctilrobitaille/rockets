@@ -1,4 +1,5 @@
-import serial
+from PyQt4.QtCore import pyqtSignal, QObject
+import serial 
 
 '''
 Created on 2016-01-04
@@ -7,57 +8,56 @@ Created on 2016-01-04
 '''
 
 class SerialConnection(serial.Serial):
-
+    
     
     def __init__(self, port="/dev/ttyS0", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
         
-        super.__init__(self)
-        self.port = port
-        self.baudrate = baudrate
-        self.stopbits = stopbits
-        self.parity = parity
-        self.bytesize = bytesize
+        self.__port = port
+        self.__baudrate = baudrate
+        self.__stopbits = stopbits
+        self.__parity = parity
+        self.__bytesize = bytesize
         self.__isConnected = False
     
     @property
     def port(self):
-        return self.port
+        return self.__port
     
     @port.setter
     def port(self, port):
-        self.port = port
-    
+        self.__port = port
+        
     @property
     def baudrate(self):
-        return self.baudrate
+        return self.__baudrate
     
     @baudrate.setter
     def baudrate(self, baudrate):
-        self.baudrate = baudrate
+        self.__baudrate = baudrate
         
     @property
     def stopbits(self):
-        return self.stopbits
+        return self.__stopbits
     
     @stopbits.setter
     def stopbits(self, stopbits):
-        self.stopbits = stopbits
+        self.__stopbits = stopbits
         
     @property
     def parity(self):
-        return self.parity
+        return self.__parity
     
     @parity.setter
     def parity(self, parity):
-        self.parity = parity
+        self.__parity = parity
         
     @property
     def bytesize(self):
-        return self.bytesize
+        return self.__bytesize
     
     @bytesize.setter
     def bytesize(self, bytesize):
-        self.bytesize = bytesize
+        self.__bytesize = bytesize
          
     @property
     def isConnected(self):

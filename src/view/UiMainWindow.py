@@ -6,6 +6,9 @@ import UiSerialProperties
 import vtkRendering
 import vtk
 import UiGpsSettings
+from model.SerialConnection import SerialConnection
+from controller.Communication import SerialController
+from PyQt4.Qt import pyqtSlot
 
 """#############################################################################
 # 
@@ -22,7 +25,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __init__(self,serialConnection,parent=None):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
-        self.serialConnection = serialConnection
+        self.serialConnection = SerialConnection()
+        self.serialController = SerialController(self.serialConnection, None)
+        self.serialController.baudrateChanged.connect(self.on_baudrateChanged)
+        self.serialController.updateSerialConnectionBaudrate(300)
         #self.dataThread = serialIO.Thread(self.serialConnection)
         self.__setupUi()
 
@@ -34,6 +40,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #    param:  None
     #    return: None
     """ 
+    
+    @pyqtSlot(int)
+    def on_baudrateChanged(self,baudrate):
+        print baudrate
+        
     def __setupUi(self):
         
         self.setObjectName("MainWindow")
