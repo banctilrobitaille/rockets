@@ -1,11 +1,25 @@
 import serial
 import PyQt4
 from model.Frame import Frame
-'''
-Created on 2016-01-11
 
-@author: rockets
-'''
+"""#############################################################################
+# 
+# Nom du module:          Cummunication.py
+# Auteur:                 Benoit Anctil-Robitaille
+# Date:                   5 janvier 2016
+# Description:            Le module Communication.py inclus les classes et methodes
+#                         permettant de controller la communication serie
+#
+##############################################################################"""
+
+
+"""#
+# La classe SerialController
+# Description:    Classe permettant de controller la communication serie,
+#                 commencer la communication avec la fusee, fermer la
+#                 communication avec la fusee, construire les trames de 
+#                 donnees avec les donnees recues etc.
+#"""
 
 class SerialController(PyQt4.QtCore.QObject):
     
@@ -15,7 +29,9 @@ class SerialController(PyQt4.QtCore.QObject):
     #        'DISCOVER'     : bitarray('1110'),
     #       'GETLOG'       : bitarray('1111')}
     
-    """Signal to connect the model to the view"""
+    """Signal to connect the model to the view, has been implemented
+    in the controller as the serial connection class uses serial.Serial
+    metaclass and cannot inherite from QObject"""
     portChanged = PyQt4.QtCore.pyqtSignal(str)
     baudrateChanged = PyQt4.QtCore.pyqtSignal(int)
     stopbitsChanged = PyQt4.QtCore.pyqtSignal(float)
@@ -30,7 +46,21 @@ class SerialController(PyQt4.QtCore.QObject):
         self.__rocketController = rocketController
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
         
-        
+    
+    """
+    #    Methode updateSerialConnectionSettings
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour tous les parametres de la connexion serie
+    #                 Cette methode appelle des methodes specifiques
+    #                 pour mettre a jour les attributs.
+    #
+    #    param:       port, le port serie ex: /dev/ttyS0
+    #                 baudrate, le baudrate du port serie
+    #                 stopbits, le stopbits ex: serial.STOPBITS_ONE
+    #                 parity, la parité ex: serial.PARITY_NONE
+    #                 bytesize, le nombre de bits envoyé ex: serial.EIGHTBITS
+    #    return: None
+    """ 
     def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
         
         self.updateSerialConnectionPort(port)
@@ -39,21 +69,53 @@ class SerialController(PyQt4.QtCore.QObject):
         self.updateSerialConnectionParity(parity)
         self.updateSerialConnectionByteSize(bytesize)
     
+    """
+    #    Methode updateSerialConnectionPort
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour le port de la connexion serie
+    #
+    #    param:       port, le port serie ex: /dev/ttyS0
+    #    return: None
+    """ 
     def updateSerialConnectionPort(self,port):
         
         self.__serialConnection.port = port
         self.portChanged.emit(port)
-        
+    
+    """
+    #    Methode updateSerialConnectionBaudrate
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour le baudrate de la connexion serie
+    #
+    #    param:       baudrate, le baudrate du port serie
+    #    return: None
+    """ 
     def updateSerialConnectionBaudrate(self, baudrate):
         
         self.__serialConnection.baudrate = baudrate
         self.baudrateChanged.emit(baudrate)
-        
+    
+    """
+    #    Methode updateSerialConnectionStopbits
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour le stopbits de la connexion serie
+    #
+    #    param:       stopbits, le stopbits ex: serial.STOPBITS_ONE
+    #    return: None
+    """ 
     def updateSerialConnectionStopbits(self, stopbits):
         
         self.__serialConnection.stopbits = stopbits
         self.stopbitsChanged.emit(stopbits)
-        
+    
+    """
+    #    Methode updateSerialConnectionParity
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour la parite de la connexion serie
+    #
+    #    param:       parity, la parité ex: serial.PARITY_NONE
+    #    return: None
+    """ 
     def updateSerialConnectionParity(self, parity):
         
         self.__serialConnection.parity = parity
