@@ -57,8 +57,8 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       port, le port serie ex: /dev/ttyS0
     #                 baudrate, le baudrate du port serie
     #                 stopbits, le stopbits ex: serial.STOPBITS_ONE
-    #                 parity, la parité ex: serial.PARITY_NONE
-    #                 bytesize, le nombre de bits envoyé ex: serial.EIGHTBITS
+    #                 parity, la parite ex: serial.PARITY_NONE
+    #                 bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
     """ 
     def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
@@ -113,7 +113,7 @@ class SerialController(PyQt4.QtCore.QObject):
     #    Description: Methode du controlleur permettant de mettre a
     #                 jour la parite de la connexion serie
     #
-    #    param:       parity, la parité ex: serial.PARITY_NONE
+    #    param:       parity, la parite ex: serial.PARITY_NONE
     #    return: None
     """ 
     def updateSerialConnectionParity(self, parity):
@@ -125,9 +125,9 @@ class SerialController(PyQt4.QtCore.QObject):
     """
     #    Methode updateSerialConnectionByteSize
     #    Description: Methode du controlleur permettant de mettre a
-    #                 jour le nombre de bits envoyés par la connexion serie
+    #                 jour le nombre de bits envoyes par la connexion serie
     #
-    #    param:       bytesize, le nombre de bits envoyé ex: serial.EIGHTBITS
+    #    param:       bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
     """ 
     def updateSerialConnectionByteSize(self, bytesize):
