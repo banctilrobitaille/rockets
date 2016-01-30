@@ -1,6 +1,6 @@
 import PyQt4.Qwt5
 import MapWidget
-
+from PyQt4.Qt import QPalette, QColor, QFont
 """#############################################################################
 # 
 # Nom du module:          UiDataAnalysis
@@ -18,10 +18,12 @@ import MapWidget
 #"""
 class DataFrame(PyQt4.QtGui.QFrame):
     
-    def __init__(self):
+    def __init__(self, parent):
         
-        PyQt4.QtGui.QFrame.__init__(self)
+        PyQt4.QtGui.QFrame.__init__(self, parent)
         self.gridLayout = PyQt4.QtGui.QGridLayout()
+        self.setLineWidth(3)
+        self.setFrameStyle(PyQt4.QtGui.QFrame.Panel | PyQt4.QtGui.QFrame.Raised)
     
     def addWidget(self,widget, xGridPosition, yGridPosition):
         
@@ -50,9 +52,13 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         
         PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
         
+        self.setCanvasBackground(QColor(45,45,45))
+        self.palette = QPalette()
+        self.palette.setColor(self.palette.Text, QColor(245,245,245))
+        self.setPalette(self.palette)
         """Parametrage de la police daffichage des titres des axes du graphique"""
-        self.plotTitleFont = PyQt4.QtGui.QFont("Helvetica", 11)
-        self.plotAxisFont = PyQt4.QtGui.QFont("Helvetica", 8)
+        self.plotTitleFont = PyQt4.QtGui.QFont("Helvetica", 15)
+        self.plotAxisFont = PyQt4.QtGui.QFont("Helvetica", 15)
         
         """Affectation des titres aux differents axes"""
         self.setGraphTitle(graphTitle, self.plotTitleFont)
@@ -108,11 +114,12 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
 #"""  
 class GraphTab(DataFrame):
     
-    def __init__(self):
+    def __init__(self, parent):
         
         """Initialiation de lobjet parent"""
-        DataFrame.__init__(self)
+        DataFrame.__init__(self,parent)
         
+        self.setGeometry(930,15,900,600)
         """Initialisation des differents graphiques realtime"""
         self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)")
         self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)")
@@ -132,11 +139,11 @@ class GraphTab(DataFrame):
 #"""  
 class GpsTab(DataFrame):
     
-    def __init__(self):
+    def __init__(self, parent):
         
         """Initialisation de lobjet parent"""
-        DataFrame.__init__(self)
-        
+        DataFrame.__init__(self, parent)
+        self.setGeometry(20,15,900,600)
         """Initialisation de la map GPS"""
         self.map = MapWidget.MapnikWidget(self)
         
@@ -145,5 +152,6 @@ class GpsTab(DataFrame):
         
         """Ajout du widget au frame daffichage (objet courant(self))"""
         self.addWidget(self.map, 0, 0)
+        self.show()
         
         

@@ -13,7 +13,7 @@ class LogController(object):
         
         pass
     
-    def writeLogToFile(self, path):
+    def writeLogToFile(self, path, data):
         pass
     
     def readLogFromFile(self, path):

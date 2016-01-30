@@ -20,9 +20,10 @@ from PyQt4.Qt import pyqtSlot
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
-    def __init__(self,serialConnection,parent=None):
+    def __init__(self,rocketModel,parent=None):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
+        self.__rocketModel = rocketModel
         self.__setupUi()
 
     """
@@ -34,14 +35,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #    return: None
     """ 
     
-    @pyqtSlot(int)
-    def on_baudrateChanged(self,baudrate):
-        print baudrate
-        
     def __setupUi(self):
         
         self.setObjectName("MainWindow")
-        self.resize(800, 600)
+        self.resize(PyQt4.Qt.QDesktopWidget().availableGeometry(self).size())
         self.setMouseTracking(False)
         self.centralwidget = PyQt4.QtGui.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
@@ -60,6 +57,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         self.__dashboard = dashboard.Dashboard(self)
         self.__compass = compass.Compass(self)
+        self.__gpsTab = UiDataAnlalysis.GpsTab(self)
+        self.__graphTab = UiDataAnlalysis.GraphTab(self)
         self.__rocket = vtkRendering.rocketRendering(self)
         
         self.ren = vtk.vtkRenderer()
@@ -82,15 +81,18 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.ren.AddActor(actor)
         
     
-        self.__graphTab = UiDataAnlalysis.GraphTab()
-        self.__gpsTab = UiDataAnlalysis.GpsTab()
+        #=======================================================================
+        # self.__graphTab = UiDataAnlalysis.GraphTab()
+        #=======================================================================
         
-        self.tabWidget = PyQt4.Qt.QTabWidget(self)
-        self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("Image_Files/gps.png"),"GPS TRACKING")
-        self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("Image_Files/graph.jpg"),"ON FLIGHT STATS")
-        self.tabWidget.setGeometry(20,15,500,300)
-        self.tabWidget.show()
         
+        #=======================================================================
+        # self.tabWidget = PyQt4.Qt.QTabWidget(self)
+        # self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("Image_Files/gps.png"),"GPS TRACKING")
+        # self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("Image_Files/graph.jpg"),"ON FLIGHT STATS")
+        # self.tabWidget.setGeometry(20,15,500,300)
+        # self.tabWidget.show()
+        #=======================================================================
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
     
@@ -198,53 +200,65 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
-        self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
+        #self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
         self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
-        
-        """Association entre le signal leve lors du changement detat de la connexion serie et la methode
-        updateStatusBar qui met a jour letat de la connexion affiche dans la 
-        barre detat"""
-        #self.dataThread.isconnected.connect(self.updateStatusBar)
-        
-        """"Association entre le signal leve lors de la reception de donnees et la methode
-        updateDashBoard qui met a jour laffichage real time des donnees de vol"""
-        #self.dataThread.receivedata.connect(self.updateDashBoard)
+        self.__rocketModel.speedChanged.connect(self.__on_SpeedChanged)
+        self.__rocketModel.accelerationChanged.connect(self.__on_AccelerationChanged)
+        self.__rocketModel.altitudeChanged.connect(self.__on_AltitudeChanged)
+        self.__rocketModel.temperatureChanged.connect(self.__on_TemperatureChanged)
         
         """Association entre un changement de tab du widget tabWidget et la methode
         __slotTab_Changed qui redimensionne le tabWidget"""
-        self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
+        #self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
        
+    
+    @pyqtSlot(float)
+    def __on_SpeedChanged(self, speed):
+        
+        self.__dashboard.updateSpeed(speed)
+    
+    @pyqtSlot(float)
+    def __on_AccelerationChanged(self, acceleration):
+        
+        self.__dashboard.updateAcceleration(acceleration)
+    
+    @pyqtSlot(float)
+    def __on_AltitudeChanged(self, altitude):
+        
+        self.__dashboard.updateAltitude(altitude)
+    
+    @pyqtSlot(float)
+    def __on_TemperatureChanged(self, temperature):
+        
+        self.__dashboard.updateTemperature(temperature)
+    
     def __slotAbout_Clicked(self):
         
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
     
+    
     def __slotSerialSettings_Clicked(self):
         
         self.__showSerialProperties()
-        
-    def __slotDisplaySettings_Clicked(self):
-        pass
     
-    def __slotLoadLogFile_Clicked(self):
-        pass
     
     def __slotConnect_Clicked(self):
     
         self.dataThread.startCommunication()
         
+    
         
     def __slotDisconnect_Clicked(self):
         
         self.dataThread.stopCommunication()
     
-    def __slotLaunchTerminal_Clicked(self):
-        
-        pass
-        #self.terminal = terminal.embTerminal()
+    
     
     def __slotSetLocalPosition_Clicked(self):
         
         self.__showGPSProperties()
+        
+        
         
     def __slotTab_Changed(self):
         
@@ -258,15 +272,19 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.tabWidget.setGeometry(20,15,500,300)
             #self.resize(800, 600)
     
+    
     def __showSerialProperties(self):
 
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
         self.serialProperties.show()
     
+    
     def __showGPSProperties(self):
 
         self.gpsProperties = UiGpsSettings.GpsSettingWindow(self.__gpsTab.map)
         self.gpsProperties.show()
+    
+    
     
     def updateStatusBar(self, isConnected):
         
@@ -285,9 +303,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.statusbar.addWidget(self.lblNotConnected)
             self.statusbar.update()
     
-    def updateDashBoard(self,speed, accel, alti):
         
-        self.__dashboard.updateValue(speed, accel, alti)        
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     

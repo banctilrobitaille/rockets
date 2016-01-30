@@ -23,7 +23,7 @@ class Rocket(PyQt4.QtCore.QObject):
     __INSTANCE = None
     
     """Signal to update the view"""
-    accerelationChanged = PyQt4.QtCore.pyqtSignal(float)
+    accelerationChanged = PyQt4.QtCore.pyqtSignal(float)
     speedChanged = PyQt4.QtCore.pyqtSignal(float)
     altitudeChanged = PyQt4.QtCore.pyqtSignal(float)
     temperatureChanged = PyQt4.QtCore.pyqtSignal(float)
@@ -63,7 +63,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @acceleration.setter
     def acceleration(self, acceleration):
         self.__acceleration = acceleration
-        self.accerelationChanged.emit(acceleration)
+        self.accelerationChanged.emit(acceleration)
         
     @property
     def speed(self):

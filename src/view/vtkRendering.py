@@ -6,7 +6,7 @@ class rocketRendering(QtGui.QFrame):
     def __init__(self, parent):
         QtGui.QFrame.__init__(self, parent)
         
-        self.setGeometry(520,20,300,300)
+        self.setGeometry(1400,620,400,400)
         self.vl = QtGui.QVBoxLayout()
         self.vtkWidget = QVTKRenderWindowInteractor(self)
         self.vl.addWidget(self.vtkWidget)

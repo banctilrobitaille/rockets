@@ -11,6 +11,7 @@ from PyQt4.Qwt5.Qwt import QwtCompass
 #                         (Nord-Sud-Est-Ouest)de la fusee durant le vol.
 #
 ##############################################################################"""
+from PyQt4.Qt import QPalette, QColor
 
 """#
 # La classe Compass
@@ -20,9 +21,18 @@ class Compass(QwtCompass):
 
     def __init__(self, *args):
         QwtCompass.__init__(self, *args)
-        self.rose = Qwt.QwtSimpleCompassRose(16) #Defini le nombre d'aiguille du compass
-        self.rose.setWidth(0.15) #Defini la largeur des aiguilles du compass
-        self.setRose(self.rose) #Initialise la rose du compass
+        
+        
+        self.needle = Qwt.QwtCompassMagnetNeedle()
+        self.needlePalette = QPalette()
+        self.compassPalette = QPalette()
+        self.needlePalette.setColor(self.needlePalette.Light, QColor(102,0,0))
+        self.needlePalette.setColor(self.needlePalette.Dark, QColor(255,255,255))
+        self.compassPalette.setColor(self.compassPalette.WindowText, QColor(55,55,55))
+        self.compassPalette.setColor(self.compassPalette.Text, QColor(102,0,0))
+        self.needle.setPalette(self.needlePalette)
+        self.setPalette(self.compassPalette)
+        self.setNeedle(self.needle)
         self.setGeometry(600,410,140,140) #Positionne le compass
         self.show() #Affiche le compass
         

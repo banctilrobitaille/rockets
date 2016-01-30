@@ -1,7 +1,7 @@
 import serial
 import PyQt4
 from model.Frame import Frame
-
+from model.SerialConnection import SerialConnection
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -39,10 +39,10 @@ class SerialController(PyQt4.QtCore.QObject):
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
     
-    def __init__(self,serialConnection, rocketController):
+    def __init__(self, rocketController):
         
         super(PyQt4.QtCore.QObject,self).__init__()
-        self.__serialConnection = serialConnection
+        self.__serialConnection = SerialController()
         self.__rocketController = rocketController
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
         

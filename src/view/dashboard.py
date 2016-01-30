@@ -1,6 +1,7 @@
 import PyQt4
-from PyQt4.Qt import QPalette
+from PyQt4.Qt import QPalette, QColor, QFont
 from PyQt4.Qwt5 import Qwt
+from PyQt4.Qwt5.Qwt import QwtDial
 
 """#############################################################################
 # 
@@ -27,7 +28,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         PyQt4.QtGui.QFrame.__init__(self, parent)
         
         """Positionnement du frame du dashboard"""
-        self.setGeometry(0,360,600,300)
+        self.setGeometry(0,650,1000,500)
         
         """Initialisation du cadran de la vitesse, du cadran numerique et label descriptif"""
         self.__lbl_speed = Label(self, "SPEED")
@@ -67,24 +68,24 @@ class Dashboard(PyQt4.QtGui.QFrame):
     def placeTheElement(self):
         
         """Positionnement des elements de vitesse"""
-        self.__lbl_speed.setGeometry(60, 15, 60,20)
-        self.__speed_dial.setGeometry(20,40,130,130)
-        self.__lcd_speed.setGeometry(35, 180, 100, 30)
+        self.__lbl_speed.setGeometry(105, 15, 60,20)
+        self.__speed_dial.setGeometry(20,50,230,230)
+        self.__lcd_speed.setGeometry(70, 320, 130, 50)
         
         """Positionnement des elements daltitude"""
-        self.__lbl_altitude.setGeometry(190, 15, 70,20)
-        self.__altitude_dial.setGeometry(160,40,130,130)
-        self.__lcd_altitude.setGeometry(175, 180, 100, 30)
+        self.__lbl_altitude.setGeometry(340, 15, 120,20)
+        self.__altitude_dial.setGeometry(270,50,230,230)
+        self.__lcd_altitude.setGeometry(320, 320, 130, 50)
          
         """Positionnement des elements dacceleration"""
-        self.__lbl_acceleration.setGeometry(315, 15, 120,20)
-        self.__acceleration_dial.setGeometry(300,40,130,130)
-        self.__lcd_acceleration.setGeometry(315, 180, 100, 30)
+        self.__lbl_acceleration.setGeometry(565, 15, 200,20)
+        self.__acceleration_dial.setGeometry(520,50,230,230)
+        self.__lcd_acceleration.setGeometry(575, 320, 130, 50)
         
         """Posiotionnement des elements thermometre"""
-        self.__lbl_thermo.setGeometry(455, 15, 200,20)
-        self.__rocketTemp.setGeometry(470, 40, 60, 130)
-        self.__lcd_thermo.setGeometry(455, 180, 100, 30)
+        self.__lbl_thermo.setGeometry(780, 15, 200,20)
+        self.__rocketTemp.setGeometry(770, 50, 100, 250)
+        self.__lcd_thermo.setGeometry(790, 320, 130, 50)
 
     """
     #    Methode updateValue
@@ -94,18 +95,37 @@ class Dashboard(PyQt4.QtGui.QFrame):
     #    param: speed, accel, alti les nouvelles valeurs a afficher
     #    return: None
     """
-    def updateValue(self,speed, accel, alti):
+    def updateValue(self,speed, acceleration, altitude):
         
         """Mise a jour des valeurs a afficher"""
         self.__speed_dial.setValue(speed)
-        self.__acceleration_dial.setValue(accel)
-        self.__altitude_dial.setValue(alti)
+        self.__acceleration_dial.setValue(acceleration)
+        self.__altitude_dial.setValue(altitude)
         
         """Affichage des nouvelles valeurs"""
         self.__lcd_speed.display(str(speed))
-        self.__lcd_acceleration.display(str(accel))
-        self.__lcd_altitude.display(str(alti)) 
+        self.__lcd_acceleration.display(str(acceleration))
+        self.__lcd_altitude.display(str(altitude))
+        
+    def updateSpeed(self, speed):
+        
+        self.__speed_dial.setValue(speed)
+        self.__lcd_speed.display(str(speed))
+        
+    def updateAcceleration(self, acceleration):
+        
+        self.__acceleration_dial.setValue(acceleration)
+        self.__lcd_acceleration.display(str(acceleration))
+        
+    def updateAltitude(self, altitude):
+        
+        self.__altitude_dial.setValue(altitude)
+        self.__lcd_altitude.display(str(altitude))
     
+    def updateTemperature(self, temperature):
+        
+        self.__rocketTemp.updateValue(temperature)
+        
 
 """#
 # La classe Speedometer
@@ -140,17 +160,22 @@ class SpeedoMeter(Qwt.QwtDial):
         self.setWrapping(False)
         self.setReadOnly(True)
         self.setOrigin(135.0)
-        
+        self.setLineWidth(2)
+        self.palette = QPalette()
+        self.palette.setColor(self.palette.Text, QColor(211,211,211))
+        self.palette.setColor(self.palette.WindowText, QColor(55,55,55))
+        self.palette.setColor(self.palette.Base, QColor(55,55,55))
+        self.setPalette(self.palette)
         """Parametrage de la longueur d'arc en degre que parcourera l'aiguille"""
         self.setScaleArc(0.0, 270.0)
         self.setNeedle(Qwt.QwtDialSimpleNeedle(
             Qwt.QwtDialSimpleNeedle.Arrow,
             True,
-            PyQt4.QtGui.QColor(PyQt4.QtGui.QColor.red),
-            PyQt4.QtGui.QColor(PyQt4.QtGui.QColor.blue).light(130)))
+            QColor(255,0,0),
+            QColor(211,211,211)))
         self.setScaleOptions(Qwt.QwtDial.ScaleTicks | Qwt.QwtDial.ScaleLabel)
         self.show()
-     
+    
     """
     #    Methode drawScaleContent
     #    Description: Affichage de la metrique de mesure ex: MPH
@@ -162,10 +187,11 @@ class SpeedoMeter(Qwt.QwtDial):
     """           
     def drawScaleContents(self, painter, center, radius):
         
-        painter.setPen(PyQt4.Qt.QPen(PyQt4.QtGui.QColor(245,245,245), 3))
         rect = PyQt4.QtCore.QRect(50, 0, 2 * radius, 2 * radius - 10)
         rect.moveCenter(center)
-        painter.setPen(self.palette().color(PyQt4.QtGui.QPalette.Text))
+        font = QFont("Arial", 15)
+        painter.setPen(self.palette.color(self.palette.Text))
+        painter.setFont(font)
         painter.drawText(
             rect, PyQt4.QtCore.Qt.AlignBottom | PyQt4.QtCore.Qt.AlignHCenter, self.__label)
 
@@ -237,11 +263,14 @@ class Thermometer(Qwt.QwtThermo):
         self.setAlarmLevel(alarmLevel)
         self.setRange(minCelsius, maxCelsius)
         self.setScale(minCelsius, maxCelsius)
-        #self.setValue(95)
+        self.setValue(0)
         
         """Affichage de lobjet"""
         self.show
+    
+    def updateValue(self, temperature):
         
+        self.setValue(temperature)
 
 """#
 # La classe Label
@@ -268,6 +297,11 @@ class Label(PyQt4.QtGui.QLabel):
     def __init__(self, parent, text):
         
         PyQt4.QtGui.QLabel.__init__(self, parent)
+        self.setStyleSheet("""
+        QLabel {
+            font: 15pt;
+        }
+        """)
         self.setText(text)
         self.setPalette(self.lbl_palette)
         self.show()

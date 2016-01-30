@@ -40,7 +40,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         
         self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
-        self.map.resize(500,300)
+        self.map.resize(900,600)
         self.map.zoom(145.0)
         self.updateMap()
         #self.map.zoom_all()
