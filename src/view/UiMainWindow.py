@@ -7,6 +7,7 @@ import vtkRendering
 import vtk
 import UiGpsSettings
 from PyQt4.Qt import pyqtSlot
+import StatePanel
 
 """#############################################################################
 # 
@@ -60,6 +61,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
         self.__rocket = vtkRendering.rocketRendering(self)
+        self.__statePanel = StatePanel.StatePanel(self)
         
         self.ren = vtk.vtkRenderer()
         self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)

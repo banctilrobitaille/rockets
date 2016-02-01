@@ -5,13 +5,9 @@ Created on 2016-01-04
 '''
 
 class BaseStation(object):
-    '''
-    classdocs
-    '''
 
 
     def __init__(self, params):
-        '''
-        Constructor
-        '''
-        
+       pass
+    
+    

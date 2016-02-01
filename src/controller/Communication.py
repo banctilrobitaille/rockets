@@ -1,7 +1,6 @@
 import serial
 import PyQt4
 from model.Frame import Frame
-from model.SerialConnection import SerialConnection
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -187,11 +186,28 @@ class SerialReader(PyQt4.QtCore.QThread):
     def running(self,value):
         self.__running = value
     
-    
+    """
+    #    Methode dataReceived
+    #    Description: Methode qui lit les donnees de la longeure dune trame et
+    #                 cree une trame avec ces donnees
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
     def dataReceived(self):
         
         self.__frame = Frame.fromByteArray(self.__serialConnection.read(size=Frame.LENGTH))
     
+    """
+    #    Methode handleData
+    #    Description: Methode qui mets a jour les donnees de la fusees selon les donnees
+    #                 de la derniere trame recue.
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
     def handleData(self):
         
         rocketData = self.__frame.data
@@ -204,9 +220,20 @@ class SerialReader(PyQt4.QtCore.QThread):
                                                  rocketData['ID'],
                                                  rocketData['state'])
     
+    """
+    #    Methode run
+    #    Description: Ovveride de la methode run de la classe QThread, initilalise la
+    #                 la connexion serie et appele les methodes necessaire lors de la
+    #                 reception dune quatite suffisante de byte(longueur dune trame)
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
     def run(self):
         
         try:
+            """Ouverture de la connexion serie"""
             self.__serialConnection.open()
             self.__serialConnection.isConnected(True)
         
@@ -214,13 +241,19 @@ class SerialReader(PyQt4.QtCore.QThread):
         
             raise serial.serialutil.SerialException
         
+        """Tant quon ne tue pas le thread"""
         while self.__running:
             
+            """Si le nombre de byte recue est superieur ou egal a la longueur
+            standard dune trame"""
             if self.__serialConnection.inWaiting() >= Frame.LENGTH:
                
+                """Creation de la trame et traitement des donnees"""
                 self.dataReceived()
                 self.handleData()
-       
+                
+        """Fermeture de la connextion serie lorsque le thread termine"""
+        self.__serialConnection.close()
         self.__serialConnection.isConnected(False)
         
     

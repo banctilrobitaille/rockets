@@ -1,7 +1,6 @@
 import PyQt4
 from PyQt4.Qt import QPalette, QColor, QFont
 from PyQt4.Qwt5 import Qwt
-from PyQt4.Qwt5.Qwt import QwtDial
 
 """#############################################################################
 # 
