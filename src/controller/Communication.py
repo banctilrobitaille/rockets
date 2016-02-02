@@ -10,6 +10,7 @@ from model.Frame import Frame
 #                         permettant de controller la communication serie
 #
 ##############################################################################"""
+from model.SerialConnection import SerialConnection
 
 
 """#
@@ -41,7 +42,7 @@ class SerialController(PyQt4.QtCore.QObject):
     def __init__(self, rocketController):
         
         super(PyQt4.QtCore.QObject,self).__init__()
-        self.__serialConnection = SerialController()
+        self.__serialConnection = SerialConnection()
         self.__rocketController = rocketController
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
         

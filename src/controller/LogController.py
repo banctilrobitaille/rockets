@@ -13,9 +13,15 @@ class LogController(object):
         
         pass
     
+    """
+    TO DO 
+    """
     def writeLogToFile(self, path, data):
         pass
     
+    """
+    TO DO 
+    """
     def readLogFromFile(self, path):
         pass
         
