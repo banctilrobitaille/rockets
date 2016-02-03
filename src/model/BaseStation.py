@@ -19,9 +19,9 @@ class BaseStation(PyQt4.QtCore.QObject):
     
     def __init__(self, temperature=0, coords=None):
     
-       super(PyQt4.QtCore.QObject, self).__init__()
-       self.__temperature = temperature
-       self.__coords = coords
+        super(PyQt4.QtCore.QObject, self).__init__()
+        self.__temperature = temperature
+        self.__coords = coords
     
     
     @property
