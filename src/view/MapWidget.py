@@ -57,7 +57,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         style = mapnik.Style()
         rule = mapnik.Rule()
         point_symbolizer = mapnik.MarkersSymbolizer()
-        point_symbolizer.filename = "home.svg"
+        point_symbolizer.filename = "Image_Files/home.svg"
         point_symbolizer.transform = "scale(1)"
         point_symbolizer.allow_overlap = False
         point_symbolizer.opacity = 1
@@ -83,7 +83,7 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         style = mapnik.Style()
         rule = mapnik.Rule()
         point_symbolizer = mapnik.MarkersSymbolizer()
-        point_symbolizer.filename = "rocket.svg"
+        point_symbolizer.filename = "Image_Files/rocket.svg"
         point_symbolizer.transform = "scale(0.2)"
         point_symbolizer.allow_overlap = False
         point_symbolizer.opacity = 1

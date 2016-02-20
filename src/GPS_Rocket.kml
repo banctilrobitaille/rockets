@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="feat_2">
+        <Placemark id="feat_4">
+            <name>Rocket</name>
+            <Point id="geom_1">
+                <coordinates>5,5,0.0</coordinates>
+            </Point>
+        </Placemark>
+    </Document>
+</kml>

@@ -11,55 +11,60 @@ class SerialConnection(serial.Serial):
     
     __INSTANCE = None
     
-    def __init__(self, port="/dev/ttyS0", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
+    def __init__(self, port="/dev/ttyS1", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
         
-        self.__port = port
-        self.__baudrate = baudrate
-        self.__stopbits = stopbits
-        self.__parity = parity
-        self.__bytesize = bytesize
+        super(serial.Serial,self).__init__()
+        self.port = port
+        self.baudrate = baudrate
+        self.stopbits = stopbits
+        self.parity = parity
+        self.bytesize = bytesize
         self.__isConnected = False
     
-    @property
-    def port(self):
-        return self.__port
-    
-    @port.setter
-    def port(self, port):
-        self.__port = port
-        
-    @property
-    def baudrate(self):
-        return self.__baudrate
-    
-    @baudrate.setter
-    def baudrate(self, baudrate):
-        self.__baudrate = baudrate
-        
-    @property
-    def stopbits(self):
-        return self.__stopbits
-    
-    @stopbits.setter
-    def stopbits(self, stopbits):
-        self.__stopbits = stopbits
-        
-    @property
-    def parity(self):
-        return self.__parity
-    
-    @parity.setter
-    def parity(self, parity):
-        self.__parity = parity
-        
-    @property
-    def bytesize(self):
-        return self.__bytesize
-    
-    @bytesize.setter
-    def bytesize(self, bytesize):
-        self.__bytesize = bytesize
-         
+    #===========================================================================
+    # @property
+    # def port(self):
+    #     return self._port
+    #   
+    # @port.setter
+    # def port(self, port):
+    #     self._port = port
+    #===========================================================================
+    #===========================================================================
+    #      
+    # @property
+    # def baudrate(self):
+    #     return self._baudrate
+    #  
+    # @baudrate.setter
+    # def baudrate(self, baudrate):
+    #     self._baudrate = baudrate
+    #      
+    # @property
+    # def stopbits(self):
+    #     return self._stopbits
+    #  
+    # @stopbits.setter
+    # def stopbits(self, stopbits):
+    #     self._stopbits = stopbits
+    #      
+    # @property
+    # def parity(self):
+    #     return self._parity
+    #  
+    # @parity.setter
+    # def parity(self, parity):
+    #     self._parity = parity
+    #      
+    # @property
+    # def bytesize(self):
+    #     return self._bytesize
+    #  
+    # @bytesize.setter
+    # def bytesize(self, bytesize):
+    #     self._bytesize = bytesize
+    #===========================================================================
+          
     @property
     def isConnected(self):
         return self.__isConnected

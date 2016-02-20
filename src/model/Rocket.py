@@ -24,7 +24,7 @@ class Rocket(PyQt4.QtCore.QObject):
     
     """Signal to update the view"""
     accelerationChanged = PyQt4.QtCore.pyqtSignal(float)
-    speedChanged = PyQt4.QtCore.pyqtSignal(float)
+    speedChanged = PyQt4.QtCore.pyqtSignal(int)
     altitudeChanged = PyQt4.QtCore.pyqtSignal(float)
     temperatureChanged = PyQt4.QtCore.pyqtSignal(float)
     directionChanged = PyQt4.QtCore.pyqtSignal(int)
@@ -54,7 +54,16 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__coords = coords
         self.__ID = ID
         self.__currentState = state
+        self.__cameraON = False
         
+    
+    @property
+    def cameraON(self):
+        return self.__cameraON 
+    
+    @cameraON.setter
+    def cameraON(self, state):
+        self.__cameraON = state
     
     @property
     def acceleration(self):

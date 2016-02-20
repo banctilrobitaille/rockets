@@ -1,6 +1,7 @@
 import serial
 import PyQt4
 from model.Frame import Frame
+from PyQt4.Qt import  pyqtSlot
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -10,7 +11,6 @@ from model.Frame import Frame
 #                         permettant de controller la communication serie
 #
 ##############################################################################"""
-from model.SerialConnection import SerialConnection
 
 
 """#
@@ -23,12 +23,6 @@ from model.SerialConnection import SerialConnection
 
 class SerialController(PyQt4.QtCore.QObject):
     
-    #command = {'GETTELEMETRY' : bitarray('0'),
-    #          'ACK'          : bitarray('10'),
-    #         'NACK'         : bitarray('110'),
-    #        'DISCOVER'     : bitarray('1110'),
-    #       'GETLOG'       : bitarray('1111')}
-    
     """Signal to connect the model to the view, has been implemented
     in the controller as the serial connection class uses serial.Serial
     metaclass and cannot inherite from QObject"""
@@ -39,13 +33,26 @@ class SerialController(PyQt4.QtCore.QObject):
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
     
-    def __init__(self, rocketController):
+    def __init__(self, rocketController, serialConnection):
         
         super(PyQt4.QtCore.QObject,self).__init__()
-        self.__serialConnection = SerialConnection()
+        self.__serialConnection = serialConnection
         self.__rocketController = rocketController
+        self.__commandBuffer = None
+        self.__history = CommunicationHistory()
+        #self.__serialWriter = SerialWriter
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
+        self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
         
+    
+    @property
+    def serialConnection(self):
+        return self.__serialConnection
+    
+    @serialConnection.setter
+    def serialConnection(self, serialConnection):
+        
+        self.__serialConnection = serialConnection
     
     """
     #    Methode updateSerialConnectionSettings
@@ -54,11 +61,11 @@ class SerialController(PyQt4.QtCore.QObject):
     #                 Cette methode appelle des methodes specifiques
     #                 pour mettre a jour les attributs.
     #
-    #    param:       port, le port serie ex: /dev/ttyS0
-    #                 baudrate, le baudrate du port serie
-    #                 stopbits, le stopbits ex: serial.STOPBITS_ONE
-    #                 parity, la parite ex: serial.PARITY_NONE
-    #                 bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
+    #    param:       _port, le _port serie ex: /dev/ttyS0
+    #                 _baudrate, le _baudrate du _port serie
+    #                 _stopbits, le _stopbits ex: serial.STOPBITS_ONE
+    #                 _parity, la parite ex: serial.PARITY_NONE
+    #                 _bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
     """ 
     def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
@@ -72,40 +79,40 @@ class SerialController(PyQt4.QtCore.QObject):
     """
     #    Methode updateSerialConnectionPort
     #    Description: Methode du controlleur permettant de mettre a
-    #                 jour le port de la connexion serie
+    #                 jour le _port de la connexion serie
     #
-    #    param:       port, le port serie ex: /dev/ttyS0
+    #    param:       _port, le _port serie ex: /dev/ttyS0
     #    return: None
     """ 
     def updateSerialConnectionPort(self,port):
         
-        self.__serialConnection.port = port
+        self.__serialConnection._port = port
         self.portChanged.emit(port)
     
     """
     #    Methode updateSerialConnectionBaudrate
     #    Description: Methode du controlleur permettant de mettre a
-    #                 jour le baudrate de la connexion serie
+    #                 jour le _baudrate de la connexion serie
     #
-    #    param:       baudrate, le baudrate du port serie
+    #    param:       _baudrate, le _baudrate du _port serie
     #    return: None
     """ 
     def updateSerialConnectionBaudrate(self, baudrate):
         
-        self.__serialConnection.baudrate = baudrate
+        self.__serialConnection._baudrate = baudrate
         self.baudrateChanged.emit(baudrate)
     
     """
     #    Methode updateSerialConnectionStopbits
     #    Description: Methode du controlleur permettant de mettre a
-    #                 jour le stopbits de la connexion serie
+    #                 jour le _stopbits de la connexion serie
     #
-    #    param:       stopbits, le stopbits ex: serial.STOPBITS_ONE
+    #    param:       _stopbits, le _stopbits ex: serial.STOPBITS_ONE
     #    return: None
     """ 
     def updateSerialConnectionStopbits(self, stopbits):
         
-        self.__serialConnection.stopbits = stopbits
+        self.__serialConnection._stopbits = stopbits
         self.stopbitsChanged.emit(stopbits)
     
     """
@@ -113,12 +120,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    Description: Methode du controlleur permettant de mettre a
     #                 jour la parite de la connexion serie
     #
-    #    param:       parity, la parite ex: serial.PARITY_NONE
+    #    param:       _parity, la parite ex: serial.PARITY_NONE
     #    return: None
     """ 
     def updateSerialConnectionParity(self, parity):
         
-        self.__serialConnection.parity = parity
+        self.__serialConnection._parity = parity
         self.parityChanged.emit(parity)
     
     
@@ -127,19 +134,34 @@ class SerialController(PyQt4.QtCore.QObject):
     #    Description: Methode du controlleur permettant de mettre a
     #                 jour le nombre de bits envoyes par la connexion serie
     #
-    #    param:       bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
+    #    param:       _bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
     """ 
     def updateSerialConnectionByteSize(self, bytesize):
         
-        self.__serialConnection.bytesize = bytesize
-        self.bytesizeChanged(bytesize)
+        self.__serialConnection._bytesize = bytesize
+        self.bytesizeChanged.emit(bytesize)
+    
+    """
+    #    Methode updateSerialConnectionState
+    #    Description: Methode du controlleur permettant de mettre a
+    #                 jour l'etat de la connexion, True: est connecte, 
+    #                 False: n'est pas connecte
+    #
+    #    param:       state, l'etat de la connexion
+    #    return: None
+    """ 
+    def updateSerialConnectionState(self, state):
         
+        self.__serialConnection.isConnected = state
+        self.stateChanged.emit(state)
+
+    
     
     """
     #    Methode startReadingData
     #    Description: Methode demarrant un thread de lecture de donnees
-    #                 sur le port serie
+    #                 sur le _port serie
     #                 
     #
     #    param:    None
@@ -147,13 +169,22 @@ class SerialController(PyQt4.QtCore.QObject):
     """ 
     def startReadingData(self):
         
-        self.__serialReader.running = True
-        self.__serialReader.start()
+        try:
+            self.__serialConnection.open()
+            self.__serialReader.running = True
+            self.__serialReader.start()
+            self.updateSerialConnectionState(True)
+            
+        except serial.SerialException as error:
+            
+            print "Error while trying to open serial _port " + str(error)
+            #raise serial.serialutil.SerialException
+    
     
     """
     #    Methode stopReadingData
     #    Description: Methode qui arrete le thread de lecture de donnees
-    #                 sur le port serie
+    #                 sur le _port serie
     #                 
     #
     #    param:    None
@@ -162,11 +193,29 @@ class SerialController(PyQt4.QtCore.QObject):
     def stopReadingData(self):
         
         self.__serialReader.running = False
+        self.__serialConnection.close()
+        self.updateSerialConnectionState(False)
+        #self.__serialWriter.running = False
+        
+        
+    def sendCommand(self, command):
+        
+        if self.__serialConnection.isOpen:
+            
+            frame = None
+            self.__serialConnection.write(frame)
+            self.__history.addSentFrame(frame)
+    
+    @pyqtSlot(bool)     
+    def on_CorruptedFrameReceived(self, corruptedFrameReceived):
+        
+        self.sendCommand(self.__history.getLastSentFrame())
+        
 
 """#
 # La classe SerialReader
 # Description:    Classe representant un thread de lecture de donnees
-#                 sur le port serie. Celle-ci cree des frames et met a 
+#                 sur le _port serie. Celle-ci cree des frames et met a 
 #                 jour les attributs du model Rocket selon les donnees
 #                 recues.
 #"""
@@ -174,8 +223,11 @@ class SerialReader(PyQt4.QtCore.QThread):
     
     __running = False
     
+    '''Emit true is received a corupted frame(Invalid CRC)'''
+    corruptedFrameReceived = PyQt4.QtCore.pyqtSignal(bool)
+    
     def __init__(self,serialConnection, rocketController):
-        
+        super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
         self.__rocketController = rocketController
     
@@ -198,7 +250,15 @@ class SerialReader(PyQt4.QtCore.QThread):
     """ 
     def dataReceived(self):
         
-        self.__frame = Frame.fromByteArray(self.__serialConnection.read(size=Frame.LENGTH))
+        try:
+            
+            #self.__frame = Frame.fromByteArray(self.__serialConnection.read(size=Frame.LENGTH))
+            self.__receivedData = self.__serialConnection.read(Frame.LENGTH)
+        
+        except:
+            
+            self.corruptedFrameReceived.emit(True)
+    
     
     """
     #    Methode handleData
@@ -211,15 +271,18 @@ class SerialReader(PyQt4.QtCore.QThread):
     """ 
     def handleData(self):
         
-        rocketData = self.__frame.data
-        self.__rocketController.updateRocketData(rocketData['speed'],
-                                                 rocketData['altitude'],
-                                                 rocketData['acceleration'],
-                                                 rocketData['temperature'],
-                                                 rocketData['direction'],
-                                                 rocketData['coords'],
-                                                 rocketData['ID'],
-                                                 rocketData['state'])
+        self.__rocketController.updateRocketSpeed(int(self.__receivedData))
+        #rocketData = self.__frame.data
+        #=======================================================================
+        # self.__rocketController.updateRocketData(rocketData['speed'],
+        #                                          rocketData['altitude'],
+        #                                          rocketData['acceleration'],
+        #                                          rocketData['temperature'],
+        #                                          rocketData['direction'],
+        #                                          rocketData['coords'],
+        #                                          rocketData['ID'],
+        #                                          rocketData['state'])
+        #=======================================================================
     
     """
     #    Methode run
@@ -233,31 +296,100 @@ class SerialReader(PyQt4.QtCore.QThread):
     """ 
     def run(self):
         
-        try:
-            """Ouverture de la connexion serie"""
-            self.__serialConnection.open()
-            self.__serialConnection.isConnected(True)
         
-        except serial.serialutil.SerialException:
-        
-            raise serial.serialutil.SerialException
+        print "Reading Data"
         
         """Tant quon ne tue pas le thread"""
         while self.__running:
             
-            """Si le nombre de byte recue est superieur ou egal a la longueur
-            standard dune trame"""
-            if self.__serialConnection.inWaiting() >= Frame.LENGTH:
-               
+            if self.__serialConnection.inWaiting() is Frame.LENGTH:
+                
                 """Creation de la trame et traitement des donnees"""
                 self.dataReceived()
                 self.handleData()
                 
+        self.__serialConnection.isConnected = False
+    
+        
+        
+"""#
+# La classe SerialWriter
+# Description:    Classe representant un thread d'ecriture de donnees
+#                 sur le _port serie. Celle-ci cree des trames et les 
+#                 envoie sur la connexion serie recu en parametre
+#                 
+#"""
+class SerialWriter(PyQt4.QtCore.QThread):
+    
+    __running = False
+    
+    def __init__(self,serialConnection, commandBuffer, serialReader):
+        super(PyQt4.QtCore.QThread, self).__init__()
+        self.__serialConnection = serialConnection
+        self.__commandBuffer = commandBuffer
+    
+    @property
+    def running(self):
+        return self.__running
+    
+    @running.setter
+    def running(self,value):
+        self.__running = value
+    
+    
+    
+    """
+    #    Methode run
+    #    Description: Ovveride de la methode run de la classe QThread, initilalise la
+    #                 la connexion serie et appele les methodes necessaire lors de la
+    #                 reception dune quatite suffisante de byte(longueur dune trame)
+    #                 
+    #
+    #    param:    None
+    #    return:   None
+    """ 
+    def run(self):
+        
+        
+        """Tant quon ne tue pas le thread"""
+        while self.__running:
+            pass
+                
         """Fermeture de la connextion serie lorsque le thread termine"""
         self.__serialConnection.close()
         self.__serialConnection.isConnected(False)
+
+
+
+
+
+'''
+TO DO
+'''
+class CommunicationHistory(object):
+    
+    HISTORY_DEEPNESS = 10
+    
+    def __init__(self):
         
+        self.__sentFrameHistory = []
     
-    
-    
+    def addSentFrame(self, sentFrame):
         
+        if len(self.__sentFrameHistory) < 10:
+            
+            self.__sentFrameHistory.append(sentFrame)
+            
+        else:
+            
+            for i in range(1, self.HISTORY_DEEPNESS-1):
+                
+                self.__sentFrameHistory[i-1] = self.__sentFrameHistory[i]
+            
+            self.__sentFrameHistory[9]
+    
+    def getLastSentFrame(self):
+        
+        if len(self.__sentFrameHistory) is not 0:
+            
+            return self.__sentFrameHistory[-1]

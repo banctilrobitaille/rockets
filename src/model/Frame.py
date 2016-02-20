@@ -9,23 +9,22 @@ Created on 2016-01-04
 class Frame(object):
     
     '''Command that can be send to the rockets. Compresssed with Huffman algorithm'''
-    COMMAND = {'GETTELEMETRY'   : bitarray('0'),
-               'ACK'            : bitarray('10'),
-               'NACK'           : bitarray('110'),
-               'DISCOVER'       : bitarray('1110'),
-               'GETLOG'         : bitarray('1111')}
+    COMMAND = {'GETTELEMETRY'   : '00000',
+               'ACK'            : '00001',
+               'NACK'           : '00010',
+               'DISCOVER'       : '00011',
+               'GETLOG'         : '00100'}
     
     '''Constant length of a frame'''
     
     
-    LENGTH = 100
+    LENGTH = 3
     
-    def __init__(self, command, rocketID, dataBlocNumber, data, crc): 
-
-        self.__command = command
+    def __init__(self,rocketID, command, payload, crc): 
+        
         self.__rocketID = rocketID
-        self.__dataBlocNumber = dataBlocNumber
-        self.__data = data
+        self.__command = command
+        self.__data = payload
         self.__crc = crc
     
     @staticmethod
@@ -38,8 +37,8 @@ class Frame(object):
     def fromByteArray(cls, byteArray):
         
         args = Frame.parseByteArray(byteArray)
-        frame = cls(args['command'], args['rocketID'], args['dataBlockNumber'],
-                    args['data'], args['crc'])
+        frame = cls(args['rocketID'], args['command'], args['data'],
+                    args['crc'])
         return frame
     
     

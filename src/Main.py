@@ -3,9 +3,9 @@ import PyQt4
 import sys
 from view import UiMainWindow
 from model.Rocket import Rocket
-from model.BaseStation import BaseStation
 from controller.Communication import SerialController
-from controller.BaseStationController import BaseStationController
+from model.SerialConnection import SerialConnection
+from controller.RocketController import RocketController
 
 """#############################################################################
 # 
@@ -23,7 +23,10 @@ class baseStationApplication(PyQt4.QtGui.QApplication):
         PyQt4.QtGui.QApplication.__init__(self, args)
         
         self.__rocketModel = Rocket.getInstance()
-        self.mainWindow = UiMainWindow.MainWindow(self.__rocketModel)
+        self.__rocketController = RocketController(self.__rocketModel)
+        self.__rfdSerialConnection = SerialConnection()
+        self.__rfdController = SerialController(self.__rocketController, self.__rfdSerialConnection)
+        self.mainWindow = UiMainWindow.MainWindow(self.__rocketModel, self.__rfdController)
         self.mainWindow.show()
         self.mainWindow.iren.Initialize()
         self.exec_()

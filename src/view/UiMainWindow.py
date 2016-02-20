@@ -21,10 +21,11 @@ import StatePanel
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
-    def __init__(self,rocketModel,parent=None):
+    def __init__(self,rocketModel,rfdController,parent=None):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
         self.__rocketModel = rocketModel
+        self.__rfdController = rfdController
         self.__setupUi()
 
     """
@@ -208,13 +209,13 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rocketModel.accelerationChanged.connect(self.__on_AccelerationChanged)
         self.__rocketModel.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__rocketModel.temperatureChanged.connect(self.__on_TemperatureChanged)
-        
+        self.__rfdController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         """Association entre un changement de tab du widget tabWidget et la methode
         __slotTab_Changed qui redimensionne le tabWidget"""
         #self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
        
     
-    @pyqtSlot(float)
+    @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
         
         self.__dashboard.updateSpeed(speed)
@@ -246,13 +247,13 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __slotConnect_Clicked(self):
     
-        self.dataThread.startCommunication()
+        self.__rfdController.startReadingData()
         
     
         
     def __slotDisconnect_Clicked(self):
         
-        self.dataThread.stopCommunication()
+        self.__rfdController.stopReadingData()
     
     
     
@@ -277,7 +278,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __showSerialProperties(self):
 
-        self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.serialConnection)
+        self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.__rfdController)
         self.serialProperties.show()
     
     
@@ -287,8 +288,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.gpsProperties.show()
     
     
-    
-    def updateStatusBar(self, isConnected):
+    @pyqtSlot(bool)
+    def __on_serialConnectionStateChanged(self, isConnected):
         
         if isConnected:
             
