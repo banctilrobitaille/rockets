@@ -1,5 +1,4 @@
-from bitarray import bitarray
-
+import struct
 '''
 Created on 2016-01-04
 
@@ -7,48 +6,47 @@ Created on 2016-01-04
 '''
 
 class Frame(object):
+
     
-    '''Command that can be send to the rockets. Compresssed with Huffman algorithm'''
-    COMMAND = {'GETTELEMETRY'   : '00000',
-               'ACK'            : '00001',
-               'NACK'           : '00010',
-               'DISCOVER'       : '00011',
-               'GETLOG'         : '00100'}
+    RECEIVED_FRAME_LENGTH = 39
+    TRANSMIT_FRAME_LENGTH = 10
+    FLAG = 'a'
     
-    '''Constant length of a frame'''
-    
-    
-    LENGTH = 3
-    
-    def __init__(self,rocketID, command, payload, crc): 
+    def __init__(self,rocketID, command,data,crc): 
         
-        self.__rocketID = rocketID
-        self.__command = command
-        self.__data = payload
-        self.__crc = crc
+        self.__rocketID     = rocketID
+        self.__command      = command
+        self.__data         = data
+        self.__crc          = crc
     
     @staticmethod
-    def parseByteArray(self, byteArray):
+    def parseByteArray(byteArray):
         
-        pass
-    
+        rocketData = {}
+        
+        rocketData['ROCKETID']      = struct.unpack_from("c",byteArray[0])[0]
+        rocketData['COMMAND']       = struct.unpack_from("c",byteArray[0])[0]
+        rocketData['TIMESTAMP']     = struct.unpack_from("f",byteArray[3:7])[0]
+        rocketData['STATE']         = struct.unpack_from("c",byteArray[7])[0]
+        rocketData['GPSFIX']        = struct.unpack_from("c",byteArray[11:15])
+        rocketData['SPEED']         = struct.unpack_from("f",byteArray[11:15])[0]
+        rocketData['ALTITUDE']      = struct.unpack_from("f",byteArray[15:19])[0]
+        rocketData['ACCELERATION']  = struct.unpack_from("f",byteArray[19:23])[0]
+        rocketData['LATITUDE']      = struct.unpack_from("f",byteArray[23:27])[0]
+        rocketData['LONGITUDE']     = struct.unpack_from("f",byteArray[27:31])[0]
+        rocketData['TEMPERATURE']   = struct.unpack_from("f",byteArray[31:35])[0]
+        rocketData['CRC']           = struct.unpack_from("c",byteArray[35])[0]
+        
+        return rocketData
     
     @classmethod
     def fromByteArray(cls, byteArray):
         
-        args = Frame.parseByteArray(byteArray)
-        frame = cls(args['rocketID'], args['command'], args['data'],
-                    args['crc'])
+        rocketData = Frame.parseByteArray(byteArray)
+        frame = cls(rocketData['ROCKETID'],rocketData['COMMAND'], rocketData, rocketData['CRC'])
+        
         return frame
     
-    
-    @property
-    def command(self):
-        return self.__command
-    
-    @command.setter
-    def command(self,command):
-        self.__command = command
     
     @property
     def rocketID(self):
@@ -58,15 +56,15 @@ class Frame(object):
     def rocketID(self,rocketID):
         
         self.__rocketID = rocketID
-        
-    @property
-    def dataBlocNumber(self):
-        return self.__dataBlocNumber
     
-    @dataBlocNumber.setter
-    def dataBlocNumber(self, dataBlocNumber):
-        self.__dataBlocNumber = dataBlocNumber
-        
+    @property
+    def command(self):
+        return self.__command
+    
+    @command.setter
+    def command(self,command):
+        self.__command = command
+    
     @property
     def data(self):
         return self.__data

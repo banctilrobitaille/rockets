@@ -1,5 +1,7 @@
 import serial
 import PyQt4
+import struct
+from bitstring import BitArray
 from model.Frame import Frame
 from PyQt4.Qt import  pyqtSlot
 """#############################################################################
@@ -42,7 +44,7 @@ class SerialController(PyQt4.QtCore.QObject):
         self.__history = CommunicationHistory()
         #self.__serialWriter = SerialWriter
         self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
-        self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
+        #self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
         
     
     @property
@@ -252,12 +254,12 @@ class SerialReader(PyQt4.QtCore.QThread):
         
         try:
             
-            #self.__frame = Frame.fromByteArray(self.__serialConnection.read(size=Frame.LENGTH))
-            self.__receivedData = self.__serialConnection.read(Frame.LENGTH)
+            self.__frame = Frame.fromByteArray(self.__serialConnection.read(Frame.RECEIVED_FRAME_LENGTH))
         
-        except:
+        except Exception as e:
             
-            self.corruptedFrameReceived.emit(True)
+            print e.message
+            #self.corruptedFrameReceived.emit(True)
     
     
     """
@@ -271,7 +273,11 @@ class SerialReader(PyQt4.QtCore.QThread):
     """ 
     def handleData(self):
         
-        self.__rocketController.updateRocketSpeed(int(self.__receivedData))
+        self.__rocketController.updateRocketSpeed(self.__frame.data['SPEED'])
+        self.__rocketController.updateRocketAcceleration(self.__frame.data['ALTITUDE'])
+        self.__rocketController.updateRocketAltitude(self.__frame.data['ACCELERATION'])
+        self.__rocketController.updateRocketAltitude(self.__frame.data['TEMPERATURE'])
+        
         #rocketData = self.__frame.data
         #=======================================================================
         # self.__rocketController.updateRocketData(rocketData['speed'],
@@ -299,15 +305,46 @@ class SerialReader(PyQt4.QtCore.QThread):
         
         print "Reading Data"
         
-        """Tant quon ne tue pas le thread"""
-        while self.__running:
+        self.__serialConnection.flush()
             
-            if self.__serialConnection.inWaiting() is Frame.LENGTH:
+        """Tant quon ne tue pas le thread"""
+        while self.__running:    
+            
+            """Waiting for the beginning of a frame and reading the flag"""
+            while self.__serialConnection.read(1) is not Frame.FLAG:
+       
+                pass
+            
+            """Waiting for a complete frame to read"""
+            if (self.__serialConnection.inWaiting() >= Frame.RECEIVED_FRAME_LENGTH):
                 
-                """Creation de la trame et traitement des donnees"""
-                self.dataReceived()
-                self.handleData()
+            
+                #data = self.__serialConnection.read(Frame.LENGTH)
                 
+                try:
+                    
+                    self.dataReceived()
+                    self.handleData()
+                    
+                except Exception as e:
+                    
+                    print e.message
+                
+                #c = BitArray(bytes=data, length=(len(data)*8), offset=0)
+                #print(c.bin)
+                
+                #for byte in data:
+                    #print(struct.unpack_from("c",byte))
+                    
+                
+                #print(data)
+                #print(len(data))
+                #print("Timestamp:")
+                #print("GPS state")
+                #print(struct.unpack_from("f",data[5:10]))
+                
+                
+                                
         self.__serialConnection.isConnected = False
     
         
