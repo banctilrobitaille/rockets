@@ -1,6 +1,6 @@
 import PyQt4.Qwt5
 import MapWidget
-from PyQt4.Qt import QPalette, QColor, QFont
+from PyQt4.Qt import QPalette, QColor
 """#############################################################################
 # 
 # Nom du module:          UiDataAnalysis
@@ -131,6 +131,7 @@ class GraphTab(DataFrame):
         self.addWidget(self.accelPlot, 0, 1)
         self.addWidget(self.altitudePlot, 1, 0)
         self.addWidget(self.temperaturePlot, 1, 1)
+        
         
 """#
 # La classe GPSTab

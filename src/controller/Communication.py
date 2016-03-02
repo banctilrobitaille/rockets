@@ -1,7 +1,5 @@
 import serial
 import PyQt4
-import struct
-from bitstring import BitArray
 from model.Frame import Frame
 from PyQt4.Qt import  pyqtSlot
 """#############################################################################
@@ -301,9 +299,6 @@ class SerialReader(PyQt4.QtCore.QThread):
     #    return:   None
     """ 
     def run(self):
-        
-        
-        print "Reading Data"
         
         self.__serialConnection.flush()
             

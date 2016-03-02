@@ -209,11 +209,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rocketModel.accelerationChanged.connect(self.__on_AccelerationChanged)
         self.__rocketModel.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__rocketModel.temperatureChanged.connect(self.__on_TemperatureChanged)
-        self.__rfdController.stateChanged.connect(self.__on_serialConnectionStateChanged)
-        """Association entre un changement de tab du widget tabWidget et la methode
-        __slotTab_Changed qui redimensionne le tabWidget"""
-        #self.tabWidget.currentChanged.connect(self.__slotTab_Changed)
-       
+        self.__rfdController.stateChanged.connect(self.__on_serialConnectionStateChanged)       
     
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
