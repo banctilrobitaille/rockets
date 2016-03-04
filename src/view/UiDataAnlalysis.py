@@ -1,6 +1,6 @@
 import PyQt4.Qwt5
 import MapWidget
-from PyQt4.Qt import QPalette, QColor
+from PyQt4.Qt import QPalette, QColor, QPen, QString
 """#############################################################################
 # 
 # Nom du module:          UiDataAnalysis
@@ -11,6 +11,8 @@ from PyQt4.Qt import QPalette, QColor
 #                         tels que les graphiques et laffichage des coordonnees GPS.
 #
 ##############################################################################"""
+from PyQt4.Qwt5.qplt import SolidLine, DashDotDotLine
+from PyQt4.Qwt5.Qwt import QwtPlotMarker, QwtText
 
 """#
 # La classe DataFrame
@@ -48,7 +50,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
     #           yAxisTitle: Titre de laxe des y
     #    return: None
     """
-    def __init__(self, graphTitle, xAxisTitle, yAxisTitle):
+    def __init__(self, graphTitle, xAxisTitle, yAxisTitle, curveColor):
         
         PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
         
@@ -65,6 +67,18 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.setXAxisTitle(xAxisTitle, self.plotAxisFont)
         self.setYAxisTitle(yAxisTitle, self.plotAxisFont)
         
+        self.marker = QwtPlotMarker()
+        self.marker.setLabel(QwtText("Peak: 200"))
+        self.marker.setLineStyle(QwtPlotMarker.HLine)
+        self.marker.setLinePen(QPen(QColor(0,153,204),1.0,DashDotDotLine))
+        self.marker.setValue(50,100)
+        self.marker.attach(self)
+        
+        self.curve = PyQt4.Qwt5.Qwt.QwtPlotCurve()
+        self.curve.setPen(QPen(curveColor,3.0,SolidLine))
+        self.curve.setData([1,5,20,30,50,70],[5,10,50,60,200,50])
+        self.curve.attach(self)
+        self.replot()
     """
     #    Methode setGraphTitle
     #    Description: Methode affectant un titre au graphique
@@ -121,10 +135,10 @@ class GraphTab(DataFrame):
         
         self.setGeometry(930,15,900,600)
         """Initialisation des differents graphiques realtime"""
-        self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)")
-        self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)")
-        self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')")
-        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(KELVIN)")
+        self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)", QColor(255,0,0))
+        self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)",QColor(255,0,0))
+        self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')",QColor(255,0,0))
+        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(KELVIN)",QColor(255,0,0))
         
         """Ajout des widgets dans le frame selon un gridlayout"""
         self.addWidget(self.speedPlot, 0, 0)

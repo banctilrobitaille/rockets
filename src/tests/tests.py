@@ -4,28 +4,31 @@ Created on 2016-02-02
 @author: rockets
 '''
 import unittest
-from model.Rocket import Rocket
-from controller.RocketController import RocketController
-
+import struct
+import model
+import controller
+from bitarray import bitarray
 
 class Test(unittest.TestCase):
+    
 
-
-    def setUp(self):
+    def test_SpeedUpdate(self):
         
-        self.__rocketModel = Rocket.getInstance()
-        self.__rocketController = RocketController(self.__rocketModel)
-
-    def tearDown(self):
-        pass
-
-
-    def testSpeedUpdate(self):
+        self.assertEqual("POmme", "POmme")
         
-        for speed in range(0,300, 50):
-            
-            self.__rocketController.updateRocketSpeed(speed)
+    
+    def test_crc(self):
         
+        frame = {}
+        
+        #frame['HEADER'] = struct.pack()
+        
+        frame['header'] = struct.pack('B', 0x21)
+        frame['timestamp'] = struct.pack('f', 100.0)
+        print bytearray(frame.values())
+        #crcCalculator = model.Frame.CRC16()
+        
+        #crcCalculator.calculate()
         
 
 

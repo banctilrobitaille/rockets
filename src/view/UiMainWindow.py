@@ -210,7 +210,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rocketModel.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__rocketModel.temperatureChanged.connect(self.__on_TemperatureChanged)
         self.__rfdController.stateChanged.connect(self.__on_serialConnectionStateChanged)       
-    
+        self.__dashboard.updateTemperature(80)
+        
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
         

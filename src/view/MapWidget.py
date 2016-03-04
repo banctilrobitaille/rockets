@@ -28,22 +28,18 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         self.drag         = False
         self.scale        = False
         self.total_scale  = 1.0
-        self.map.zoom_all()
         
         self.timer        = PyQt4.QtCore.QTimer()
         self.timer.timeout.connect(self.updateMap)
-
-        self.map_tree     = PyQt4.QtGui.QStandardItemModel()
         
         
     def open(self, xml):
         
-        self.map = mapnik.Map(self.width(), self.height())
         mapnik.load_map(self.map, xml)
         self.map.resize(900,600)
         self.map.zoom(145.0)
+        self.map.zoom_to_box(mapnik.Envelope(-74,48,-74,48))
         self.updateMap()
-        #self.map.zoom_all()
         
     def setBaseStation(self):
         

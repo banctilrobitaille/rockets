@@ -255,17 +255,23 @@ class Thermometer(Qwt.QwtThermo):
         """Couleur sous la valeur alarmLevel"""
         thermoPalette.setColor(thermoPalette.Highlight,PyQt4.QtGui.QColor(0, 255, 0))
         
+        thermoPalette.setColor(thermoPalette.Base,PyQt4.QtGui.QColor(0, 255, 0))
+        
         """Application de la palette de couleur"""
         self.setPalette(thermoPalette)
         
+        self.setAlarmColor(QColor(255,0,0))
+        self.setFillColor(QColor(255,102,0))
+        
         """Parametrage du niveau dalarme et de la graduation"""
         self.setAlarmLevel(alarmLevel)
+        self.setAlarmEnabled(True)
         self.setRange(minCelsius, maxCelsius)
         self.setScale(minCelsius, maxCelsius)
         self.setValue(0)
         
         """Affichage de lobjet"""
-        self.show
+        self.show()
     
     def updateValue(self, temperature):
         
