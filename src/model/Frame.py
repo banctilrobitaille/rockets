@@ -7,7 +7,6 @@ Created on 2016-01-04
 '''
 
 class Frame(object):
-
     
     RECEIVED_FRAME_LENGTH = 39
     TRANSMIT_FRAME_LENGTH = 10

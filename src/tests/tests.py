@@ -7,7 +7,7 @@ import unittest
 import struct
 import model
 import controller
-from bitarray import bitarray
+#from bitarray import bitarray
 
 class Test(unittest.TestCase):
     
