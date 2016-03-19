@@ -234,7 +234,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __slotAbout_Clicked(self):
         
-        PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
+        #PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
+        self.__gpsTab.map.updateMarker(-90,46.8)
     
     
     def __slotSerialSettings_Clicked(self):

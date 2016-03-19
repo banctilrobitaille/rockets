@@ -275,18 +275,6 @@ class SerialReader(PyQt4.QtCore.QThread):
         self.__rocketController.updateRocketAcceleration(self.__frame.data['ALTITUDE'])
         self.__rocketController.updateRocketAltitude(self.__frame.data['ACCELERATION'])
         self.__rocketController.updateRocketAltitude(self.__frame.data['TEMPERATURE'])
-        
-        #rocketData = self.__frame.data
-        #=======================================================================
-        # self.__rocketController.updateRocketData(rocketData['speed'],
-        #                                          rocketData['altitude'],
-        #                                          rocketData['acceleration'],
-        #                                          rocketData['temperature'],
-        #                                          rocketData['direction'],
-        #                                          rocketData['coords'],
-        #                                          rocketData['ID'],
-        #                                          rocketData['state'])
-        #=======================================================================
     
     """
     #    Methode run

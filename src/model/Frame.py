@@ -6,89 +6,209 @@ Created on 2016-01-04
 @author: rockets
 '''
 
+
 class Frame(object):
 
-    
-    RECEIVED_FRAME_LENGTH = 39
-    TRANSMIT_FRAME_LENGTH = 10
-    FLAG = 'a'
-    
-    def __init__(self,rocketID, command,data,crc): 
+    FLAG = "AA"
+
+    def __init__(self, rocketID, command, timestamp, crc):
+
+        self.__crcCalculator = CRC16()
+        self.__rocketID = rocketID
+        self.__command = command
+        self.__timestamp = timestamp
+        self.__crc = crc
+
+    @property
+    def crcCalculator(self):
+        return self.__crcCalculator
+
+    @property
+    def rocketID(self):
+        return self.__rocketID
+
+    @rocketID.setter
+    def rocketID(self, rocketID):
+
+        self.__rocketID = rocketID
+
+    @property
+    def command(self):
+        return self.__command
+
+    @command.setter
+    def command(self, command):
+        self.__command = command
+
+    @property
+    def timestamp(self):
+        return self.__timestamp
+
+    @timestamp.setter
+    def timestamp(self, timestamp):
+        self.__timestamp = timestamp
+
+    @property
+    def crc(self):
+        return self.__crc
+
+    @crc.setter
+    def crc(self, crc):
+        self.__crc = crc
+
+
+class ReceivedFrame(Frame):
+
+    LENGTH = 39
+
+    def __init__(self,rocketID, command, timestamp, state, gpsFix, speed, altitude,
+                 acceleration, latitude, longitude, temperature, crc):
         
-        self.__rocketID     = rocketID
-        self.__command      = command
-        self.__data         = data
-        self.__crc          = crc
+        Frame.__init__(self, rocketID, command, timestamp, crc)
+        self.__state = state
+        self.__gpsFix = gpsFix
+        self.__speed = speed
+        self.__altitude = altitude
+        self.__acceleration = acceleration
+        self.__latitude = latitude
+        self.__longitude = longitude
+        self.__temperature = temperature
     
     @staticmethod
     def parseByteArray(byteArray):
         
-        rocketData = {}
-        
-        rocketData['ROCKETID']      = struct.unpack_from("c",byteArray[0])[0]
-        rocketData['COMMAND']       = struct.unpack_from("c",byteArray[0])[0]
-        rocketData['TIMESTAMP']     = struct.unpack_from("f",byteArray[3:7])[0]
-        rocketData['STATE']         = struct.unpack_from("c",byteArray[7])[0]
-        rocketData['GPSFIX']        = struct.unpack_from("c",byteArray[11:15])
-        rocketData['SPEED']         = struct.unpack_from("f",byteArray[11:15])[0]
-        rocketData['ALTITUDE']      = struct.unpack_from("f",byteArray[15:19])[0]
-        rocketData['ACCELERATION']  = struct.unpack_from("f",byteArray[19:23])[0]
-        rocketData['LATITUDE']      = struct.unpack_from("f",byteArray[23:27])[0]
-        rocketData['LONGITUDE']     = struct.unpack_from("f",byteArray[27:31])[0]
-        rocketData['TEMPERATURE']   = struct.unpack_from("f",byteArray[31:35])[0]
-        rocketData['CRC']           = struct.unpack_from("c",byteArray[35])[0]
-        
-        return rocketData
+        frame = {}
+
+        frame['ROCKETID']      = struct.unpack_from("c",byteArray[0])[0]
+        frame['COMMAND']       = struct.unpack_from("c",byteArray[0])[0]
+        frame['TIMESTAMP']     = struct.unpack_from("f",byteArray[3:7])[0]
+        frame['STATE']         = struct.unpack_from("c",byteArray[7])[0]
+        frame['GPSFIX']        = struct.unpack_from("c",byteArray[11:15])
+        frame['SPEED']         = struct.unpack_from("f",byteArray[11:15])[0]
+        frame['ALTITUDE']      = struct.unpack_from("f",byteArray[15:19])[0]
+        frame['ACCELERATION']  = struct.unpack_from("f",byteArray[19:23])[0]
+        frame['LATITUDE']      = struct.unpack_from("f",byteArray[23:27])[0]
+        frame['LONGITUDE']     = struct.unpack_from("f",byteArray[27:31])[0]
+        frame['TEMPERATURE']   = struct.unpack_from("f",byteArray[31:35])[0]
+        frame['CRC']           = struct.unpack_from("c",byteArray[35])[0]
+
+        return frame
     
     @classmethod
     def fromByteArray(cls, byteArray):
         
-        rocketData = Frame.parseByteArray(byteArray)
-        frame = cls(rocketData['ROCKETID'],rocketData['COMMAND'], rocketData, rocketData['CRC'])
+        frameDict = ReceivedFrame.parseByteArray(byteArray)
+        frame = cls(frameDict['ROCKETID'], frameDict['COMMAND'], frameDict['TIMESTAMP'],
+                    frameDict['STATE'], frameDict['GPSFIX'], frameDict['SPEED'],
+                    frameDict['ALTITUDE'], frameDict['ACCELERATION'], frameDict['LATITUDE'],
+                    frameDict['LONGITUDE'], frameDict['TEMPERATURE'],frameDict['CRC'])
         
         return frame
 
-    
     @property
-    def rocketID(self):
-        return self.__rocketID
-    
-    @rocketID.setter
-    def rocketID(self,rocketID):
-        
-        self.__rocketID = rocketID
-    
+    def state(self):
+        return self.__state
+
+    @state.setter
+    def state(self, state):
+        self.__state = state
+
     @property
-    def command(self):
-        return self.__command
-    
-    @command.setter
-    def command(self,command):
-        self.__command = command
-    
+    def gpsFix(self):
+        return self.__gpsFix
+
+    @gpsFix.setter
+    def gpsFix(self, gpsFix):
+        self.__gpsFix = gpsFix
+
     @property
-    def data(self):
-        return self.__data
-    
-    @data.setter
-    def data(self, data):
-        self.__data = data
-        
+    def speed(self):
+        return self.__speed
+
+    @speed.setter
+    def speed(self,speed):
+        self.__speed = speed
+
     @property
-    def crc(self):
-        return self.__crc
-    
-    @crc.setter
-    def crc(self, crc):
-        self.__crc = crc
-     
-     
+    def altitude(self):
+        return self.__altitude
+
+    @altitude.setter
+    def altitude(self,altitude):
+        self.__altitude = altitude
+
+    @property
+    def acceleration(self):
+        return self.__acceleration
+
+    @acceleration.setter
+    def acceleration(self, acceleration):
+        self.__acceleration = acceleration
+
+    @property
+    def latitude(self):
+        return self.__latitude
+
+    @latitude.setter
+    def latitude(self, latitude):
+        self.__latitude = latitude
+
+    @property
+    def longitude(self):
+        return self.__longitude
+
+    @longitude.setter
+    def longitude(self, longitude):
+        self.__longitude = longitude
+
+    @property
+    def temperature(self):
+        return self.__temperature
+
+    @temperature.setter
+    def temperature(self,temperature):
+        self.__temperature = temperature
+
+
+class SentFrame(Frame):
+
+    LENGTH = 10
+
+    def __init__(self, rocketID, command, timestamp, payload):
+        Frame.__init__(self, rocketID, command, timestamp, None)
+
+        self.__payload = payload
+        self.crc = self.crcCalculator.calculate(self.toByteArray())
+
+    def toByteArray(self):
+
+        #The list holding the frame data as byte
+        byteData = ""
+        byteData += struct.pack('B', self.rocketID | self.command)
+        byteData += struct.pack('f', self.timestamp)
+        byteData += struct.pack('f', self.__payload)
+
+        if self.crc is not None:
+            byteData += struct.pack('h', self.crc)
+
+        return byteData
+
+    @property
+    def payload(self):
+        return self.__payload
+
+    @payload.setter
+    def payload(self, payload):
+        self.__payload = payload
+
+
 class CRC16(object):
     crc16_tab = []
 
     # The CRC's are computed using polynomials. Here is the most used
     # coefficient for CRC16
-    crc16_constant = 0xA001  # 40961
+    crc16_constant = 0x8005
+    #crc16_constant = 0xA001
 
     def __init__(self, modbus_flag=False):
         # initialize the precalculated tables
@@ -109,9 +229,9 @@ class CRC16(object):
 
             for c in input_data:
                 d = ord(c) if is_string else c
-                tmp = crc_value ^ d
+                tmp = (crc_value ^ (d & 0x00ff))
                 rotated = crc_value >> 8
-                crc_value = rotated ^ self.crc16_tab[(tmp & 0x00ff)]
+                crc_value = rotated ^ self.crc16_tab[(tmp & 0xff)]
 
             return crc_value
         except Exception as e:
@@ -120,12 +240,20 @@ class CRC16(object):
     def init_crc16(self):
         """The algorithm uses tables with precalculated values"""
         for i in range(0, 256):
-            crc = c_ushort(i).value
+
+            crc = 0
+            c = c_ushort(i).value
+
             for j in range(0, 8):
-                if crc & 0x0001:
+
+                if (crc ^ c) & 0x0001:
+
                     crc = c_ushort(crc >> 1).value ^ self.crc16_constant
+
                 else:
+
                     crc = c_ushort(crc >> 1).value
+
+                c = c_ushort(c >> 1).value
+
             self.crc16_tab.append(crc)
-   
-        

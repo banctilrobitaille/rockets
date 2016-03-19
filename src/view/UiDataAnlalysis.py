@@ -1,4 +1,5 @@
 import PyQt4.Qwt5
+import Mapwidget
 import MapWidget
 from PyQt4.Qt import QPalette, QColor, QPen, QString
 """#############################################################################
@@ -68,7 +69,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.setYAxisTitle(yAxisTitle, self.plotAxisFont)
         
         self.marker = QwtPlotMarker()
-        self.marker.setLabel(QwtText("Peak: 200"))
+        self.marker.setLabel(QwtText("Peak: 100"))
         self.marker.setLineStyle(QwtPlotMarker.HLine)
         self.marker.setLinePen(QPen(QColor(0,153,204),1.0,DashDotDotLine))
         self.marker.setValue(50,100)
@@ -160,10 +161,11 @@ class GpsTab(DataFrame):
         DataFrame.__init__(self, parent)
         self.setGeometry(20,15,900,600)
         """Initialisation de la map GPS"""
-        self.map = MapWidget.MapnikWidget(self)
-        
+        #self.map = MapWidget.MapnikWidget(self)
+        self.map = Mapwidget.Map(self)
+
         """Ouverture de la carte a afficher"""
-        self.map.open("Mapnik_Files/world_style.xml")
+        #self.map.open("Mapnik_Files/world_style.xml")
         
         """Ajout du widget au frame daffichage (objet courant(self))"""
         self.addWidget(self.map, 0, 0)

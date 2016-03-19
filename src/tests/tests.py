@@ -4,34 +4,28 @@ Created on 2016-02-02
 @author: rockets
 '''
 import unittest
-import struct
-import model
-import controller
-from bitarray import bitarray
+from src.model.Frame import SentFrame
 
 class Test(unittest.TestCase):
     
 
     def test_SpeedUpdate(self):
-        
-        self.assertEqual("POmme", "POmme")
-        
+
+        pass
+        #self.assertEqual("POmme", "POmme")
     
     def test_crc(self):
-        
-        frame = {}
-        
-        #frame['HEADER'] = struct.pack()
-        
-        frame['header'] = struct.pack('B', 0x21)
-        frame['timestamp'] = struct.pack('f', 100.0)
-        print bytearray(frame.values())
-        #crcCalculator = model.Frame.CRC16()
-        
-        #crcCalculator.calculate()
+
+        frame = SentFrame(0x20,0x01,100.0,100.0)
+
+        print frame.toByteArray()
+        print frame.toByteArray().encode('hex')
+
+        self.assertTrue(True)
+
         
 
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testViewUpdate']
+
     unittest.main()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import mapnik
-import simplekml
+#import mapnik
+#import simplekml
 import PyQt4
 
 

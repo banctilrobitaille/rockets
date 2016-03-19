@@ -28,7 +28,7 @@ class StatePanel(PyQt4.QtGui.QFrame):
             led = KLed()
             
             led.setColor(QColor(255,0,0))
-                
+
             label = PyQt4.QtGui.QLabel(state)
             label.fontChange(QFont("Arial",20))
             label.setPalette(self.palette)
