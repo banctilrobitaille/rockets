@@ -22,9 +22,11 @@ from model.Rocket import Rocket
 class RocketController(object):
     
 
-    def __init__(self, rocketModel):
+    __INSTANCE = None
+
+    def __init__(self):
         
-        self.__rocketModel = rocketModel
+        self.__rocketModel = Rocket.getInstance()
   
   
     """
@@ -153,4 +155,12 @@ class RocketController(object):
     def updateRocketState(self,state):
         
         self.__rocketModel.currentState = state
-    
+
+
+    @staticmethod
+    def getInstance():
+
+        if RocketController.__INSTANCE is None:
+            RocketController.__INSTANCE = RocketController()
+
+        return RocketController.__INSTANCE

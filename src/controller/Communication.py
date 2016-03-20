@@ -1,6 +1,7 @@
 import serial
 import PyQt4
-from model.Frame import Frame
+from model.Frame import ReceivedFrame, SentFrame
+from controller.RocketController import RocketController
 from PyQt4.Qt import  pyqtSlot
 """#############################################################################
 # 
@@ -33,15 +34,13 @@ class SerialController(PyQt4.QtCore.QObject):
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
     
-    def __init__(self, rocketController, serialConnection):
+    def __init__(self, serialConnection):
         
         super(PyQt4.QtCore.QObject,self).__init__()
         self.__serialConnection = serialConnection
-        self.__rocketController = rocketController
-        self.__commandBuffer = None
         self.__history = CommunicationHistory()
         #self.__serialWriter = SerialWriter
-        self.__serialReader = SerialReader(self.__serialConnection, self.__rocketController)
+        self.__serialReader = SerialReader(self.__serialConnection)
         #self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
         
     
@@ -219,6 +218,8 @@ class SerialController(PyQt4.QtCore.QObject):
 #                 jour les attributs du model Rocket selon les donnees
 #                 recues.
 #"""
+
+
 class SerialReader(PyQt4.QtCore.QThread):
     
     __running = False
@@ -226,10 +227,10 @@ class SerialReader(PyQt4.QtCore.QThread):
     '''Emit true is received a corupted frame(Invalid CRC)'''
     corruptedFrameReceived = PyQt4.QtCore.pyqtSignal(bool)
     
-    def __init__(self,serialConnection, rocketController):
+    def __init__(self, serialConnection):
         super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
-        self.__rocketController = rocketController
+        self.__rocketController = RocketController.getInstance()
     
     @property
     def running(self):
@@ -248,18 +249,19 @@ class SerialReader(PyQt4.QtCore.QThread):
     #    param:    None
     #    return:   None
     """ 
-    def dataReceived(self):
+    def readReceivedFrame(self):
         
         try:
             
-            self.__frame = Frame.fromByteArray(self.__serialConnection.read(Frame.RECEIVED_FRAME_LENGTH))
-        
+            receivedFrame = ReceivedFrame.fromByteArray(self.__serialConnection.read(ReceivedFrame.LENGTH))
+
         except Exception as e:
             
             print e.message
             #self.corruptedFrameReceived.emit(True)
-    
-    
+
+        return receivedFrame
+
     """
     #    Methode handleData
     #    Description: Methode qui mets a jour les donnees de la fusees selon les donnees
@@ -269,12 +271,12 @@ class SerialReader(PyQt4.QtCore.QThread):
     #    param:    None
     #    return:   None
     """ 
-    def handleData(self):
+    def handleData(self, receivedFrame):
         
-        self.__rocketController.updateRocketSpeed(self.__frame.data['SPEED'])
-        self.__rocketController.updateRocketAcceleration(self.__frame.data['ALTITUDE'])
-        self.__rocketController.updateRocketAltitude(self.__frame.data['ACCELERATION'])
-        self.__rocketController.updateRocketAltitude(self.__frame.data['TEMPERATURE'])
+        self.__rocketController.updateRocketSpeed(receivedFrame.data['SPEED'])
+        self.__rocketController.updateRocketAcceleration(receivedFrame.data['ALTITUDE'])
+        self.__rocketController.updateRocketAltitude(receivedFrame.data['ACCELERATION'])
+        self.__rocketController.updateRocketAltitude(receivedFrame.data['TEMPERATURE'])
     
     """
     #    Methode run
@@ -294,40 +296,36 @@ class SerialReader(PyQt4.QtCore.QThread):
         while self.__running:    
             
             """Waiting for the beginning of a frame and reading the flag"""
-            while self.__serialConnection.read(1) is not Frame.FLAG:
+            while self.__serialConnection.read(1) is not ReceivedFrame.FLAG:
        
                 pass
             
             """Waiting for a complete frame to read"""
-            if (self.__serialConnection.inWaiting() >= Frame.RECEIVED_FRAME_LENGTH):
-                
-            
-                #data = self.__serialConnection.read(Frame.LENGTH)
-                
+            if self.__serialConnection.inWaiting() >= ReceivedFrame.LENGTH:
+
                 try:
                     
-                    self.dataReceived()
-                    self.handleData()
+                    receivedFrame = self.readReceivedFrame()
+                    self.handleData(receivedFrame)
                     
                 except Exception as e:
                     
                     print e.message
                 
-                #c = BitArray(bytes=data, length=(len(data)*8), offset=0)
-                #print(c.bin)
-                
-                #for byte in data:
-                    #print(struct.unpack_from("c",byte))
-                    
-                
-                #print(data)
-                #print(len(data))
-                #print("Timestamp:")
-                #print("GPS state")
-                #print(struct.unpack_from("f",data[5:10]))
-                
-                
-                                
+                #data = self.__serialConnection.read(Frame.LENGTH)
+                # c = BitArray(bytes=data, length=(len(data)*8), offset=0)
+                # print(c.bin)
+                #
+                # for byte in data:
+                #     print(struct.unpack_from("c",byte))
+                #
+                #
+                # print(data)
+                # print(len(data))
+                # print("Timestamp:")
+                # print("GPS state")
+                # print(struct.unpack_from("f",data[5:10]))
+
         self.__serialConnection.isConnected = False
     
         
@@ -339,6 +337,8 @@ class SerialReader(PyQt4.QtCore.QThread):
 #                 envoie sur la connexion serie recu en parametre
 #                 
 #"""
+
+
 class SerialWriter(PyQt4.QtCore.QThread):
     
     __running = False

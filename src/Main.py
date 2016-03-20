@@ -23,9 +23,8 @@ class baseStationApplication(PyQt4.QtGui.QApplication):
         PyQt4.QtGui.QApplication.__init__(self, args)
         
         self.__rocketModel = Rocket.getInstance()
-        self.__rocketController = RocketController(self.__rocketModel)
         self.__rfdSerialConnection = SerialConnection()
-        self.__rfdController = SerialController(self.__rocketController, self.__rfdSerialConnection)
+        self.__rfdController = SerialController(self.__rfdSerialConnection)
         self.mainWindow = UiMainWindow.MainWindow(self.__rocketModel, self.__rfdController)
         self.mainWindow.show()
         self.mainWindow.iren.Initialize()

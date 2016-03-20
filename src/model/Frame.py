@@ -9,7 +9,7 @@ Created on 2016-01-04
 
 class Frame(object):
 
-    FLAG = "AA"
+    FLAG = "a"
 
     def __init__(self, rocketID, command, timestamp, crc):
 
@@ -18,6 +18,10 @@ class Frame(object):
         self.__command = command
         self.__timestamp = timestamp
         self.__crc = crc
+
+    def toByteArray(self, withCRC=False):
+
+        raise NotImplementedError
 
     @property
     def crcCalculator(self):
@@ -90,7 +94,7 @@ class ReceivedFrame(Frame):
         frame['LATITUDE']      = struct.unpack_from("f",byteArray[23:27])[0]
         frame['LONGITUDE']     = struct.unpack_from("f",byteArray[27:31])[0]
         frame['TEMPERATURE']   = struct.unpack_from("f",byteArray[31:35])[0]
-        frame['CRC']           = struct.unpack_from("c",byteArray[35])[0]
+        frame['CRC']           = struct.unpack_from("H",byteArray[35:36])[0]
 
         return frame
     
@@ -104,6 +108,27 @@ class ReceivedFrame(Frame):
                     frameDict['LONGITUDE'], frameDict['TEMPERATURE'],frameDict['CRC'])
         
         return frame
+
+    #Override
+    def toByteArray(self, withCRC=False):
+
+        dataByte = ""
+        dataByte   += struct.pack("c", self.rocketID)
+        dataByte   += struct.pack("c", self.command)
+        dataByte   += struct.pack("f", self.timestamp)
+        dataByte   += struct.pack("c", self.__state)
+        dataByte   += struct.pack("c", self.__gpsFix)
+        dataByte   += struct.pack("f", self.__speed)
+        dataByte   += struct.pack("f", self.__altitude)
+        dataByte   += struct.pack("f", self.__acceleration)
+        dataByte   += struct.pack("f", self.__latitude)
+        dataByte   += struct.pack("f", self.__longitude)
+        dataByte   += struct.pack("f", self.__temperature)
+
+        if withCRC:
+            dataByte += struct.pack("H", self.crc)
+
+        return dataByte
 
     @property
     def state(self):
@@ -178,18 +203,17 @@ class SentFrame(Frame):
         Frame.__init__(self, rocketID, command, timestamp, None)
 
         self.__payload = payload
-        self.crc = self.crcCalculator.calculate(self.toByteArray())
+        #self.crc = self.crcCalculator.calculate(self.toByteArray())
 
-    def toByteArray(self):
+    def toByteArray(self, withCRC=False):
 
-        #The list holding the frame data as byte
         byteData = ""
         byteData += struct.pack('B', self.rocketID | self.command)
         byteData += struct.pack('f', self.timestamp)
         byteData += struct.pack('f', self.__payload)
 
-        if self.crc is not None:
-            byteData += struct.pack('h', self.crc)
+        if withCRC and self.crc is not None:
+            byteData += struct.pack('H', self.crc)
 
         return byteData
 
