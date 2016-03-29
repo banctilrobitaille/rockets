@@ -8,20 +8,18 @@ Created on 2016-01-27
 
 class LogController(object):
 
-
     def __init__(self, params):
         
         pass
     
     """
-    TO DO 
+    TO DO
     """
     def writeLogToFile(self, path, data):
         pass
     
     """
-    TO DO 
+    TO DO
     """
     def readLogFromFile(self, path):
         pass
-        

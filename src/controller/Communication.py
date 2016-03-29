@@ -1,8 +1,11 @@
 import serial
 import PyQt4
-from model.Frame import ReceivedFrame, SentFrame
-from controller.RocketController import RocketController
-from PyQt4.Qt import  pyqtSlot
+import time
+from src.controller.CommunicationUtility import CRC16 as crcCalculator
+from src.controller.RocketController import RocketController
+from src.model.Frame import ReceivedFrame, SentFrame
+from src.model.Rocket import Rocket
+from PyQt4.Qt import pyqtSlot
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -39,7 +42,6 @@ class SerialController(PyQt4.QtCore.QObject):
         super(PyQt4.QtCore.QObject,self).__init__()
         self.__serialConnection = serialConnection
         self.__history = CommunicationHistory()
-        #self.__serialWriter = SerialWriter
         self.__serialReader = SerialReader(self.__serialConnection)
         #self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
         
@@ -194,16 +196,21 @@ class SerialController(PyQt4.QtCore.QObject):
         self.__serialReader.running = False
         self.__serialConnection.close()
         self.updateSerialConnectionState(False)
-        #self.__serialWriter.running = False
         
         
     def sendCommand(self, command):
-        
-        if self.__serialConnection.isOpen:
-            
-            frame = None
-            self.__serialConnection.write(frame)
-            self.__history.addSentFrame(frame)
+
+        if not self.__serialConnection.isConnected:
+            try:
+                self.__serialConnection.open()
+                self.updateSerialConnectionState(True)
+
+            except serial.SerialException as error:
+
+                print "Error while trying to send command on serial port " + str(error)
+
+        self.__serialReader.sendCommand(command)
+        self.__serialConnection.close()
     
     @pyqtSlot(bool)     
     def on_CorruptedFrameReceived(self, corruptedFrameReceived):
@@ -231,7 +238,8 @@ class SerialReader(PyQt4.QtCore.QThread):
         super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
         self.__rocketController = RocketController.getInstance()
-    
+        self.__crcCalculator = crcCalculator()
+
     @property
     def running(self):
         return self.__running
@@ -277,7 +285,21 @@ class SerialReader(PyQt4.QtCore.QThread):
         self.__rocketController.updateRocketAcceleration(receivedFrame.data['ALTITUDE'])
         self.__rocketController.updateRocketAltitude(receivedFrame.data['ACCELERATION'])
         self.__rocketController.updateRocketAltitude(receivedFrame.data['TEMPERATURE'])
-    
+
+    def sendCommand(self,rocketID=None,command=0x00, payload=0x00):
+
+        sentFrame = None
+
+        if rocketID is None:
+            sentFrame = sentFrame(Rocket.DISCOVERY_ID, command, time.time(), payload)
+        else:
+            sentFrame = sentFrame(rocketID, command, time.time(), payload)
+
+        sentFrame.crc = self.__crcCalculator.calculate(sentFrame.toByteArray())
+        self.__serialConnection.write(sentFrame.toByteArray(withCRC=True))
+
+
+
     """
     #    Methode run
     #    Description: Ovveride de la methode run de la classe QThread, initilalise la
@@ -361,8 +383,7 @@ class SerialWriter(PyQt4.QtCore.QThread):
     """
     #    Methode run
     #    Description: Ovveride de la methode run de la classe QThread, initilalise la
-    #                 la connexion serie et appele les methodes necessaire lors de la
-    #                 reception dune quatite suffisante de byte(longueur dune trame)
+    #                 la connexion serie et envoie de la trame
     #                 
     #
     #    param:    None

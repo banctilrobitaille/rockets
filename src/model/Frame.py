@@ -13,7 +13,6 @@ class Frame(object):
 
     def __init__(self, rocketID, command, timestamp, crc):
 
-        self.__crcCalculator = CRC16()
         self.__rocketID = rocketID
         self.__command = command
         self.__timestamp = timestamp
@@ -22,10 +21,6 @@ class Frame(object):
     def toByteArray(self, withCRC=False):
 
         raise NotImplementedError
-
-    @property
-    def crcCalculator(self):
-        return self.__crcCalculator
 
     @property
     def rocketID(self):
@@ -105,7 +100,7 @@ class ReceivedFrame(Frame):
         frame = cls(frameDict['ROCKETID'], frameDict['COMMAND'], frameDict['TIMESTAMP'],
                     frameDict['STATE'], frameDict['GPSFIX'], frameDict['SPEED'],
                     frameDict['ALTITUDE'], frameDict['ACCELERATION'], frameDict['LATITUDE'],
-                    frameDict['LONGITUDE'], frameDict['TEMPERATURE'],frameDict['CRC'])
+                    frameDict['LONGITUDE'], frameDict['TEMPERATURE'], frameDict['CRC'])
         
         return frame
 
@@ -203,13 +198,12 @@ class SentFrame(Frame):
         Frame.__init__(self, rocketID, command, timestamp, None)
 
         self.__payload = payload
-        #self.crc = self.crcCalculator.calculate(self.toByteArray())
 
     def toByteArray(self, withCRC=False):
 
         byteData = ""
         byteData += struct.pack('B', self.rocketID | self.command)
-        byteData += struct.pack('f', self.timestamp)
+        byteData += struct.pack('i', self.timestamp)
         byteData += struct.pack('f', self.__payload)
 
         if withCRC and self.crc is not None:
@@ -224,60 +218,3 @@ class SentFrame(Frame):
     @payload.setter
     def payload(self, payload):
         self.__payload = payload
-
-
-class CRC16(object):
-    crc16_tab = []
-
-    # The CRC's are computed using polynomials. Here is the most used
-    # coefficient for CRC16
-    crc16_constant = 0x8005
-    #crc16_constant = 0xA001
-
-    def __init__(self, modbus_flag=False):
-        # initialize the precalculated tables
-        if not len(self.crc16_tab):
-            self.init_crc16()
-        self.mdflag = bool(modbus_flag)
-
-    def calculate(self, input_data=None):
-        try:
-            is_string = isinstance(input_data, str)
-            is_bytes = isinstance(input_data, (bytes, bytearray))
-
-            if not is_string and not is_bytes:
-                raise Exception("Please provide a string or a byte sequence "
-                                "as argument for calculation.")
-
-            crc_value = 0x0000 if not self.mdflag else 0xffff
-
-            for c in input_data:
-                d = ord(c) if is_string else c
-                tmp = (crc_value ^ (d & 0x00ff))
-                rotated = crc_value >> 8
-                crc_value = rotated ^ self.crc16_tab[(tmp & 0xff)]
-
-            return crc_value
-        except Exception as e:
-            print("EXCEPTION(calculate): {}".format(e))
-
-    def init_crc16(self):
-        """The algorithm uses tables with precalculated values"""
-        for i in range(0, 256):
-
-            crc = 0
-            c = c_ushort(i).value
-
-            for j in range(0, 8):
-
-                if (crc ^ c) & 0x0001:
-
-                    crc = c_ushort(crc >> 1).value ^ self.crc16_constant
-
-                else:
-
-                    crc = c_ushort(crc >> 1).value
-
-                c = c_ushort(c >> 1).value
-
-            self.crc16_tab.append(crc)
