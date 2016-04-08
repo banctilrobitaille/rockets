@@ -24,8 +24,7 @@ class BaseStation(PyQt4.QtCore.QObject):
         super(PyQt4.QtCore.QObject, self).__init__()
         self.__temperature = temperature
         self.__coords = coords
-        self.__availableRocket = {}
-        self.__connectedRocket = Rocket()
+        self.__availableRocket = { Rocket.DISCOVERY_ID : Rocket(ID=Rocket.DISCOVERY_ID, name="Broadcast"),}
     
 
     @property

@@ -68,6 +68,10 @@ class BaseStationController(PyQt4.QtCore.QObject):
         self.__baseStationModel.availableRocket = {}
         self.__RFD900.sendData(FrameFactory.COMMAND['ROCKET_DISCOVERY'])
 
+    def updateConnectedRocket(self, rocketID):
+
+        self.__baseStationModel.connectedRocket = self.__baseStationModel.availableRocket[rocketID]
+
 
     @pyqtSlot(int)
     def __on_rocketDiscovery(self, rocketID):

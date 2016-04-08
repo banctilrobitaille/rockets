@@ -32,6 +32,7 @@ class Rocket(PyQt4.QtCore.QObject):
     idChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(str)
 
+    DISCOVERY_ID = 0xF0
     
     """The state provided by the rocket during the flight"""
     STATE = {'INITIALIZING'     : 0,
@@ -43,7 +44,7 @@ class Rocket(PyQt4.QtCore.QObject):
 
 
     """The model constructor, default value are provided if not given"""
-    def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None):
+    def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None, name=""):
         
         super(PyQt4.QtCore.QObject, self).__init__()
         self.__acceleration = acceleration
@@ -55,8 +56,16 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__ID = ID
         self.__currentState = state
         self.__cameraON = False
-        
-    
+        self.__name = name
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, name):
+        self.__name = name
+
     @property
     def cameraON(self):
         return self.__cameraON 

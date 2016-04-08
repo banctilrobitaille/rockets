@@ -10,18 +10,24 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.__setupUi()
     
     def __setupUi(self):
-        
+
+        self.setStyleSheet("QWidget {background: rgba(29,29,29,85);color : white;}"
+                           "QComboBox {border: 1px;border-color: rgba(255,255,255);border-style: solid; color : white; padding: 1px 0px 1px 3px;}"
+                           "QPushButton { color : white; background : rgba(29,29,29,85); border: 1px;border-color: rgba(255,255,255);border-style: solid;}"
+                           "QPushButton:hover { color : rgba(29,29,29,100); background : white; border: 1px;border-color: black;border-style: solid;}"
+                           "QLineEdit { color: white; background: rgba(29,29,29,85);border: 1px;border-color: rgba(255,255,255);border-style: solid;}")
+
         self.setObjectName("frmSerialProperties")
         self.setFixedSize(447, 192)
         self.setWindowTitle("Serial Connection Properties")
         
         self.btnCancel = PyQt4.QtGui.QPushButton(self)
-        self.btnCancel.setGeometry(PyQt4.QtCore.QRect(320, 150, 93, 28))
+        self.btnCancel.setGeometry(PyQt4.QtCore.QRect(210, 150, 93, 28))
         self.btnCancel.setObjectName("btnCancel")
         self.btnCancel.setText("Cancel")
         
         self.btnSave = PyQt4.QtGui.QPushButton(self)
-        self.btnSave.setGeometry(PyQt4.QtCore.QRect(210, 150, 93, 28))
+        self.btnSave.setGeometry(PyQt4.QtCore.QRect(320, 150, 93, 28))
         self.btnSave.setObjectName("btnSave")
         self.btnSave.setText("Save")
         

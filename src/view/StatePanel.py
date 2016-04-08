@@ -13,9 +13,7 @@ class StatePanel(PyQt4.QtGui.QFrame):
     def __init__(self, parent):
 
         super(PyQt4.QtGui.QFrame,self).__init__(parent)
-        self.setGeometry(1580,700, 250,250)
-        self.setStyleSheet("QFrame {background-image : url(./Image_Files/metaltexture.jpg);"
-                           "border-radius : 3px; padding : 10px}")
+        self.setGeometry(1580,670, 250,300)
         self.palette = PyQt4.Qt.QPalette()
         self.palette.setColor(self.palette.WindowText, QColor(245,245,245))
         self.gridLayout = PyQt4.QtGui.QGridLayout()
@@ -31,8 +29,14 @@ class StatePanel(PyQt4.QtGui.QFrame):
             
             led.setColor(QColor(255,0,0))
 
+            iconLabel = PyQt4.QtGui.QLabel()
+            iconLabel.setAlignment(PyQt4.QtCore.Qt.AlignCenter)
+            iconLabel.setSizePolicy(PyQt4.QtGui.QSizePolicy.Expanding, PyQt4.QtGui.QSizePolicy.Expanding)
+            iconLabel.setMinimumSize(32,32)
+            iconLabel.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/running.png'))
+
             label = PyQt4.QtGui.QLabel(state)
             label.fontChange(QFont("Arial",20))
             label.setPalette(self.palette)
-            self.gridLayout.addWidget(led,value,0)
+            self.gridLayout.addWidget(iconLabel,value,0)
             self.gridLayout.addWidget(label,value,1)
