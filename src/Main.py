@@ -2,11 +2,7 @@
 import PyQt4
 import sys
 from view import UiMainWindow
-from model.Rocket import Rocket
-from controller.Communication import SerialController
-from model.SerialConnection import SerialConnection
-from controller.RocketController import RocketController
-
+from controller.BaseStationController import BaseStationController
 """#############################################################################
 # 
 # Nom du module:          MainApplication
@@ -16,16 +12,13 @@ from controller.RocketController import RocketController
 #                         de lapplication et cree une instance unique de serialConnection
 #                         
 ##############################################################################"""
-class baseStationApplication(PyQt4.QtGui.QApplication):
+class BaseStationApplication(PyQt4.QtGui.QApplication):
         
     def __init__(self, args):
         
         PyQt4.QtGui.QApplication.__init__(self, args)
-        
-        self.__rocketModel = Rocket.getInstance()
-        self.__rfdSerialConnection = SerialConnection()
-        self.__rfdController = SerialController(self.__rfdSerialConnection)
-        self.mainWindow = UiMainWindow.MainWindow(self.__rocketModel, self.__rfdController)
+
+        self.mainWindow = UiMainWindow.MainWindow(BaseStationController())
         self.mainWindow.show()
         self.mainWindow.iren.Initialize()
         self.exec_()
@@ -33,4 +26,4 @@ class baseStationApplication(PyQt4.QtGui.QApplication):
 
 if __name__ == "__main__":
     
-    app = baseStationApplication(sys.argv)
+    app = BaseStationApplication(sys.argv)

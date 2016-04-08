@@ -27,7 +27,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         PyQt4.QtGui.QFrame.__init__(self, parent)
         
         """Positionnement du frame du dashboard"""
-        self.setGeometry(0,650,1000,500)
+        self.setGeometry(100,650,1000,500)
         
         """Initialisation du cadran de la vitesse, du cadran numerique et label descriptif"""
         self.__lbl_speed = Label(self, "SPEED")
@@ -67,24 +67,24 @@ class Dashboard(PyQt4.QtGui.QFrame):
     def placeTheElement(self):
         
         """Positionnement des elements de vitesse"""
-        self.__lbl_speed.setGeometry(105, 15, 60,20)
-        self.__speed_dial.setGeometry(20,50,230,230)
-        self.__lcd_speed.setGeometry(70, 320, 130, 50)
+        self.__lbl_speed.setGeometry(130, 55, 60,20)
+        self.__speed_dial.setGeometry(70,90,190,190)
+        self.__lcd_speed.setGeometry(95, 300, 130, 50)
         
         """Positionnement des elements daltitude"""
-        self.__lbl_altitude.setGeometry(340, 15, 120,20)
-        self.__altitude_dial.setGeometry(270,50,230,230)
-        self.__lcd_altitude.setGeometry(320, 320, 130, 50)
+        self.__lbl_altitude.setGeometry(335, 5, 120,20)
+        self.__altitude_dial.setGeometry(260,30,240,240)
+        self.__lcd_altitude.setGeometry(315, 300, 130, 50)
          
         """Positionnement des elements dacceleration"""
-        self.__lbl_acceleration.setGeometry(565, 15, 200,20)
-        self.__acceleration_dial.setGeometry(520,50,230,230)
-        self.__lcd_acceleration.setGeometry(575, 320, 130, 50)
+        self.__lbl_acceleration.setGeometry(525, 55, 200,20)
+        self.__acceleration_dial.setGeometry(500,90,190,190)
+        self.__lcd_acceleration.setGeometry(535, 300, 130, 50)
         
         """Posiotionnement des elements thermometre"""
-        self.__lbl_thermo.setGeometry(780, 15, 200,20)
-        self.__rocketTemp.setGeometry(770, 50, 100, 250)
-        self.__lcd_thermo.setGeometry(790, 320, 130, 50)
+        self.__lbl_thermo.setGeometry(740, 15, 200,20)
+        self.__rocketTemp.setGeometry(730, 50, 100, 230)
+        self.__lcd_thermo.setGeometry(750, 300, 130, 50)
 
     """
     #    Methode updateValue
@@ -94,17 +94,19 @@ class Dashboard(PyQt4.QtGui.QFrame):
     #    param: speed, accel, alti les nouvelles valeurs a afficher
     #    return: None
     """
-    def updateValue(self,speed, acceleration, altitude):
+    def updateValue(self,speed, acceleration, altitude, temperature):
         
         """Mise a jour des valeurs a afficher"""
         self.__speed_dial.setValue(speed)
         self.__acceleration_dial.setValue(acceleration)
         self.__altitude_dial.setValue(altitude)
+        self.__rocketTemp.setValue(temperature)
         
         """Affichage des nouvelles valeurs"""
         self.__lcd_speed.display(str(speed))
         self.__lcd_acceleration.display(str(acceleration))
         self.__lcd_altitude.display(str(altitude))
+        self.__lcd_thermo.display(str(temperature))
         
     def updateSpeed(self, speed):
         

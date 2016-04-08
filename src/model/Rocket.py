@@ -41,8 +41,6 @@ class Rocket(PyQt4.QtCore.QObject):
              'MAIN_DESCENT'     : 4,
              'ON_THE_GROUND'    : 5}
 
-    """The broadcast ID treated by every rocket"""
-    DISCOVERY_ID = 0xF0
 
     """The model constructor, default value are provided if not given"""
     def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None):

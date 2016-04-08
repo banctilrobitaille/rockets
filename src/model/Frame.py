@@ -1,4 +1,5 @@
 import struct
+from src.controller.CommunicationUtility import CRC16
 from ctypes import c_ushort
 '''
 Created on 2016-01-04
@@ -10,6 +11,7 @@ Created on 2016-01-04
 class Frame(object):
 
     FLAG = "a"
+    CRC_CALCULATOR = CRC16()
 
     def __init__(self, rocketID, command, timestamp, crc):
 
@@ -54,6 +56,10 @@ class Frame(object):
     @crc.setter
     def crc(self, crc):
         self.__crc = crc
+
+    def isValid(self):
+
+        raise NotImplementedError
 
 
 class ReceivedFrame(Frame):
@@ -124,6 +130,10 @@ class ReceivedFrame(Frame):
             dataByte += struct.pack("H", self.crc)
 
         return dataByte
+
+    def isValid(self):
+
+        return Frame.CRC_CALCULATOR.calculate(self.toByteArray()) == self.crc
 
     @property
     def state(self):
@@ -196,8 +206,8 @@ class SentFrame(Frame):
 
     def __init__(self, rocketID, command, timestamp, payload):
         Frame.__init__(self, rocketID, command, timestamp, None)
-
         self.__payload = payload
+        self.crc = Frame.CRC_CALCULATOR.calculate(self.toByteArray())
 
     def toByteArray(self, withCRC=False):
 
@@ -210,6 +220,10 @@ class SentFrame(Frame):
             byteData += struct.pack('H', self.crc)
 
         return byteData
+
+    def isValid(self):
+
+        return True
 
     @property
     def payload(self):

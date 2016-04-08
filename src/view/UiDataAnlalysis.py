@@ -159,7 +159,7 @@ class GpsTab(DataFrame):
         
         """Initialisation de lobjet parent"""
         DataFrame.__init__(self, parent)
-        self.setGeometry(20,15,900,600)
+        self.setGeometry(120,15,800,600)
         """Initialisation de la map GPS"""
         #self.map = MapWidget.MapnikWidget(self)
         self.map = Mapwidget.Map(self)

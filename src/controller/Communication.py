@@ -1,10 +1,8 @@
 import serial
 import PyQt4
 import time
-from src.controller.CommunicationUtility import CRC16 as crcCalculator
-from src.controller.RocketController import RocketController
 from src.model.Frame import ReceivedFrame, SentFrame
-from src.model.Rocket import Rocket
+from src.model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
 """#############################################################################
 # 
@@ -37,15 +35,11 @@ class SerialController(PyQt4.QtCore.QObject):
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
     
-    def __init__(self, serialConnection):
+    def __init__(self):
         
         super(PyQt4.QtCore.QObject,self).__init__()
-        self.__serialConnection = serialConnection
-        self.__history = CommunicationHistory()
-        self.__serialReader = SerialReader(self.__serialConnection)
-        #self.__serialReader.corruptedFrameReceived.connect(self.on_CorruptedFrameReceived)
-        
-    
+        self.__serialConnection = SerialConnection()
+
     @property
     def serialConnection(self):
         return self.__serialConnection
@@ -157,66 +151,6 @@ class SerialController(PyQt4.QtCore.QObject):
         self.__serialConnection.isConnected = state
         self.stateChanged.emit(state)
 
-    
-    
-    """
-    #    Methode startReadingData
-    #    Description: Methode demarrant un thread de lecture de donnees
-    #                 sur le _port serie
-    #                 
-    #
-    #    param:    None
-    #    return:   None
-    """ 
-    def startReadingData(self):
-        
-        try:
-            self.__serialConnection.open()
-            self.__serialReader.running = True
-            self.__serialReader.start()
-            self.updateSerialConnectionState(True)
-            
-        except serial.SerialException as error:
-            
-            print "Error while trying to open serial _port " + str(error)
-            #raise serial.serialutil.SerialException
-    
-    
-    """
-    #    Methode stopReadingData
-    #    Description: Methode qui arrete le thread de lecture de donnees
-    #                 sur le _port serie
-    #                 
-    #
-    #    param:    None
-    #    return:   None
-    """ 
-    def stopReadingData(self):
-        
-        self.__serialReader.running = False
-        self.__serialConnection.close()
-        self.updateSerialConnectionState(False)
-        
-        
-    def sendCommand(self, command):
-
-        if not self.__serialConnection.isConnected:
-            try:
-                self.__serialConnection.open()
-                self.updateSerialConnectionState(True)
-
-            except serial.SerialException as error:
-
-                print "Error while trying to send command on serial port " + str(error)
-
-        self.__serialReader.sendCommand(command)
-        self.__serialConnection.close()
-    
-    @pyqtSlot(bool)     
-    def on_CorruptedFrameReceived(self, corruptedFrameReceived):
-        
-        self.sendCommand(self.__history.getLastSentFrame())
-        
 
 """#
 # La classe SerialReader
@@ -230,15 +164,12 @@ class SerialController(PyQt4.QtCore.QObject):
 class SerialReader(PyQt4.QtCore.QThread):
     
     __running = False
-    
-    '''Emit true is received a corupted frame(Invalid CRC)'''
-    corruptedFrameReceived = PyQt4.QtCore.pyqtSignal(bool)
+
+    frameReceived = PyQt4.QtCore.pyqtSignal(object)
     
     def __init__(self, serialConnection):
         super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
-        self.__rocketController = RocketController.getInstance()
-        self.__crcCalculator = crcCalculator()
 
     @property
     def running(self):
@@ -247,58 +178,6 @@ class SerialReader(PyQt4.QtCore.QThread):
     @running.setter
     def running(self,value):
         self.__running = value
-    
-    """
-    #    Methode dataReceived
-    #    Description: Methode qui lit les donnees de la longeure dune trame et
-    #                 cree une trame avec ces donnees
-    #                 
-    #
-    #    param:    None
-    #    return:   None
-    """ 
-    def readReceivedFrame(self):
-        
-        try:
-            
-            receivedFrame = ReceivedFrame.fromByteArray(self.__serialConnection.read(ReceivedFrame.LENGTH))
-
-        except Exception as e:
-            
-            print e.message
-            #self.corruptedFrameReceived.emit(True)
-
-        return receivedFrame
-
-    """
-    #    Methode handleData
-    #    Description: Methode qui mets a jour les donnees de la fusees selon les donnees
-    #                 de la derniere trame recue.
-    #                 
-    #
-    #    param:    None
-    #    return:   None
-    """ 
-    def handleData(self, receivedFrame):
-        
-        self.__rocketController.updateRocketSpeed(receivedFrame.data['SPEED'])
-        self.__rocketController.updateRocketAcceleration(receivedFrame.data['ALTITUDE'])
-        self.__rocketController.updateRocketAltitude(receivedFrame.data['ACCELERATION'])
-        self.__rocketController.updateRocketAltitude(receivedFrame.data['TEMPERATURE'])
-
-    def sendCommand(self,rocketID=None,command=0x00, payload=0x00):
-
-        sentFrame = None
-
-        if rocketID is None:
-            sentFrame = sentFrame(Rocket.DISCOVERY_ID, command, time.time(), payload)
-        else:
-            sentFrame = sentFrame(rocketID, command, time.time(), payload)
-
-        sentFrame.crc = self.__crcCalculator.calculate(sentFrame.toByteArray())
-        self.__serialConnection.write(sentFrame.toByteArray(withCRC=True))
-
-
 
     """
     #    Methode run
@@ -327,82 +206,212 @@ class SerialReader(PyQt4.QtCore.QThread):
 
                 try:
                     
-                    receivedFrame = self.readReceivedFrame()
-                    self.handleData(receivedFrame)
+                    self.frameReceived.emit(self.__serialConnection.read(ReceivedFrame.LENGTH))
                     
                 except Exception as e:
                     
                     print e.message
-                
-                #data = self.__serialConnection.read(Frame.LENGTH)
-                # c = BitArray(bytes=data, length=(len(data)*8), offset=0)
-                # print(c.bin)
-                #
-                # for byte in data:
-                #     print(struct.unpack_from("c",byte))
-                #
-                #
-                # print(data)
-                # print(len(data))
-                # print("Timestamp:")
-                # print("GPS state")
-                # print(struct.unpack_from("f",data[5:10]))
-
-        self.__serialConnection.isConnected = False
-    
-        
-        
-"""#
-# La classe SerialWriter
-# Description:    Classe representant un thread d'ecriture de donnees
-#                 sur le _port serie. Celle-ci cree des trames et les 
-#                 envoie sur la connexion serie recu en parametre
-#                 
-#"""
 
 
-class SerialWriter(PyQt4.QtCore.QThread):
-    
-    __running = False
-    
-    def __init__(self,serialConnection, commandBuffer, serialReader):
-        super(PyQt4.QtCore.QThread, self).__init__()
-        self.__serialConnection = serialConnection
-        self.__commandBuffer = commandBuffer
-    
+class CommunicationStrategy(PyQt4.QtCore.QObject):
+
+    rocketDiscovered = PyQt4.QtCore.pyqtSignal(int)
+
+    def __init__(self, rocketController):
+        super(CommunicationStrategy, self).__init__()
+        self.__rocketController = rocketController
+        self.__history = CommunicationHistory()
+
     @property
-    def running(self):
-        return self.__running
-    
-    @running.setter
-    def running(self,value):
-        self.__running = value
-    
-    
-    
-    """
-    #    Methode run
-    #    Description: Ovveride de la methode run de la classe QThread, initilalise la
-    #                 la connexion serie et envoie de la trame
-    #                 
-    #
-    #    param:    None
-    #    return:   None
-    """ 
-    def run(self):
-        
-        
-        """Tant quon ne tue pas le thread"""
-        while self.__running:
-            pass
-                
-        """Fermeture de la connextion serie lorsque le thread termine"""
-        self.__serialConnection.close()
-        self.__serialConnection.isConnected(False)
+    def rocketController(self):
+        return self.__rocketController
+
+    @rocketController.setter
+    def rocketController(self, rocketController):
+        self.__rocketController = rocketController
+
+    @property
+    def history(self):
+        return self.__history
+
+    @history.setter
+    def history(self, communicationHistory):
+        self.__history = communicationHistory
+
+    def connect(self):
+
+        raise NotImplementedError
+
+    def disconnect(self):
+
+        raise NotImplementedError
+
+    def sendData(self, data):
+
+        raise NotImplementedError
+
+    @pyqtSlot(object)
+    def __on_received_data(self, receivedData):
+
+        raise NotImplementedError
+
+
+class SerialDeviceStrategy(CommunicationStrategy):
+
+    def __init__(self, rocketController, serialConnection):
+
+        super(SerialDeviceStrategy, self).__init__(rocketController)
+        self.__serialConnection = serialConnection
+        self.__serialReader = SerialReader(self.__serialConnection)
+
+    @property
+    def serialConnection(self):
+        return self.__serialConnection
+
+    @serialConnection.setter
+    def serialConnection(self, serialConnection):
+        self.__serialConnection = serialConnection
+
+    @property
+    def serialReader(self):
+        return self.__serialReader
+
+    @serialReader.setter
+    def serialReader(self, serialReader):
+        self.__serialReader = serialReader
+
+    def connect(self):
+
+        try:
+            self.__serialConnection.open()
+            self.__serialConnection.isConnected = True
+            self.__serialReader.running = True
+            self.__serialReader.start()
+
+        except Exception as e:
+
+                print(e.message)
+
+    def disconnect(self):
+
+        try:
+            self.__serialReader.running = False
+            self.__serialConnection.close()
+            self.__serialConnection.isConnected = False
+
+        except Exception as e:
+
+            print(e.message)
+
+
+class RFD900Strategy(SerialDeviceStrategy):
+
+    def __init__(self, rocketController, serialConnection):
+        super(RFD900Strategy, self).__init__(rocketController, serialConnection)
+        self.__streaming = False
+        self.serialReader.frameReceived.connect(self.__on_received_data)
+
+    @property
+    def streaming(self):
+        return self.__streaming
+
+    @streaming.setter
+    def streaming(self, streaming):
+        self.__streaming = streaming
+
+    def sendData(self, data):
+
+        command = data
+
+        if not self.serialConnection.isConnected:
+            self.connect()
+
+        if command == FrameFactory.COMMAND['START_STREAM']:
+            self.__streaming = True
+        elif command == FrameFactory.COMMAND['STOP_STREAM']:
+            self.__streaming = False
+
+        self.serialConnection.write(FrameFactory.create(FrameFactory.FRAMETYPES['SENT'],\
+                                                        command=command).toByteArray(withCRC=True))
+
+    def resendLastCommand(self):
+
+        self.sendData(self.history.getLastSentFrame().command)
+
+    @pyqtSlot(object)
+    def __on_received_data(self, receivedData):
+
+        receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData)
+
+        if receivedFrame.isValid():
+
+            if receivedFrame.command == FrameFactory.COMMAND['START_STREAM'] or receivedFrame.command \
+                    == FrameFactory.COMMAND['GET_TELEMETRY']:
+
+                self.rocketController.updateRocketSpeed(receivedFrame.speed)
+                self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
+                self.rocketController.updateRocketAltitude(receivedFrame.altitude)
+                self.rocketController.updateRocketAltitude( receivedFrame.temperature)
+                self.rocketController.updateRocketCoords([receivedFrame.longitude, receivedFrame.latitude])
+
+            elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
+
+                self.rocketDiscovered.emit(receivedFrame.rocketID)
+
+            elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
+
+                self.resendLastCommand()
+
+        elif self.history.getLastSentFrame().command != FrameFactory.COMMAND['START_STREAM']:
+
+            self.resendLastCommand()
 
 
 
+class XbeeStrategy(SerialDeviceStrategy):
 
+    def __init__(self, rocketController, serialConnection):
+        super(XbeeStrategy, self).__init__(rocketController, serialConnection)
+
+
+class FrameFactory(object):
+
+    FRAMETYPES = {'SENT' : 0, 'RECEIVED' : 1}
+
+    COMMAND = {
+        'GET_TELEMETRY'     : 0x01,
+        'START_STREAM'      : 0x02,
+        'STOP_STREAM'       : 0x03,
+        'START_CAMERA'      : 0x04,
+        'STOP_CAMERA'       : 0x05,
+        'GET_LOG'           : 0x06,
+        'NACK'              : 0x07,
+        'ROCKET_DISCOVERY'  : 0x1F,
+    }
+
+    """The broadcast ID treated by every rocket"""
+    DISCOVERY_ID = 0xF0
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def create(frameType=None, rocketID=None, command=0x00, payload=0x00, receivedData=None):
+
+        frame = None
+
+        if frameType is FrameFactory.FRAMETYPES['SENT']:
+
+            if rocketID is None:
+                frame = SentFrame(FrameFactory.DISCOVERY_ID, command, time.time(), payload)
+            else:
+                frame = SentFrame(rocketID, command, time.time(), payload)
+
+        elif frameType is FrameFactory['RECEIVED']:
+
+            frame = ReceivedFrame.fromByteArray(receivedData)
+
+        return frame
 
 '''
 TO DO

@@ -14,14 +14,16 @@ class StatePanel(PyQt4.QtGui.QFrame):
 
         super(PyQt4.QtGui.QFrame,self).__init__(parent)
         self.setGeometry(1580,700, 250,250)
+        self.setStyleSheet("QFrame {background-image : url(./Image_Files/metaltexture.jpg);"
+                           "border-radius : 3px; padding : 10px}")
         self.palette = PyQt4.Qt.QPalette()
         self.palette.setColor(self.palette.WindowText, QColor(245,245,245))
         self.gridLayout = PyQt4.QtGui.QGridLayout()
-        self.addStateToPanel()
+        self.__addStateToPanel()
         self.setLayout(self.gridLayout)
         self.show()
     
-    def addStateToPanel(self):
+    def __addStateToPanel(self):
         
         for state,value in Rocket.STATE.items():
             

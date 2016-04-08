@@ -26,9 +26,18 @@ class RocketController(object):
 
     def __init__(self):
         
-        self.__rocketModel = Rocket.getInstance()
+        self.__rocketModel = Rocket()
   
-  
+
+    @property
+    def rocket(self):
+        return self.__rocketModel
+
+    @rocket.setter
+    def rocket(self, rocket):
+        self.__rocketModel = rocket
+
+
     """
     #    Methode updateRocketData
     #    Description: Methode du controlleur permettant de mettre a

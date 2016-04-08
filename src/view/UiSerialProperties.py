@@ -7,7 +7,6 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         
         PyQt4.QtGui.QWidget.__init__(self, parent)
         self.__rfdController = rfdController
-        self.__serialConnection = self.__rfdController.serialConnection
         self.__setupUi()
     
     def __setupUi(self):
@@ -59,7 +58,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.checkNo.setText("No")
         self.checkNo.setAutoExclusive(True)
     
-        if self.__serialConnection._parity != serial.PARITY_NONE:
+        if self.__rfdController.serialConnection._parity != serial.PARITY_NONE:
             self.checkYes.setChecked(True)
         else:
             self.checkNo.setChecked(True)
@@ -72,7 +71,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtBaudRate = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtBaudRate.setGeometry(PyQt4.QtCore.QRect(100, 90, 100, 22))
         self.txtBaudRate.setObjectName("txtBaudRate")
-        self.txtBaudRate.setText(str(self.__serialConnection._baudrate))
+        self.txtBaudRate.setText(str(self.__rfdController.serialConnection._baudrate))
         
         self.lblStopBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblStopBits.setGeometry(PyQt4.QtCore.QRect(220, 90, 60, 22))
@@ -82,7 +81,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtStopBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtStopBits.setGeometry(PyQt4.QtCore.QRect(280, 90, 31, 22))
         self.txtStopBits.setObjectName("txtStopBits")
-        self.txtStopBits.setText(str(self.__serialConnection._stopbits))
+        self.txtStopBits.setText(str(self.__rfdController.serialConnection._stopbits))
         
         self.lblDataBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblDataBits.setGeometry(PyQt4.QtCore.QRect(320, 90, 60, 22))
@@ -92,7 +91,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtDataBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtDataBits.setGeometry(PyQt4.QtCore.QRect(380, 90, 41, 22))
         self.txtDataBits.setObjectName("txtDataBits")
-        self.txtDataBits.setText(str(self.__serialConnection._bytesize))
+        self.txtDataBits.setText(str(self.__rfdController.serialConnection._bytesize))
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()

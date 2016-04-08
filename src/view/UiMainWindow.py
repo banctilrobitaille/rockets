@@ -21,12 +21,16 @@ import StatePanel
 
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
-    def __init__(self,rocketModel,rfdController,parent=None):
+    def __init__(self,basestationController,parent=None):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
-        self.__rocketModel = rocketModel
-        self.__rfdController = rfdController
+
+        self.__baseStationController    = basestationController
+        self.__rfdSerialController      = self.__baseStationController.RFD900SerialController
+        self.__xbeeSerialController     = self.__baseStationController.XBeeSerialController
+
         self.__setupUi()
+        self.__connectSlot()
 
     """
     #    Methode __setupUi
@@ -56,9 +60,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__AddMenuAction()
         """Ajout de la barre de status"""
         self.__AddStatusBar()
-        
+
+        self.__addToolBar()
+
         self.__dashboard = dashboard.Dashboard(self)
-        self.__compass = compass.Compass(self)
+        #self.__compass = compass.Compass(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
         self.__rocket = vtkRendering.rocketRendering(self)
@@ -83,21 +89,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         actor.SetOrientation(100,0,0)
         self.ren.AddActor(actor)
         
-    
-        #=======================================================================
-        # self.__graphTab = UiDataAnlalysis.GraphTab()
-        #=======================================================================
-        
-        
-        #=======================================================================
-        # self.tabWidget = PyQt4.Qt.QTabWidget(self)
-        # self.tabWidget.addTab(self.__gpsTab,PyQt4.Qt.QIcon("Image_Files/gps.png"),"GPS TRACKING")
-        # self.tabWidget.addTab(self.__graphTab,PyQt4.Qt.QIcon("Image_Files/graph.jpg"),"ON FLIGHT STATS")
-        # self.tabWidget.setGeometry(20,15,500,300)
-        # self.tabWidget.show()
-        #=======================================================================
+
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
-        self.__connectSlot()
+
     
     """
     #    Methode __AddMenu
@@ -139,9 +133,12 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.menuView.addAction(self.actionDisplay_Settings)
         
         """Initialisaiton et ajout du sous menu <Serial Settings>"""
-        self.actionSerial_Settings = MenuAction(self,"actionSerial_Settings", "Serial Settings")
-        self.menuConnection.addAction(self.actionSerial_Settings)
-        
+        self.actionRFD900_Settings = MenuAction(self,"actionSerial_Settings", "RFD900 Settings")
+        self.menuConnection.addAction(self.actionRFD900_Settings)
+
+        self.actionXBEE_Settings = MenuAction(self,"actionSerial_Settings", "XBEE Serial Settings")
+        self.menuConnection.addAction(self.actionXBEE_Settings)
+
         """Initialisaiton et ajout du sous menu <Connect>"""
         self.actionConnect = MenuAction(self,"actionConnect", "Connect")
         self.menuConnection.addAction(self.actionConnect)
@@ -149,10 +146,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         """Initialisaiton et ajout du sous menu <Disconnect>"""
         self.actionDisconnect = MenuAction(self,"actionDisconnect", "Disconnect")
         self.menuConnection.addAction(self.actionDisconnect)
-        
-        """Initialisaiton et ajout du sous menu <Launch Terminal>"""
-        self.actionLaunchTerminal = MenuAction(self, "actionLaunchTerminal", "Launch Terminal")
-        self.menuConnection.addAction(self.actionLaunchTerminal)
         
         """Initialisaiton et ajout du sous menu <Set base station position>"""
         self.actionSetLocalPosition = MenuAction(self, "actionSetLocalPosition", "Set base station position")
@@ -189,7 +182,30 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         """Ajout de la barre detat"""
         self.statusbar.addWidget(self.lblNotConnected)
         self.setStatusBar(self.statusbar)
-    
+
+    def __addToolBar(self):
+
+        self.discoverAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/discoverOFF.png'), 'Discover', self)
+        self.streamAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/streamOFF.png'), 'Stream', self)
+        self.cameraAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/cameraOFF.png'), 'Start Camera', self)
+        self.rocketAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/rocketOFF.png'), 'Connect', self)
+        toolbar = PyQt4.QtGui.QToolBar()
+        self.addToolBar(PyQt4.QtCore.Qt.LeftToolBarArea, toolbar)
+        toolbar.setStyleSheet("QToolBar {"
+                              "background: #1d1d1d; }"
+                              "QToolButton { color : white;}"
+                              "QToolButton:hover {color : black;}")
+        toolbar.setToolButtonStyle(PyQt4.QtCore.Qt.ToolButtonTextBesideIcon|PyQt4.QtCore.Qt.AlignLeading)
+        toolbar.addAction(self.discoverAction)
+        toolbar.addSeparator()
+        toolbar.addAction(self.streamAction)
+        toolbar.addSeparator()
+        toolbar.addAction(self.cameraAction)
+        toolbar.addSeparator()
+        toolbar.addAction(self.rocketAction)
+        toolbar.setIconSize(PyQt4.QtCore.QSize(100,100))
+
+
     """
     #    Methode __connectSlot
     #    Description: Methode qui associe les actions (menus) a une methode
@@ -199,19 +215,33 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     """ 
     def __connectSlot(self):
         
-        self.connect(self.actionSerial_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__slotSerialSettings_Clicked)
+        self.connect(self.actionRFD900_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_RFD900_Settings_Clicked)
+        self.connect(self.actionXBEE_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_XBEE_Settings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
-        #self.connect(self.actionLaunchTerminal, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotLaunchTerminal_Clicked)
         self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
-        self.__rocketModel.speedChanged.connect(self.__on_SpeedChanged)
-        self.__rocketModel.accelerationChanged.connect(self.__on_AccelerationChanged)
-        self.__rocketModel.altitudeChanged.connect(self.__on_AltitudeChanged)
-        self.__rocketModel.temperatureChanged.connect(self.__on_TemperatureChanged)
-        self.__rfdController.stateChanged.connect(self.__on_serialConnectionStateChanged)       
-        self.__dashboard.updateTemperature(80)
-        
+
+        self.connect(self.discoverAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Discover_Clicked)
+        self.connect(self.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
+        self.connect(self.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
+        self.connect(self.rocketAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Rocket_Clicked)
+
+        self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
+
+
+    def __connectRocketSlot(self):
+
+        self.__baseStationController.baseStation.connectedRocket.speedChanged.connect(self.__on_SpeedChanged)
+        self.__baseStationController.baseStation.connectedRocket.accelerationChanged.connect(self.__on_AccelerationChanged)
+        self.__baseStationController.baseStation.connectedRocket.altitudeChanged.connect(self.__on_AltitudeChanged)
+        self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
+
+    @pyqtSlot()
+    def __on_connectedRocketChanged(self, rocket):
+
+        self.__connectRocketSlot()
+
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
         
@@ -234,49 +264,51 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     
     def __slotAbout_Clicked(self):
         
-        #PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
+        PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
         self.__gpsTab.map.updateMarker(-90,46.8)
-    
-    
-    def __slotSerialSettings_Clicked(self):
+
+    def __on_Discover_Clicked(self):
+
+        self.discoverAction.setIcon(PyQt4.QtGui.QIcon('./Image_Files/discoverON.png'))
+
+    def __on_Camera_Clicked(self):
+
+        self.cameraAction.setIcon(PyQt4.QtGui.QIcon('./Image_Files/cameraON.png'))
+
+    def __on_Stream_Clicked(self):
+
+        pass
+
+    def __on_Rocket_Clicked(self):
+
+        pass
+
+
+    def __on_RFD900_Settings_Clicked(self):
         
-        self.__showSerialProperties()
-    
+        self.__showSerialProperties(self.__rfdSerialController)
+
+    def __on_XBEE_Settings_Clicked(self):
+
+        self.__showSerialProperties(self.__xbeeSerialController)
+
     
     def __slotConnect_Clicked(self):
-    
-        self.__rfdController.startReadingData()
-        
+        pass
     
         
     def __slotDisconnect_Clicked(self):
-        
-        self.__rfdController.stopReadingData()
-    
+        pass
     
     
     def __slotSetLocalPosition_Clicked(self):
         
         self.__showGPSProperties()
-        
-        
-        
-    def __slotTab_Changed(self):
-        
-        if self.tabWidget.currentIndex() != 0:
-            
-            #self.resize(800, 650)
-            self.tabWidget.setGeometry(20,15,750,350)
-            
-        else:
-            
-            self.tabWidget.setGeometry(20,15,500,300)
-            #self.resize(800, 600)
-    
-    
-    def __showSerialProperties(self):
 
-        self.serialProperties = UiSerialProperties.SerialPropertiesWindow(self.__rfdController)
+    
+    def __showSerialProperties(self, serialController):
+
+        self.serialProperties = UiSerialProperties.SerialPropertiesWindow(serialController)
         self.serialProperties.show()
     
     
