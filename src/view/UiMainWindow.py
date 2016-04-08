@@ -188,7 +188,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.discoverAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/discoverOFF.png'), 'Discover', self)
         self.streamAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/streamOFF.png'), 'Stream', self)
+        self.streamAction.setDisabled(True)
         self.cameraAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/cameraOFF.png'), 'Start Camera', self)
+        self.cameraAction.setDisabled(True)
         #self.rocketAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/rocketOFF.png'), 'Connect', self)
         toolbar = PyQt4.QtGui.QToolBar()
         self.addToolBar(PyQt4.QtCore.Qt.LeftToolBarArea, toolbar)
@@ -251,6 +253,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_connectedRocketChanged(self, rocket):
 
         self.__connectRocketSlot()
+        self.cameraAction.setDisabled(False)
+        self.streamAction.setDisabled(False)
         self.__rocketIDToAction[rocket.ID].setIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketON.png'))
 
 

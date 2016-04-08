@@ -95,7 +95,7 @@ class ReceivedFrame(Frame):
         frame['LATITUDE']      = struct.unpack_from("f",byteArray[23:27])[0]
         frame['LONGITUDE']     = struct.unpack_from("f",byteArray[27:31])[0]
         frame['TEMPERATURE']   = struct.unpack_from("f",byteArray[31:35])[0]
-        frame['CRC']           = struct.unpack_from("H",byteArray[35:36])[0]
+        frame['CRC']           = struct.unpack_from("H",byteArray[35:37])[0]
 
         return frame
     

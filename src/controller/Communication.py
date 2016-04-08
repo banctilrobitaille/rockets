@@ -396,18 +396,18 @@ class FrameFactory(object):
         pass
 
     @staticmethod
-    def create(frameType=None, rocketID=None, command=0x00, payload=0x00, receivedData=None):
+    def create(frameType=None, rocketID=None, command=0x00,timestamp=None, payload=0x00, receivedData=None):
 
         frame = None
 
         if frameType is FrameFactory.FRAMETYPES['SENT']:
 
-            if rocketID is None:
-                frame = SentFrame(FrameFactory.DISCOVERY_ID, command, time.time(), payload)
-            else:
+            if timestamp is None:
                 frame = SentFrame(rocketID, command, time.time(), payload)
+            else:
+                frame = SentFrame(rocketID, command, timestamp, payload)
 
-        elif frameType is FrameFactory['RECEIVED']:
+        elif frameType is FrameFactory.FRAMETYPES['RECEIVED']:
 
             frame = ReceivedFrame.fromByteArray(receivedData)
 
