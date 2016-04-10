@@ -18,7 +18,6 @@ class BaseStationController(PyQt4.QtCore.QObject):
         self.__XBeeSerialController = SerialController()
         self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
         self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
-
         self.__RFD900.rocketDiscovered.connect(self.__on_rocketDiscovery)
     
 
@@ -59,9 +58,8 @@ class BaseStationController(PyQt4.QtCore.QObject):
         return self.__XBee
 
     @XBee.setter
-    def Xbee(self, xbeeCommStrategy):
+    def XBee(self, xbeeCommStrategy):
         self.__XBee = xbeeCommStrategy
-
 
     def updateAvailableRocket(self):
 
@@ -72,14 +70,18 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
         self.__baseStationModel.connectedRocket = self.__baseStationModel.availableRocket[rocketID]
 
+    def disconnectFromRocket(self, rocketID):
+
+        if self.__baseStationModel.connectedRocket.ID == rocketID:
+
+            self.__baseStationModel.connectedRocket = None
 
     @pyqtSlot(int)
     def __on_rocketDiscovery(self, rocketID):
 
-        if not self.__baseStationModel.availableRocket.has_key(rocketID):
+        if rocketID not in self.__baseStationModel.availableRocket:
 
             self.__baseStationModel.availableRocket[rocketID] = Rocket()
-
 
     @staticmethod
     def getInstance():

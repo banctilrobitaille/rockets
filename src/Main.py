@@ -18,9 +18,18 @@ class BaseStationApplication(PyQt4.QtGui.QApplication):
         
         PyQt4.QtGui.QApplication.__init__(self, args)
 
+        splashImage = PyQt4.QtGui.QPixmap('./Image_Files/LogoRocket.png')
+        splash = PyQt4.QtGui.QSplashScreen(splashImage, PyQt4.QtCore.Qt.WindowStaysOnTopHint)
+        splash.show()
+        splash.showMessage("Loading modules", color=PyQt4.QtGui.QColor(255, 255, 255))
+
         self.mainWindow = UiMainWindow.MainWindow(BaseStationController())
         self.mainWindow.show()
+
+        splash.showMessage("Loading VTK modules", color=PyQt4.QtGui.QColor(255, 255, 255))
         self.mainWindow.iren.Initialize()
+
+        splash.finish(self.mainWindow)
         self.exec_()
         
 

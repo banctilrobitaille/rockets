@@ -351,7 +351,7 @@ class RFD900Strategy(SerialDeviceStrategy):
                 self.rocketController.updateRocketSpeed(receivedFrame.speed)
                 self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
                 self.rocketController.updateRocketAltitude(receivedFrame.altitude)
-                self.rocketController.updateRocketAltitude( receivedFrame.temperature)
+                self.rocketController.updateRocketAltitude(receivedFrame.temperature)
                 self.rocketController.updateRocketCoords([receivedFrame.longitude, receivedFrame.latitude])
 
             elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:

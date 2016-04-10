@@ -8,7 +8,7 @@ import vtk
 import UiGpsSettings
 from PyQt4.Qt import pyqtSlot
 import StatePanel
-
+import UiToolbar
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -186,37 +186,19 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __addToolBar(self):
 
-        self.discoverAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/discoverOFF.png'), 'Discover', self)
-        self.streamAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/streamOFF.png'), 'Stream', self)
-        self.streamAction.setDisabled(True)
-        self.cameraAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/cameraOFF.png'), 'Start Camera', self)
-        self.cameraAction.setDisabled(True)
-        #self.rocketAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/rocketOFF.png'), 'Connect', self)
-        toolbar = PyQt4.QtGui.QToolBar()
-        self.addToolBar(PyQt4.QtCore.Qt.LeftToolBarArea, toolbar)
-        toolbar.setStyleSheet("QToolBar {background: rgba(29,29,29,90);}"
-                              "QToolButton { color : white;}"
-                              "QToolButton:hover {color : black;}"
-                              "QLabel {color : white; padding-top : 20px; padding-bottom: 5px; qproperty-alignment: AlignCenter;}")
+        self.__toolbar = UiToolbar.MainToolBar()
+        self.addToolBar(PyQt4.QtCore.Qt.LeftToolBarArea, self.__toolbar)
+        self.__updateToolBarRocketList()
 
-        toolbar.setToolButtonStyle(PyQt4.QtCore.Qt.ToolButtonTextBesideIcon|PyQt4.QtCore.Qt.AlignLeading)
-        toolbar.addAction(self.discoverAction)
-        toolbar.addSeparator()
-        toolbar.addAction(self.streamAction)
-        toolbar.addSeparator()
-        toolbar.addAction(self.cameraAction)
-        toolbar.addSeparator()
-        toolbar.addWidget(PyQt4.QtGui.QLabel("ROCKET LIST"))
 
-        for rocketID,rocket in self.__baseStationController.baseStation.availableRocket.items():
+    def __updateToolBarRocketList(self):
 
-            rocketAction = PyQt4.QtGui.QAction(PyQt4.QtGui.QIcon('./Image_Files/rocketOFF.png'), rocket.name + "\n" + "ID: " + str(hex(rocket.ID)), self)
-            rocketAction.triggered.connect(lambda: self.__on_Rocket_Clicked(rocket.ID))
-            self.__rocketIDToAction[rocket.ID] = rocketAction
-            toolbar.addAction(rocketAction)
+        self.__toolbar.resetRocketList()
 
-        toolbar.setIconSize(PyQt4.QtCore.QSize(80,80))
+        for rocketID, rocket in self.__baseStationController.baseStation.availableRocket.items():
 
+            self.__toolbar.addRocketAction(rocket.ID, rocket.name)
+            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(lambda: self.__on_Rocket_Clicked(rocket.ID))
 
     """
     #    Methode __connectSlot
@@ -234,9 +216,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
         self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
 
-        self.connect(self.discoverAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Discover_Clicked)
-        self.connect(self.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
-        self.connect(self.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
+        self.connect(self.__toolbar.discoverAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Discover_Clicked)
+        self.connect(self.__toolbar.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
+        self.connect(self.__toolbar.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
 
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
@@ -252,11 +234,13 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     @pyqtSlot(object)
     def __on_connectedRocketChanged(self, rocket):
 
-        self.__connectRocketSlot()
-        self.cameraAction.setDisabled(False)
-        self.streamAction.setDisabled(False)
-        self.__rocketIDToAction[rocket.ID].setIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketON.png'))
+        if rocket is not None:
 
+            self.__connectRocketSlot()
+            self.__toolbar.selectedRocketAction = self.__toolbar.getActionFromRocketID(rocket.ID)
+        else:
+
+            self.__toolbar.selectedRocketAction = None
 
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
@@ -285,24 +269,48 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Discover_Clicked(self):
 
-        self.discoverAction.setIcon(PyQt4.QtGui.QIcon('./Image_Files/discoverON.png'))
+        self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_ON_ICON__PATH))
 
     def __on_Camera_Clicked(self):
 
-        self.cameraAction.setIcon(PyQt4.QtGui.QIcon('./Image_Files/cameraON.png'))
+        if self.__baseStationController.baseStation.connectedRocket.cameraON:
+
+            cameraMsg = PyQt4.QtGui.QMessageBox( PyQt4.QtGui.QMessageBox.Question, "CAMERA WARNING",
+                                                 "Do you really want to close connected rocket's cameras ?",
+                                                 PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
+            result = cameraMsg.exec_()
+
+            if result == PyQt4.QtGui.QMessageBox.Yes:
+                self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_OFF_ICON_PATH))
+            else:
+                cameraMsg.close()
+        else:
+            self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
 
     def __on_Stream_Clicked(self):
 
-        pass
+        self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
 
     def __on_Rocket_Clicked(self, rocketID):
 
-        try:
-            self.__baseStationController.baseStation.connectedRocket = \
-                self.__baseStationController.baseStation.availableRocket[rocketID]
-        except Exception as e:
+        if self.__baseStationController.baseStation.connectedRocket is \
+                self.__baseStationController.baseStation.availableRocket[rocketID]:
 
-            print e.message
+            rocketMsg = PyQt4.QtGui.QMessageBox(PyQt4.QtGui.QMessageBox.Warning, "ROCKET WARNING",
+                                                 "Do you really want to disconnect from rocket ?",
+                                                 PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
+
+            rocketMsg.setIconPixmap(PyQt4.QtGui.QPixmap(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
+            result = rocketMsg.exec_()
+
+            if result == PyQt4.QtGui.QMessageBox.Yes:
+                self.__toolbar.rocketActionDict[rocketID].setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
+                self.__baseStationController.disconnectFromRocket(rocketID)
+            else:
+                rocketMsg.close()
+        else:
+
+            self.__baseStationController.updateConnectedRocket(rocketID)
 
 
     def __on_RFD900_Settings_Clicked(self):
