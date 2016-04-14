@@ -5,6 +5,7 @@ from src.controller.Communication import SerialController
 from src.controller.Communication import RFD900Strategy, XbeeStrategy, FrameFactory
 from src.model.BaseStation import BaseStation
 from src.model.Rocket import Rocket
+from src.controller.GPS import GlobalSat
 
 class BaseStationController(PyQt4.QtCore.QObject):
     
@@ -14,12 +15,21 @@ class BaseStationController(PyQt4.QtCore.QObject):
         
         self.__rocketController = RocketController.getInstance()
         self.__baseStationModel = BaseStation()
+
         self.__RFD900SerialController = SerialController()
         self.__XBeeSerialController = SerialController()
+        self.__globalSatSerialController = SerialController()
+        self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
+        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS0")
+
         self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
         self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
+        self.__gpsDevice = GlobalSat(self.__globalSatSerialController)
+        self.__gpsDevice.connect()
+
         self.__RFD900.rocketDiscovered.connect(self.__on_rocketDiscovery)
-    
+        self.__gpsDevice.coordsReceived.connect(self.__on_coordsReceived)
+
 
     @property
     def baseStation(self):
@@ -44,6 +54,14 @@ class BaseStationController(PyQt4.QtCore.QObject):
     @property
     def XBeeSerialController(self):
         return self.__XBeeSerialController
+
+    @property
+    def GlobalSatSerialController(self):
+        return self.__globalSatSerialController
+
+    @GlobalSatSerialController.setter
+    def GlobalSatSerialController(self, serialController):
+        self.__globalSatSerialController = serialController
 
     @property
     def RFD900(self):
@@ -82,6 +100,12 @@ class BaseStationController(PyQt4.QtCore.QObject):
         if rocketID not in self.__baseStationModel.availableRocket:
 
             self.__baseStationModel.availableRocket[rocketID] = Rocket()
+
+    @pyqtSlot(float, float)
+    def __on_coordsReceived(self, latitude, longitude):
+
+        self.baseStation.coords = {"latitude": latitude, "longitude": longitude}
+
 
     @staticmethod
     def getInstance():

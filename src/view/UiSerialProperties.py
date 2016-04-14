@@ -11,7 +11,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     
     def __setupUi(self):
 
-        self.setStyleSheet("QWidget {background: rgba(29,29,29,85);color : white;}"
+        self.setStyleSheet("QWidget {background: rgba(29,29,29,85);color : white; border: 0px;}"
                            "QComboBox {border: 1px;border-color: rgba(255,255,255);border-style: solid; color : white; padding: 1px 0px 1px 3px;}"
                            "QPushButton { color : white; background : rgba(29,29,29,85); border: 1px;border-color: rgba(255,255,255);border-style: solid;}"
                            "QPushButton:hover { color : rgba(29,29,29,100); background : white; border: 1px;border-color: black;border-style: solid;}"

@@ -1,6 +1,5 @@
 import PyQt4
 import dashboard
-import compass
 import UiDataAnlalysis
 import UiSerialProperties
 import vtkRendering
@@ -9,6 +8,7 @@ import UiGpsSettings
 from PyQt4.Qt import pyqtSlot
 import StatePanel
 import UiToolbar
+from UiSlidingMessage import SlidingMessage
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -64,13 +64,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__addToolBar()
 
+
+
         self.__dashboard = dashboard.Dashboard(self)
         #self.__compass = compass.Compass(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
         self.__rocket = vtkRendering.rocketRendering(self)
         self.__statePanel = StatePanel.StatePanel(self)
-        
+
+        self.__slidingMessage = SlidingMessage("Successfully entered in discover mode", self)
+
         self.ren = vtk.vtkRenderer()
         self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
@@ -222,6 +226,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
+        self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)
 
 
     def __connectRocketSlot(self):
@@ -265,11 +270,13 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __slotAbout_Clicked(self):
         
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
-        self.__gpsTab.map.updateMarker(-90,46.8)
+        self.__slidingMessage.reveal()
+        #self.__gpsTab.map.updateMarker(-90,46.8)
 
     def __on_Discover_Clicked(self):
 
         self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_ON_ICON__PATH))
+        self.__slidingMessage.reveal()
 
     def __on_Camera_Clicked(self):
 
@@ -278,6 +285,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             cameraMsg = PyQt4.QtGui.QMessageBox( PyQt4.QtGui.QMessageBox.Question, "CAMERA WARNING",
                                                  "Do you really want to close connected rocket's cameras ?",
                                                  PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
+
+            cameraMsg.setStyleSheet("QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
+                                    "QMessageBox QLabel {color : rgba(249,105,14);}"
+                                    "QMessageBox QPushButton {background-color : white;}"
+                                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
             result = cameraMsg.exec_()
 
             if result == PyQt4.QtGui.QMessageBox.Yes:
@@ -301,6 +313,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
                                                  PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
 
             rocketMsg.setIconPixmap(PyQt4.QtGui.QPixmap(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
+            rocketMsg.setStyleSheet("QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
+                                    "QMessageBox QLabel {color : rgba(249,105,14);}"
+                                    "QMessageBox QPushButton {background-color : white;}"
+                                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
             result = rocketMsg.exec_()
 
             if result == PyQt4.QtGui.QMessageBox.Yes:
@@ -365,7 +381,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.statusbar.addWidget(self.lblNotConnected)
             self.statusbar.update()
     
-        
+    @pyqtSlot(float, float)
+    def __on_BaseStationCoordsChanged(self,latitude, longitude):
+
+        self.__gpsTab.map.updateMarker(longitude, latitude)
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     

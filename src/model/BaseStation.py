@@ -19,11 +19,11 @@ class BaseStation(PyQt4.QtCore.QObject):
     connectedRocketChanged = PyQt4.QtCore.pyqtSignal(object)
 
 
-    def __init__(self, temperature=0, coords=None):
+    def __init__(self):
     
         super(PyQt4.QtCore.QObject, self).__init__()
-        self.__temperature = temperature
-        self.__coords = coords
+        self.__temperature = 0
+        self.__coords = {}
         self.__connectedRocket = None
         self.__availableRocket = {Rocket.DISCOVERY_ID: Rocket(ID=Rocket.DISCOVERY_ID, name="Broadcast"), }
     
@@ -64,8 +64,8 @@ class BaseStation(PyQt4.QtCore.QObject):
         return self.__coords
     
     @coords.setter
-    def coords(self, **coords):
+    def coords(self, coordsDict):
         
-        self.__coords['longitude'] = coords['longitude']
-        self.__coords['latitude'] = coords['latitude']
-        self.coordsChanged.emit(self.__coords['longitude'], self.__coords['latitude'])
+        self.__coords['longitude'] = coordsDict['longitude']
+        self.__coords['latitude'] = coordsDict['latitude']
+        self.coordsChanged.emit(self.__coords['latitude'], self.__coords['longitude'])

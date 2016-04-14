@@ -23,20 +23,17 @@ class Map(PyQt4.QtGui.QWidget):
         self.layout.addWidget(self.canvas)
 
         self.m = Basemap(width=6000000,height=4500000,projection='lcc',
-            resolution='i',lat_1=45.,lat_2=55,lat_0=38.88,lon_0=-110,ax=self.axes)
+            resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
 
         #m.drawlsmask(land_color='coral',ocean_color='aqua',lakes=True)
 
-        self.m.bluemarble()
-        self.m.drawcountries()
-        self.m.drawstates()
-        parallels = np.arange(0.,41,10.)
-        # labels = [left,right,top,bottom]
-        self.m.drawparallels(parallels,labels=[False,True,True,False], linewidth=1,color='R', textcolor='R', fontsize=9)
-        meridians = np.arange(10.,351.,20.)
-        self.m.drawmeridians(meridians,labels=[True,False,False,True], linewidth=1,color='R',textcolor='R', fontsize=9)
-        self.lon = -110
-        self.lat = 38.88
+        #self.m.bluemarble()
+        self.m.shadedrelief()
+        #self.m.drawcountries()
+        #self.m.drawstates()
+
+        self.lon = -90
+        self.lat = 30
 
         x,y = self.m(self.lon,self.lat)
         self.marker = self.m.plot(x,y, marker="D", markersize=10, color='r')

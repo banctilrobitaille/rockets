@@ -82,8 +82,8 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
     def setup(self):
 
         self.setStyleSheet("QToolBar {background: rgba(29,29,29,90);}"
-                              "QToolButton { color : white;}"
-                              "QToolButton:hover {color : black;}"
+                              "QToolButton { color : white; border-radius: 0px;}"
+                              "QToolButton:hover {color : black; background: white}"
                               "QLabel {color : white; padding-top : 20px; padding-bottom: 5px; qproperty-alignment: AlignCenter;}")
         self.setToolButtonStyle(PyQt4.QtCore.Qt.ToolButtonTextBesideIcon|PyQt4.QtCore.Qt.AlignLeading)
         self.addAction(self.discoverAction)
