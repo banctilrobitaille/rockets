@@ -313,6 +313,7 @@ class SerialReader(PyQt4.QtCore.QThread):
             """Waiting for a complete frame to read"""
             if (self.__serialConnection.inWaiting() >= Frame.RECEIVED_FRAME_LENGTH):
                 
+                
             
                 #data = self.__serialConnection.read(Frame.LENGTH)
                 
@@ -425,3 +426,6 @@ class CommunicationHistory(object):
         if len(self.__sentFrameHistory) is not 0:
             
             return self.__sentFrameHistory[-1]
+        
+        
+        

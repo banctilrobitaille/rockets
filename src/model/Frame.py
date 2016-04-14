@@ -18,6 +18,15 @@ class Frame(object):
         self.__command      = command
         self.__data         = data
         self.__crc          = crc
+        #self.__state        = state
+        #self.__gpsfix       = gpsfix
+        #self.__speed        = speed
+        #self.__altitude     = altitude
+        #self.__acceleration = acceleration
+        #self.__latitude     = latitude
+        #self.__longitutde   = longitude
+        #self.__temperature  = temperature
+        
     
     @staticmethod
     def parseByteArray(byteArray):
@@ -44,6 +53,7 @@ class Frame(object):
         
         rocketData = Frame.parseByteArray(byteArray)
         frame = cls(rocketData['ROCKETID'],rocketData['COMMAND'], rocketData, rocketData['CRC'])
+        
         
         return frame
 
@@ -80,6 +90,11 @@ class Frame(object):
     @crc.setter
     def crc(self, crc):
         self.__crc = crc
+        
+    #@property
+    #def state(self):
+    #    return self.__state
+    #@state.setter()   
      
      
 class CRC16(object):
