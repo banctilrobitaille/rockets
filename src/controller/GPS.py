@@ -107,14 +107,14 @@ class GlobalSat(GPSDevice):
                         self.altitudeReceived.emit(sentence.altitude)
                         self.coordsReceived.emit(sentence.latitude, sentence.longitude)
 
-                        if sentence.fix != self.fix:
-                            self.fix = sentence.fix
+                        #if sentence.fix != self.fix:
+                        self.fix = sentence.fix
 
-                        if sentence.nbSatellite != self.nbSatellite:
-                            self.nbSatellite = sentence.nbSatellite
+                        #if sentence.nbSatellite != self.nbSatellite:
+                        self.nbSatellite = sentence.nbSatellite
 
-                        if sentence.fixTime != self.fixTime:
-                            self.fixTime = sentence.fixTime
+                        #if sentence.fixTime != self.fixTime:
+                        self.fixTime = sentence.fixTime
 
                         print "yess"
                     except Exception as e:

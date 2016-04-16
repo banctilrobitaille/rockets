@@ -9,6 +9,7 @@ from PyQt4.Qt import pyqtSlot
 import StatePanel
 import UiToolbar
 from UiSlidingMessage import SlidingMessage
+from src.controller.BaseStationController import BaseStationController
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -227,7 +228,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
         self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)
-
+        self.__baseStationController.GPS.fixTimeChanged.connect(self.__on_FixTimeChanged)
+        self.__baseStationController.GPS.fixChanged.connect(self.__on_FixChanged)
+        self.__baseStationController.GPS.nbSatellitesChanged.connect(self.__on_SatellitesChanged)
 
     def __connectRocketSlot(self):
 
@@ -266,7 +269,21 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_TemperatureChanged(self, temperature):
         
         self.__dashboard.updateTemperature(temperature)
-    
+
+    @pyqtSlot(str)
+    def __on_FixTimeChanged(self, fixTime):
+        pass
+
+    @pyqtSlot(str)
+    def __on_FixChanged(self, fix):
+
+        self.__gpsTab.map.gpsFix = fix
+
+    @pyqtSlot(int)
+    def __on_SatellitesChanged(self, nbSatellite):
+
+        self.__gpsTab.map.nbSatellite = nbSatellite
+
     def __slotAbout_Clicked(self):
         
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
@@ -384,7 +401,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     @pyqtSlot(float, float)
     def __on_BaseStationCoordsChanged(self,latitude, longitude):
 
-        self.__gpsTab.map.updateMarker(longitude, latitude)
+        self.__gpsTab.map.updateBaseStationMarker(longitude, latitude)
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     

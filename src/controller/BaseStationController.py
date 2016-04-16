@@ -79,6 +79,14 @@ class BaseStationController(PyQt4.QtCore.QObject):
     def XBee(self, xbeeCommStrategy):
         self.__XBee = xbeeCommStrategy
 
+    @property
+    def GPS(self):
+        return self.__gpsDevice
+
+    @GPS.setter
+    def GPS(self, gpsDevice):
+        self.__gpsDevice = gpsDevice
+
     def updateAvailableRocket(self):
 
         self.__baseStationModel.availableRocket = {}
