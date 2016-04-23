@@ -216,11 +216,27 @@ class SerialReader(PyQt4.QtCore.QThread):
 class CommunicationStrategy(PyQt4.QtCore.QObject):
 
     rocketDiscovered = PyQt4.QtCore.pyqtSignal(int)
+    rocketDidNotRespond = PyQt4.QtCore.pyqtSignal(str)
+    newCommandStreamer = PyQt4.QtCore.pyqtSignal(object)
 
     def __init__(self, rocketController):
         super(CommunicationStrategy, self).__init__()
         self.__rocketController = rocketController
         self.__history = CommunicationHistory()
+        self.__commandStreamer = {'RocketDiscovery': None,}
+
+    @property
+    def commandStreamer(self):
+        return self.__commandStreamer
+
+    @commandStreamer.setter
+    def commandStreamer(self, commandStreamer):
+        self.__commandStreamer = commandStreamer
+
+    def addCommandStreamer(self, blockID, commandStreamer):
+
+        self.__commandStreamer[blockID] = commandStreamer
+        self.newCommandStreamer.emit(commandStreamer)
 
     @property
     def rocketController(self):
@@ -250,11 +266,23 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
 
         raise NotImplementedError
 
+    def startRocketDiscovery(self):
+
+        raise NotImplementedError
+
+    def stopRocketDiscovery(self):
+
+        raise NotImplementedError
+
     @pyqtSlot(object)
     def __on_received_data(self, receivedData):
 
         raise NotImplementedError
 
+    @pyqtSlot(str)
+    def on_Rocket_Did_Not_Respond(self, errorMessage):
+
+        self.rocketDidNotRespond.emit(errorMessage)
 
 class SerialDeviceStrategy(CommunicationStrategy):
 
@@ -310,6 +338,7 @@ class RFD900Strategy(SerialDeviceStrategy):
         super(RFD900Strategy, self).__init__(rocketController, serialConnection)
         self.__streaming = False
         self.serialReader.frameReceived.connect(self.__on_received_data)
+        self.__rocketDiscoveryThread = None
 
     @property
     def streaming(self):
@@ -319,7 +348,24 @@ class RFD900Strategy(SerialDeviceStrategy):
     def streaming(self, streaming):
         self.__streaming = streaming
 
-    def sendData(self, data):
+    def startRocketDiscovery(self):
+
+        self.addCommandStreamer('RocketDiscovery', CommandStream(self.serialConnection,
+                                                                 command=FrameFactory.COMMAND['ROCKET_DISCOVERY']
+                                                                 , timeout=5, interval=5))
+        self.commandStreamer['RocketDiscovery'].isRunning = True
+        self.commandStreamer['RocketDiscovery'].rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
+        self.commandStreamer['RocketDiscovery'].start()
+
+    def stopRocketDiscovery(self):
+
+        if self.commandStreamer['RocketDiscovery'] is not None:
+
+            self.commandStreamer['RocketDiscovery'].isRunning = False
+            self.commandStreamer['RocketDiscovery'] = None
+
+
+    def sendData(self, data, blockID=None):
 
         command = data
 
@@ -412,6 +458,103 @@ class FrameFactory(object):
             frame = ReceivedFrame.fromByteArray(receivedData)
 
         return frame
+
+
+class CommandStream(PyQt4.QtCore.QThread):
+
+    commandStreamStarted    = PyQt4.QtCore.pyqtSignal(bool)
+    commandStreamEnded      = PyQt4.QtCore.pyqtSignal(bool)
+    rocketDidNotRespond     = PyQt4.QtCore.pyqtSignal(str)
+
+    def __init__(self, serialConnection, command=None, timeout=None, interval=1):
+        super(CommandStream, self).__init__()
+        self.__serialConnection = serialConnection
+        self.__command = command
+        self.__timeout = timeout
+        self.__interval = interval
+        self.__isRunning = False
+        self.__timer = None
+
+        if timeout is not None:
+
+            self.__timer = PyQt4.QtCore.QTimer()
+            self.__timer.setSingleShot(True)
+            self.__timer.timeout.connect(self.__on_Timer_Ended)
+
+    @property
+    def command(self):
+        return self.__command
+
+    @command.setter
+    def command(self, command):
+        self.__command = command
+
+    @property
+    def timeout(self):
+        return self.__timeout
+
+    @timeout.setter
+    def timeout(self, second):
+        self.__timeout = second
+
+    @property
+    def interval(self):
+        return self.__interval
+
+    @interval.setter
+    def interval(self, second):
+        self.__interval = second
+
+    @property
+    def serialConnection(self):
+        return self.__serialConnection
+
+    @serialConnection.setter
+    def serialConnection(self,serialConnection):
+        self.__serialConnection = serialConnection
+
+    @property
+    def isRunning(self):
+        return self.__isRunning
+
+    @isRunning.setter
+    def isRunning(self, bool):
+
+        self.__isRunning = bool
+
+    @property
+    def timer(self):
+        return self.__timer
+
+    @timer.setter
+    def timer(self, timer):
+        self.__timer = timer
+
+    @pyqtSlot()
+    def __on_Timer_Ended(self):
+
+        self.__isRunning = False
+        commandString = None
+
+        for command, value in FrameFactory.COMMAND.iteritems():
+
+            if value == self.__command:
+
+                commandString = command
+
+        self.rocketDidNotRespond.emit("Rocket did not respond to command: \n" + commandString)
+
+    def run(self):
+
+        if self.__timer is not None:
+
+            self.__timer.start(self.__timeout*1000)
+
+        while self.__isRunning:
+
+            frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'], FrameFactory.COMMAND['ROCKET_DISCOVERY'])
+            #self.__serialConnection.write(frame.toByteArray(withCRC=True))
+            time.sleep(self.__interval)
 
 '''
 TO DO

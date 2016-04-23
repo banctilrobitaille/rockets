@@ -7,22 +7,22 @@ class SlidingMessage(PyQt4.QtGui.QFrame):
         super(SlidingMessage, self).__init__(parent)
 
         self.layout = PyQt4.QtGui.QHBoxLayout()
-        text = PyQt4.QtGui.QLabel(message)
-        text.setObjectName("text")
-        text.setAlignment(PyQt4.QtCore.Qt.AlignCenter)
-        text.setStyleSheet("QFrame#text {color: white;}")
+        self.text = PyQt4.QtGui.QLabel(message)
+        self.text.setObjectName("text")
+        self.text.setAlignment(PyQt4.QtCore.Qt.AlignCenter)
+        self.text.setStyleSheet("QFrame#text {color: white;}")
         self.icon = PyQt4.QtGui.QLabel()
         self.icon.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
         self.icon.setSizePolicy(PyQt4.QtGui.QSizePolicy.Expanding, PyQt4.QtGui.QSizePolicy.Expanding)
         self.icon.setMinimumSize(32,32)
-        self.icon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/success.png'))
+        self.icon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/error.png'))
         self.iconLabel = PyQt4.QtGui.QLabel()
         self.iconLabel.setAlignment(PyQt4.QtCore.Qt.AlignRight)
         self.iconLabel.setSizePolicy(PyQt4.QtGui.QSizePolicy.Expanding, PyQt4.QtGui.QSizePolicy.Expanding)
         self.iconLabel.setMinimumSize(32,32)
         self.iconLabel.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/close2.png'))
         self.layout.addWidget(self.icon)
-        self.layout.addWidget(text)
+        self.layout.addWidget(self.text)
         self.layout.addWidget(self.iconLabel)
         self.setLayout(self.layout)
         self.setAutoFillBackground(True)
@@ -40,9 +40,11 @@ class SlidingMessage(PyQt4.QtGui.QFrame):
         #self.setStyleSheet("QFrame {background : rgba(30,139,195,230)}"
         #                  "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")
 
-        self.setStyleSheet("QFrame {background : rgba(0,177,106,230)}"
-                           "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")
+        #self.setStyleSheet("QFrame {background : rgba(0,177,106,230)}"
+        #                   "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")
 
+        self.setStyleSheet("QFrame {background : rgba(207,0,15,230)}"
+                          "QFrame QLabel {background : rgba(207,0,15,0);padding: 10px;}")
         self.mousePressEvent = self.hide
 
 

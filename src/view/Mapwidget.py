@@ -23,9 +23,9 @@ class Map(PyQt4.QtGui.QWidget):
         self.__rocketMarkerLon = 0
         self.__rocketMarketLat = 0
 
-        self.__gpsFix = PyQt4.QtGui.QLabel()
+        self.__gpsFix = PyQt4.QtGui.QLabel("Invalid")
         #self.__gpsFix.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
-        self.__nbSatellite = PyQt4.QtGui.QLabel()
+        self.__nbSatellite = PyQt4.QtGui.QLabel("0")
         #self.__nbSatellite.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
 
         self.__addGPSInfo()

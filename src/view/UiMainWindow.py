@@ -231,6 +231,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.GPS.fixTimeChanged.connect(self.__on_FixTimeChanged)
         self.__baseStationController.GPS.fixChanged.connect(self.__on_FixChanged)
         self.__baseStationController.GPS.nbSatellitesChanged.connect(self.__on_SatellitesChanged)
+        self.__baseStationController.RFD900.newCommandStreamer.connect(self.__on_Command_Sent)
 
     def __connectRocketSlot(self):
 
@@ -293,7 +294,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_Discover_Clicked(self):
 
         self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_ON_ICON__PATH))
-        self.__slidingMessage.reveal()
+        self.__baseStationController.RFD900.startRocketDiscovery()
+
+    @pyqtSlot(object)
+    def __on_Command_Sent(self, commandStreamer):
+
+        commandStreamer.rocketDidNotRespond.connect(self.__on_Error)
+
+    @pyqtSlot(str)
+    def __on_Error(self, errorMessage):
+
+        SlidingMessage(errorMessage, self).reveal()
 
     def __on_Camera_Clicked(self):
 
