@@ -20,8 +20,6 @@ class LogController(object):
 
     #def endFlight(self, endTime):
     
-    
-
     def addData(self, timestamp, state, speed, altitude,acceleration, latitude, longitude, temperature, crc):
         root=Element('Flight')
         tree=ElementTree(root)
@@ -32,27 +30,27 @@ class LogController(object):
         timestamp.text = datetime.date.fromtimestamp()
         state=ET.SubElement(rocketid,'state')
         #state.text = 'connected'
-        state.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(state)))
+        state.text = Frame.fromByteArray(Frame.data(state))
         speed=ET.SubElement(rocketid,'speed')
         #speed.text = '450 mph'
-        speed.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(speed)))
+        speed.text = Frame.fromByteArray(Frame.data(speed))
         altitude=ET.SubElement(rocketid,'altitude')
         #altitude.text = '10000 ft'
-        altitude.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(altitude)))
+        altitude.text = Frame.fromByteArray(Frame.data(altitude))
         acceleration=ET.SubElement(rocketid,'acceleration')
         #acceleration.text = '45 m/s^2'
-        acceleration.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(acceleration)))
+        acceleration.text = Frame.fromByteArray(Frame.data(acceleration))
         latitude = ET.SubElement(rocketid,'latitude')
         #latitude.text = '37.77184'
-        latitude.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(latitude)))
+        latitude.text = Frame.fromByteArray(Frame.data(latitude))
         longitude=ET.SubElement(rocketid,'longitude')
-        longitude.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(longitude)))
+        longitude.text = Frame.fromByteArray(Frame.data(longitude))
         #longitude.text = '11.500'
         temperature=ET.SubElement(rocketid,'temperature')
         #temperature.text = '20'
-        temperature.text = Frame.fromByteArray(self.__serialConnection.read(Frame.data(temperature)))
+        temperature.text = Frame.fromByteArray(Frame.data(temperature))
         crc=ET.SubElement(rocketid, 'crc')
-        crc.text = Frame.fromByteArray(self.__serialConnection.read(Frame.crc(CRC16)))
+        crc.text = Frame.fromByteArray(Frame.crc(CRC16))
         root.set('id', '1')
         rocketid.set('id', '1')
         print ET.tostring(root)

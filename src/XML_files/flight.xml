@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flight id="1">
+   <RocketID id="1">
+      <timestamp>39432949324</timestamp>
+      <state>connected</state>
+      <speed>450 mph</speed>
+      <altitude>10000 ft</altitude>
+      <acceleration>45 m/s^2</acceleration>
+      <latitude>37.77184</latitude>
+      <longitude>11.500</longitude>
+      <temperature>20</temperature>
+   </RocketID>
+</Flight>
