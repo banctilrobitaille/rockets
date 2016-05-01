@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7254fc63-b6f0-4275-be73-ed492b9ae80f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/XML_files/flight.xml" afterPath="$PROJECT_DIR$/src/XML_files/flight.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/controller/LogController.py" afterPath="$PROJECT_DIR$/src/controller/LogController.py" />
-    </list>
+    <list default="true" id="7254fc63-b6f0-4275-be73-ed492b9ae80f" name="Default" comment="" />
     <ignored path="rockets.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -53,8 +50,8 @@
       <file leaf-file-name="LogController.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/controller/LogController.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="61" column="17" selection-start-line="61" selection-start-column="17" selection-end-line="61" selection-end-column="17" />
+            <state relative-caret-position="218">
+              <caret line="59" column="57" selection-start-line="59" selection-start-column="57" selection-end-line="59" selection-end-column="57" />
               <folding>
                 <element signature="e#0#45#0" expanded="true" />
               </folding>
@@ -580,8 +577,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/controller/LogController.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="61" column="17" selection-start-line="61" selection-start-column="17" selection-end-line="61" selection-end-column="17" />
+        <state relative-caret-position="218">
+          <caret line="59" column="57" selection-start-line="59" selection-start-column="57" selection-end-line="59" selection-end-column="57" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
           </folding>
