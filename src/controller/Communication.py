@@ -1,7 +1,7 @@
 import serial
 import PyQt4
 import time
-from src.model.Frame import ReceivedFrame, SentFrame
+from src.model.Frame import ReceivedFrame, SentFrame, Frame
 from src.model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
 """#############################################################################
@@ -197,15 +197,15 @@ class SerialReader(PyQt4.QtCore.QThread):
         while self.__running:    
             
             """Waiting for the beginning of a frame and reading the flag"""
-            while self.__serialConnection.read(1) is not ReceivedFrame.FLAG:
-       
+            while self.__serialConnection.read(1) is not Frame.FLAG and self.__serialConnection.read(1) is not Frame.FLAG:
                 pass
             
             """Waiting for a complete frame to read"""
             if self.__serialConnection.inWaiting() >= ReceivedFrame.LENGTH:
+            #if self.__serialConnection.inWaiting():
 
                 try:
-                    
+                    #print self.__serialConnection.read(self.__serialConnection.inWaiting())
                     self.frameReceived.emit(self.__serialConnection.read(ReceivedFrame.LENGTH))
                     
                 except Exception as e:
@@ -218,12 +218,42 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
     rocketDiscovered = PyQt4.QtCore.pyqtSignal(int)
     rocketDidNotRespond = PyQt4.QtCore.pyqtSignal(str)
     newCommandStreamer = PyQt4.QtCore.pyqtSignal(object)
+    errorOccured = PyQt4.QtCore.pyqtSignal(str)
+    discoveringRocket = PyQt4.QtCore.pyqtSignal(bool)
 
     def __init__(self, rocketController):
         super(CommunicationStrategy, self).__init__()
         self.__rocketController = rocketController
         self.__history = CommunicationHistory()
-        self.__commandStreamer = {'RocketDiscovery': None,}
+        self.__commandStreamer = {}
+        self.__ID = 0
+        self.__isDiscoveringRocket = False
+        self.__rocketDiscoveryStreamer = None
+
+    @property
+    def rocketDiscoveryStreamer(self):
+        return self.__rocketDiscoveryStreamer
+
+    @rocketDiscoveryStreamer.setter
+    def rocketDiscoveryStreamer(self, rocketDiscoveryStreamer):
+        self.__rocketDiscoveryStreamer = rocketDiscoveryStreamer
+
+    @property
+    def  isDiscoveringRocket(self):
+        return self.__isDiscoveringRocket
+
+    @isDiscoveringRocket.setter
+    def isDiscoveringRocket(self, state):
+        self.__isDiscoveringRocket = state
+        self.discoveringRocket.emit(state)
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @ID.setter
+    def ID(self, value):
+        self.__ID = value
 
     @property
     def commandStreamer(self):
@@ -233,10 +263,15 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
     def commandStreamer(self, commandStreamer):
         self.__commandStreamer = commandStreamer
 
-    def addCommandStreamer(self, blockID, commandStreamer):
+    def addCommandStreamer(self, commandStreamer):
 
-        self.__commandStreamer[blockID] = commandStreamer
+        self.__commandStreamer[str(self.__ID)] = commandStreamer
+        commandStreamer.isRunning = True
+        commandStreamer.rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
+        commandStreamer.errorOccured.connect(self.errorOccured)
         self.newCommandStreamer.emit(commandStreamer)
+        commandStreamer.start()
+        self.__ID += 1
 
     @property
     def rocketController(self):
@@ -262,10 +297,6 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
 
         raise NotImplementedError
 
-    def sendData(self, data):
-
-        raise NotImplementedError
-
     def startRocketDiscovery(self):
 
         raise NotImplementedError
@@ -274,15 +305,42 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
 
         raise NotImplementedError
 
-    @pyqtSlot(object)
-    def __on_received_data(self, receivedData):
+    def startCamera(self):
 
         raise NotImplementedError
+
+    def stopCamera(self):
+
+        raise NotImplementedError
+
+    def startStream(self):
+
+        raise NotImplementedError
+
+    def stopStream(self):
+
+        raise NotImplementedError
+
+    def resendLastCommand(self):
+
+        self.addCommandStreamer(CommandStream(self.serialConnection, self.rocketController.rocket.ID,
+                                              command=self.history.getLastCommand(), ID=self.ID, timeout=5, interval=5))
+
+    @pyqtSlot(object)
+    def on_received_data(self, receivedData):
+
+        raise NotImplementedError
+
+    @pyqtSlot(str)
+    def on_error(self, errorMessage):
+
+        self.errorOccured.emit(errorMessage)
 
     @pyqtSlot(str)
     def on_Rocket_Did_Not_Respond(self, errorMessage):
 
         self.rocketDidNotRespond.emit(errorMessage)
+
 
 class SerialDeviceStrategy(CommunicationStrategy):
 
@@ -291,6 +349,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
         super(SerialDeviceStrategy, self).__init__(rocketController)
         self.__serialConnection = serialConnection
         self.__serialReader = SerialReader(self.__serialConnection)
+        self.__serialReader.frameReceived.connect(self.on_received_data)
 
     @property
     def serialConnection(self):
@@ -337,8 +396,6 @@ class RFD900Strategy(SerialDeviceStrategy):
     def __init__(self, rocketController, serialConnection):
         super(RFD900Strategy, self).__init__(rocketController, serialConnection)
         self.__streaming = False
-        self.serialReader.frameReceived.connect(self.__on_received_data)
-        self.__rocketDiscoveryThread = None
 
     @property
     def streaming(self):
@@ -350,48 +407,50 @@ class RFD900Strategy(SerialDeviceStrategy):
 
     def startRocketDiscovery(self):
 
-        self.addCommandStreamer('RocketDiscovery', CommandStream(self.serialConnection,
-                                                                 command=FrameFactory.COMMAND['ROCKET_DISCOVERY']
-                                                                 , timeout=5, interval=5))
-        self.commandStreamer['RocketDiscovery'].isRunning = True
-        self.commandStreamer['RocketDiscovery'].rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
-        self.commandStreamer['RocketDiscovery'].start()
+        self.rocketDiscoveryStreamer = CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.DISCOVERY_ID,
+                                                     ID=self.ID,command=FrameFactory.COMMAND['ROCKET_DISCOVERY'], timeout=5,
+                                                     interval=5)
+        self.addCommandStreamer(self.rocketDiscoveryStreamer)
+        self.rocketDiscoveryStreamer.isRunning = True
+        self.rocketDiscoveryStreamer.rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
+        self.rocketDiscoveryStreamer.start()
+        self.isDiscoveringRocket = True
 
     def stopRocketDiscovery(self):
 
-        if self.commandStreamer['RocketDiscovery'] is not None:
+        if self.isDiscoveringRocket:
 
-            self.commandStreamer['RocketDiscovery'].isRunning = False
-            self.commandStreamer['RocketDiscovery'] = None
+            self.rocketDiscoveryStreamer.isRunning = False
+            self.rocketDiscoveryStreamer = None
+            self.isDiscoveringRocket = False
 
+    def startStream(self):
 
-    def sendData(self, data, blockID=None):
+        self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
+                                              command=FrameFactory.COMMAND['START_STREAM'], ID=self.ID,
+                                              timeout=5, interval=5))
 
-        command = data
+    def stopStream(self):
 
-        if not self.serialConnection.isConnected:
-            self.connect()
-
-        if command == FrameFactory.COMMAND['START_STREAM']:
-            self.__streaming = True
-        elif command == FrameFactory.COMMAND['STOP_STREAM']:
-            self.__streaming = False
-
-        self.serialConnection.write(FrameFactory.create(FrameFactory.FRAMETYPES['SENT'],\
-                                                        command=command).toByteArray(withCRC=True))
-
-    def resendLastCommand(self):
-
-        self.sendData(self.history.getLastSentFrame().command)
+        self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
+                                              command=FrameFactory.COMMAND['STOP_STREAM'], ID=self.ID,
+                                              timeout=5, interval=5))
 
     @pyqtSlot(object)
-    def __on_received_data(self, receivedData):
+    def on_received_data(self, receivedData):
 
-        receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData)
+        receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
         if receivedFrame.isValid():
 
-            if receivedFrame.command == FrameFactory.COMMAND['START_STREAM'] or receivedFrame.command \
+            if receivedFrame.command == FrameFactory.COMMAND['ACK']:
+
+                if str(receivedFrame.ID) in self.commandStreamer:
+
+                    self.commandStreamer[str(receivedFrame.ID)].kill()
+                    del self.commandStreamer[str(receivedFrame.ID)]
+
+            elif receivedFrame.command == FrameFactory.COMMAND['START_STREAM'] or receivedFrame.command \
                     == FrameFactory.COMMAND['GET_TELEMETRY']:
 
                 self.rocketController.updateRocketSpeed(receivedFrame.speed)
@@ -413,11 +472,23 @@ class RFD900Strategy(SerialDeviceStrategy):
             self.resendLastCommand()
 
 
-
 class XbeeStrategy(SerialDeviceStrategy):
 
     def __init__(self, rocketController, serialConnection):
         super(XbeeStrategy, self).__init__(rocketController, serialConnection)
+
+
+    def StartCamera(self):
+
+        self.addCommandStreamer(CommandStream(self.serialConnection, rockcetID=self.rocketController.rocket.ID,
+                                              command=FrameFactory.COMMAND['START_CAMERA'], ID=self.ID, timeout=5,
+                                              interval=1))
+
+    def StopCamera(self):
+
+        self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
+                                              command=FrameFactory.COMMAND['STOP_CAMERA'],ID=self.ID, timeout=5,
+                                              interval=1))
 
 
 class FrameFactory(object):
@@ -425,13 +496,14 @@ class FrameFactory(object):
     FRAMETYPES = {'SENT' : 0, 'RECEIVED' : 1}
 
     COMMAND = {
-        'GET_TELEMETRY'     : 0x01,
-        'START_STREAM'      : 0x02,
-        'STOP_STREAM'       : 0x03,
-        'START_CAMERA'      : 0x04,
-        'STOP_CAMERA'       : 0x05,
-        'GET_LOG'           : 0x06,
-        'NACK'              : 0x07,
+        'ACK'               : 0x01,
+        'GET_TELEMETRY'     : 0x02,
+        'START_STREAM'      : 0x03,
+        'STOP_STREAM'       : 0x04,
+        'START_CAMERA'      : 0x05,
+        'STOP_CAMERA'       : 0x06,
+        'GET_LOG'           : 0x07,
+        'NACK'              : 0x08,
         'ROCKET_DISCOVERY'  : 0x1F,
     }
 
@@ -442,16 +514,16 @@ class FrameFactory(object):
         pass
 
     @staticmethod
-    def create(frameType=None, rocketID=None, command=0x00,timestamp=None, payload=0x00, receivedData=None):
+    def create(frameType=None, rocketID=None, command=0x00, ID=0,timestamp=None, payload=0x00, receivedData=None):
 
         frame = None
 
         if frameType is FrameFactory.FRAMETYPES['SENT']:
 
             if timestamp is None:
-                frame = SentFrame(rocketID, command, time.time(), payload)
+                frame = SentFrame(rocketID, command, ID, time.time(), payload)
             else:
-                frame = SentFrame(rocketID, command, timestamp, payload)
+                frame = SentFrame(rocketID, command, ID, timestamp, payload)
 
         elif frameType is FrameFactory.FRAMETYPES['RECEIVED']:
 
@@ -465,21 +537,40 @@ class CommandStream(PyQt4.QtCore.QThread):
     commandStreamStarted    = PyQt4.QtCore.pyqtSignal(bool)
     commandStreamEnded      = PyQt4.QtCore.pyqtSignal(bool)
     rocketDidNotRespond     = PyQt4.QtCore.pyqtSignal(str)
+    errorOccured            = PyQt4.QtCore.pyqtSignal(str)
 
-    def __init__(self, serialConnection, command=None, timeout=None, interval=1):
+    def __init__(self, serialConnection, rocketID=None, command=None,ID=None, timeout=None, interval=1):
         super(CommandStream, self).__init__()
         self.__serialConnection = serialConnection
+        self.__rocketID = rocketID
         self.__command = command
         self.__timeout = timeout
         self.__interval = interval
         self.__isRunning = False
         self.__timer = None
+        self.__ID = ID
 
         if timeout is not None:
 
             self.__timer = PyQt4.QtCore.QTimer()
             self.__timer.setSingleShot(True)
             self.__timer.timeout.connect(self.__on_Timer_Ended)
+
+    @property
+    def rocketID(self):
+        return self.__rocketID
+
+    @rocketID.setter
+    def rocketID(self, ID):
+        self.__rocketID = ID
+
+    @property
+    def ID(self):
+        return self.__ID
+
+    @ID.setter
+    def ID(self, ID):
+        self.__ID = ID
 
     @property
     def command(self):
@@ -544,6 +635,11 @@ class CommandStream(PyQt4.QtCore.QThread):
 
         self.rocketDidNotRespond.emit("Rocket did not respond to command: \n" + commandString)
 
+    def kill(self):
+
+        self.timer.stop()
+        self.isRunning = False
+
     def run(self):
 
         if self.__timer is not None:
@@ -551,10 +647,18 @@ class CommandStream(PyQt4.QtCore.QThread):
             self.__timer.start(self.__timeout*1000)
 
         while self.__isRunning:
+            try:
 
-            frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'], FrameFactory.COMMAND['ROCKET_DISCOVERY'])
-            #self.__serialConnection.write(frame.toByteArray(withCRC=True))
-            time.sleep(self.__interval)
+                frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'],rocketID=self.__rocketID,
+                                            ID=self.ID, command=self.command)
+                self.__serialConnection.write(frame.toByteArray(withCRC=True))
+                time.sleep(self.__interval)
+
+            except Exception as e:
+
+                self.errorOccured.emit("Error while sending command on port: \n" + self.serialConnection.port +
+                                       "\n" + e.message)
+                self.kill()
 
 '''
 TO DO
@@ -565,24 +669,24 @@ class CommunicationHistory(object):
     
     def __init__(self):
         
-        self.__sentFrameHistory = []
+        self.__commandHistory = []
     
-    def addSentFrame(self, sentFrame):
+    def addSentCommand(self, command):
         
-        if len(self.__sentFrameHistory) < 10:
+        if len(self.__commandHistory) < 10:
             
-            self.__sentFrameHistory.append(sentFrame)
+            self.__commandHistory.append(command)
             
         else:
             
             for i in range(1, self.HISTORY_DEEPNESS-1):
                 
-                self.__sentFrameHistory[i-1] = self.__sentFrameHistory[i]
+                self.__commandHistory[i-1] = self.__commandHistory[i]
             
-            self.__sentFrameHistory[9]
+            self.__commandHistory[self.HISTORY_DEEPNESS-1] = command
     
-    def getLastSentFrame(self):
+    def getLastCommand(self):
         
-        if len(self.__sentFrameHistory) is not 0:
+        if len(self.self.__commandHistory) is not 0:
             
-            return self.__sentFrameHistory[-1]
+            return self.__commandHistory[-1]

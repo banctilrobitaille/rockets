@@ -1,4 +1,4 @@
-from model.Rocket import Rocket
+from src.model.Rocket import Rocket
 
 """#############################################################################
 # 

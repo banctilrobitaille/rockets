@@ -228,10 +228,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
         self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)
+
         self.__baseStationController.GPS.fixTimeChanged.connect(self.__on_FixTimeChanged)
         self.__baseStationController.GPS.fixChanged.connect(self.__on_FixChanged)
         self.__baseStationController.GPS.nbSatellitesChanged.connect(self.__on_SatellitesChanged)
+
         self.__baseStationController.RFD900.newCommandStreamer.connect(self.__on_Command_Sent)
+        self.__baseStationController.RFD900.errorOccured.connect(self.__on_Error)
+        self.__baseStationController.RFD900.discoveringRocket.connect(self.__on_DiscoveringRocket_Changed)
+
+        self.__baseStationController.XBee.newCommandStreamer.connect(self.__on_Command_Sent)
+        self.__baseStationController.XBee.errorOccured.connect(self.__on_Error)
 
     def __connectRocketSlot(self):
 
@@ -293,8 +300,18 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Discover_Clicked(self):
 
-        self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_ON_ICON__PATH))
-        self.__baseStationController.RFD900.startRocketDiscovery()
+        if self.__baseStationController.RFD900.isDiscoveringRocket:
+            self.__baseStationController.RFD900.stopRocketDiscovery()
+        else:
+            self.__baseStationController.RFD900.startRocketDiscovery()
+
+    @pyqtSlot(bool)
+    def __on_DiscoveringRocket_Changed(self, discoveringRocket):
+
+        if discoveringRocket:
+            self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_ON_ICON_PATH))
+        else:
+            self.__toolbar.discoverAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.DISCOVER_OFF_ICON_PATH))
 
     @pyqtSlot(object)
     def __on_Command_Sent(self, commandStreamer):
@@ -325,7 +342,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             else:
                 cameraMsg.close()
         else:
-            self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
+            self.__baseStationController.XBee.StartCamera()
+            #self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
 
     def __on_Stream_Clicked(self):
 

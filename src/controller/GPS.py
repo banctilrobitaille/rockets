@@ -98,7 +98,7 @@ class GlobalSat(GPSDevice):
             if self.__serialController.serialConnection.inWaiting() > 0:
 
                 receivedData = self.__serialController.serialConnection.readline()
-                print receivedData
+                #print receivedData
 
                 if NMEASentenceFactory.SENTENCE_TYPE["GPGGA"] in receivedData:
 
@@ -116,10 +116,11 @@ class GlobalSat(GPSDevice):
                         #if sentence.fixTime != self.fixTime:
                         self.fixTime = sentence.fixTime
 
-                        print "yess"
+                        #print "yess"
                     except Exception as e:
 
-                        print "NOP"
+                        pass
+                        #print "NOP"
 
 
 class NMEASentenceFactory(PyQt4.QtCore.QObject):
@@ -185,7 +186,8 @@ class GPGGASentence(NMEASentence):
 
         except Exception as e:
 
-            print e.message
+            pass
+            #print e.message
 
 
     @property

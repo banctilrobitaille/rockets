@@ -18,12 +18,14 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
         self.__RFD900SerialController = SerialController()
         self.__XBeeSerialController = SerialController()
+        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS1")
         self.__globalSatSerialController = SerialController()
         self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
         self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS0")
 
         self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
         self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
+        self.__XBee.connect()
         self.__gpsDevice = GlobalSat(self.__globalSatSerialController)
         self.__gpsDevice.connect()
 

@@ -5,7 +5,7 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
 
     ROCKET_ON_ICON_PATH     = './Image_Files/rocketON.png'
     ROCKET_OFF_ICON_PATH    = './Image_Files/rocketOFF.png'
-    DISCOVER_ON_ICON__PATH  = './Image_Files/discoverON.png'
+    DISCOVER_ON_ICON_PATH  = './Image_Files/discoverON.png'
     DISCOVER_OFF_ICON_PATH  = './Image_Files/discoverOFF.png'
     STREAM_ON_ICON_PATH     = './Image_Files/streamON.png'
     STREAM_OFF_ICON_PATH    = './Image_Files/streamOFF.png'
