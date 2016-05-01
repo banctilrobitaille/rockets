@@ -4,8 +4,8 @@
       <timestamp>39432949324</timestamp>
       <state>connected</state>
       <speed>450 mph</speed>
-      <altitude>10000 ft</altitude>
-      <acceleration>45 m/s^2</acceleration>
+      <altitude>10000</altitude>
+      <acceleration>45</acceleration>
       <latitude>37.77184</latitude>
       <longitude>11.500</longitude>
       <temperature>20</temperature>
