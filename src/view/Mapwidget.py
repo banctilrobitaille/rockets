@@ -95,7 +95,7 @@ class Map(PyQt4.QtGui.QWidget):
         fixIcon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/fix.png'))
 
         self.__gpsInfoFrame = PyQt4.QtGui.QFrame(self)
-        self.__gpsInfoFrame.setGeometry(500,0,280,60)
+        self.__gpsInfoFrame.setGeometry(450,0,230,60)
         self.__gpsInfoFrame.setStyleSheet("QFrame {background : rgba(0,177,106,230)}"
                                           "QFrame QLabel {color: white;background : rgba(30,139,195,0);padding-top: 5px;"
                                           "padding-bottom: 5px;}")

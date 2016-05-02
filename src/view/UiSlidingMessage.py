@@ -29,13 +29,13 @@ class SlidingMessage(PyQt4.QtGui.QFrame):
         self.setGeometry(300,0,300,0)
         self.__revealAnimation = PyQt4.QtCore.QPropertyAnimation(self, "geometry")
         self.__revealAnimation.setDuration(250)
-        self.__revealAnimation.setStartValue(PyQt4.QtCore.QRect(1300,-105,500,105))
-        self.__revealAnimation.setEndValue(PyQt4.QtCore.QRect(1300,0,500,105))
+        self.__revealAnimation.setStartValue(PyQt4.QtCore.QRect(1000,-105,500,105))
+        self.__revealAnimation.setEndValue(PyQt4.QtCore.QRect(1000,0,500,105))
 
         self.__hideAnimation = PyQt4.QtCore.QPropertyAnimation(self, "geometry")
         self.__hideAnimation.setDuration(100)
-        self.__hideAnimation.setStartValue(PyQt4.QtCore.QRect(1300,0,500,105))
-        self.__hideAnimation.setEndValue(PyQt4.QtCore.QRect(1300,-105,500,105))
+        self.__hideAnimation.setStartValue(PyQt4.QtCore.QRect(1000,0,500,105))
+        self.__hideAnimation.setEndValue(PyQt4.QtCore.QRect(1000,-105,500,105))
         self.show()
         #self.setStyleSheet("QFrame {background : rgba(30,139,195,230)}"
         #                  "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")

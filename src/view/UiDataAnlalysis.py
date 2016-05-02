@@ -134,7 +134,7 @@ class GraphTab(DataFrame):
         """Initialiation de lobjet parent"""
         DataFrame.__init__(self,parent)
         
-        self.setGeometry(930,15,900,600)
+        self.setGeometry(830,15,700,500)
         """Initialisation des differents graphiques realtime"""
         self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)", QColor(255,0,0))
         self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)",QColor(255,0,0))
@@ -159,7 +159,7 @@ class GpsTab(DataFrame):
         
         """Initialisation de lobjet parent"""
         DataFrame.__init__(self, parent)
-        self.setGeometry(120,15,800,600)
+        self.setGeometry(120,15,700,500)
         """Initialisation de la map GPS"""
         #self.map = MapWidget.MapnikWidget(self)
         self.map = Mapwidget.Map(self)

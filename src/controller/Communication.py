@@ -480,7 +480,7 @@ class XbeeStrategy(SerialDeviceStrategy):
 
     def StartCamera(self):
 
-        self.addCommandStreamer(CommandStream(self.serialConnection, rockcetID=self.rocketController.rocket.ID,
+        self.addCommandStreamer(CommandStream(self.serialConnection, rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['START_CAMERA'], ID=self.ID, timeout=5,
                                               interval=1))
 

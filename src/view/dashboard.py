@@ -27,7 +27,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         PyQt4.QtGui.QFrame.__init__(self, parent)
         
         """Positionnement du frame du dashboard"""
-        self.setGeometry(100,650,1000,500)
+        self.setGeometry(100,500,800,400)
         
         """Initialisation du cadran de la vitesse, du cadran numerique et label descriptif"""
         self.__lbl_speed = Label(self, "SPEED")
@@ -67,24 +67,24 @@ class Dashboard(PyQt4.QtGui.QFrame):
     def placeTheElement(self):
         
         """Positionnement des elements de vitesse"""
-        self.__lbl_speed.setGeometry(130, 55, 60,20)
-        self.__speed_dial.setGeometry(70,90,190,190)
-        self.__lcd_speed.setGeometry(95, 300, 130, 50)
+        self.__lbl_speed.setGeometry(90, 65, 60,15)
+        self.__speed_dial.setGeometry(30,100,175,175)
+        self.__lcd_speed.setGeometry(50, 300, 130, 50)
         
         """Positionnement des elements daltitude"""
-        self.__lbl_altitude.setGeometry(335, 5, 120,20)
-        self.__altitude_dial.setGeometry(260,30,240,240)
-        self.__lcd_altitude.setGeometry(315, 300, 130, 50)
+        self.__lbl_altitude.setGeometry(270, 25, 120,15)
+        self.__altitude_dial.setGeometry(205,50,220,220)
+        self.__lcd_altitude.setGeometry(250, 300, 130, 50)
          
         """Positionnement des elements dacceleration"""
-        self.__lbl_acceleration.setGeometry(525, 55, 200,20)
-        self.__acceleration_dial.setGeometry(500,90,190,190)
-        self.__lcd_acceleration.setGeometry(535, 300, 130, 50)
+        self.__lbl_acceleration.setGeometry(450, 65, 200,15)
+        self.__acceleration_dial.setGeometry(425,100,175,175)
+        self.__lcd_acceleration.setGeometry(455, 300, 130, 50)
         
         """Posiotionnement des elements thermometre"""
-        self.__lbl_thermo.setGeometry(740, 15, 200,20)
-        self.__rocketTemp.setGeometry(730, 50, 100, 230)
-        self.__lcd_thermo.setGeometry(750, 300, 130, 50)
+        self.__lbl_thermo.setGeometry(615, 65, 200,20)
+        self.__rocketTemp.setGeometry(625, 90, 80, 195)
+        self.__lcd_thermo.setGeometry(625, 300, 130, 50)
 
     """
     #    Methode updateValue

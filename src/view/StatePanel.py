@@ -13,7 +13,7 @@ class StatePanel(PyQt4.QtGui.QFrame):
     def __init__(self, parent):
 
         super(PyQt4.QtGui.QFrame,self).__init__(parent)
-        self.setGeometry(1580,670, 250,300)
+        self.setGeometry(1250,530, 250,300)
         self.palette = PyQt4.Qt.QPalette()
         self.palette.setColor(self.palette.WindowText, QColor(245,245,245))
         self.gridLayout = PyQt4.QtGui.QGridLayout()
