@@ -93,21 +93,21 @@ class ReceivedFrame(Frame):
         
         frame = {}
 
-        rocketIDAndCommand     = struct.unpack_from("c", byteArray[0])[0]
+        rocketIDAndCommand     = struct.unpack_from("B", byteArray[0])[0]
         frame['ROCKETID']      = rocketIDAndCommand & 0b11100000
         frame['COMMAND']       = rocketIDAndCommand & 0b00011111
-        frame['ID']            = struct.unpack_from("c", byteArray[1])[0]
-        frame['TIMESTAMP']     = struct.unpack_from("f", byteArray[4:8])[0]
-        stateAndFix            = struct.unpack_from("c", byteArray[8])[0]
+        frame['ID']            = struct.unpack_from("B", byteArray[1])[0]
+        frame['TIMESTAMP']     = struct.unpack_from("f", byteArray[3:7])[0]
+        stateAndFix            = struct.unpack_from("B", byteArray[7])[0]
         frame['STATE']         = stateAndFix & 0b11111000
         frame['GPSFIX']        = stateAndFix & 0b00000111
-        frame['SPEED']         = struct.unpack_from("f", byteArray[12:16])[0]
-        frame['ALTITUDE']      = struct.unpack_from("f", byteArray[16:20])[0]
-        frame['ACCELERATION']  = struct.unpack_from("f", byteArray[20:24])[0]
-        frame['LATITUDE']      = struct.unpack_from("f", byteArray[24:28])[0]
-        frame['LONGITUDE']     = struct.unpack_from("f", byteArray[28:32])[0]
-        frame['TEMPERATURE']   = struct.unpack_from("f", byteArray[32:36])[0]
-        frame['CRC']           = struct.unpack_from("H", byteArray[36:38])[0]
+        frame['SPEED']         = struct.unpack_from("f", byteArray[11:15])[0]
+        frame['ALTITUDE']      = struct.unpack_from("f", byteArray[15:19])[0]
+        frame['ACCELERATION']  = struct.unpack_from("f", byteArray[19:23])[0]
+        frame['LATITUDE']      = struct.unpack_from("f", byteArray[23:27])[0]
+        frame['LONGITUDE']     = struct.unpack_from("f", byteArray[27:31])[0]
+        frame['TEMPERATURE']   = struct.unpack_from("f", byteArray[31:35])[0]
+        frame['CRC']           = struct.unpack_from("H", byteArray[35:37])[0]
 
         return frame
     

@@ -246,6 +246,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.baseStation.connectedRocket.accelerationChanged.connect(self.__on_AccelerationChanged)
         self.__baseStationController.baseStation.connectedRocket.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
+        self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
 
     @pyqtSlot(object)
     def __on_connectedRocketChanged(self, rocket):
@@ -286,6 +287,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_FixChanged(self, fix):
 
         self.__gpsTab.map.gpsFix = fix
+
+    @pyqtSlot(bool)
+    def __on_CameraState_Changed(self, state):
+
+        if state:
+            self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
+        else:
+            self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_OFF_ICON_PATH))
 
     @pyqtSlot(int)
     def __on_SatellitesChanged(self, nbSatellite):
@@ -338,12 +347,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             result = cameraMsg.exec_()
 
             if result == PyQt4.QtGui.QMessageBox.Yes:
-                self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_OFF_ICON_PATH))
+                self.__baseStationController.XBee.StopCamera()
             else:
                 cameraMsg.close()
         else:
             self.__baseStationController.XBee.StartCamera()
-            #self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
 
     def __on_Stream_Clicked(self):
 

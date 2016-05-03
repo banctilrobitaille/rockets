@@ -31,8 +31,9 @@ class Rocket(PyQt4.QtCore.QObject):
     coordsChanged = PyQt4.QtCore.pyqtSignal(float,float)
     idChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(str)
+    cameraStateChanged = PyQt4.QtCore.pyqtSignal(bool)
 
-    DISCOVERY_ID = 0xF0
+    DISCOVERY_ID = 0xE0
     
     """The state provided by the rocket during the flight"""
     STATE = {'INITIALIZING'     : 0,
@@ -73,6 +74,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @cameraON.setter
     def cameraON(self, state):
         self.__cameraON = state
+        self.cameraStateChanged.emit(state)
     
     @property
     def acceleration(self):

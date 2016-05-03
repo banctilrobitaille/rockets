@@ -18,10 +18,11 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
         self.__RFD900SerialController = SerialController()
         self.__XBeeSerialController = SerialController()
-        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS1")
+        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS0")
+        self.__XBeeSerialController.updateSerialConnectionBaudrate(9600)
         self.__globalSatSerialController = SerialController()
         self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
-        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS0")
+        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS3")
 
         self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
         self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
@@ -97,6 +98,7 @@ class BaseStationController(PyQt4.QtCore.QObject):
     def updateConnectedRocket(self, rocketID):
 
         self.__baseStationModel.connectedRocket = self.__baseStationModel.availableRocket[rocketID]
+        self.__rocketController.rocket = self.__baseStationModel.connectedRocket
 
     def disconnectFromRocket(self, rocketID):
 

@@ -8,12 +8,10 @@ Created on 2016-01-04
 '''
 
 class SerialConnection(serial.Serial):
-    
-    __INSTANCE = None
-    
+
     def __init__(self, port="/dev/ttyS1", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
         
-        super(serial.Serial,self).__init__()
+        super(SerialConnection, self).__init__()
         self.port = port
         self.baudrate = baudrate
         self.stopbits = stopbits
@@ -72,11 +70,3 @@ class SerialConnection(serial.Serial):
     @isConnected.setter
     def isConnected(self,isConnected):
         self.__isConnected = isConnected
-        
-    @staticmethod
-    def getInstance():
-        
-        if SerialConnection.__INSTANCE is None:
-            SerialConnection.__INSTANCE = SerialConnection()
-            
-        return SerialConnection.__INSTANCE

@@ -66,7 +66,15 @@ class RocketController(object):
         self.updateRocketID(ID)
         self.updateRocketState(state)
    
-        
+
+    def updateRocketCameraState(self):
+
+        if self.__rocketModel.cameraON:
+
+            self.__rocketModel.cameraON = False
+        else:
+            self.__rocketModel.cameraON = True
+
     """
     #    Methode updateRocketSpeed
     #    Description: Methode du controlleur permettant de mettre a
