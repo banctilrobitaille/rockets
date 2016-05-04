@@ -248,6 +248,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.baseStation.connectedRocket.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
         self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
+        self.__baseStationController.baseStation.connectedRocket.coordsChanged.connect(self.__on_RocketCoordsChanged)
 
     @pyqtSlot(object)
     def __on_AvailableRocketChanged(self, availableRocket):
@@ -274,21 +275,25 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_SpeedChanged(self, speed):
         
         self.__dashboard.updateSpeed(speed)
+        self.__graphTab.addSpeedData(speed)
     
     @pyqtSlot(float)
     def __on_AccelerationChanged(self, acceleration):
         
         self.__dashboard.updateAcceleration(acceleration)
+        self.__graphTab.addAccelerationData(acceleration)
     
     @pyqtSlot(float)
     def __on_AltitudeChanged(self, altitude):
         
         self.__dashboard.updateAltitude(altitude)
+        self.__graphTab.addAltitudeData(altitude)
     
     @pyqtSlot(float)
     def __on_TemperatureChanged(self, temperature):
         
         self.__dashboard.updateTemperature(temperature)
+        self.__graphTab.addTemperatureData(temperature)
 
     @pyqtSlot(str)
     def __on_FixTimeChanged(self, fixTime):
@@ -457,6 +462,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_BaseStationCoordsChanged(self,latitude, longitude):
 
         self.__gpsTab.map.updateBaseStationMarker(longitude, latitude)
+
+    @pyqtSlot(float, float)
+    def __on_RocketCoordsChanged(self, latitude, longitude):
+
+        self.__gpsTab.map.updateRocketMarker(longitude, latitude)
     
 class MenuBar(PyQt4.QtGui.QMenuBar):
     

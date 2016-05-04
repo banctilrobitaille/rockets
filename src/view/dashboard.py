@@ -120,13 +120,13 @@ class Dashboard(PyQt4.QtGui.QFrame):
         
     def updateAltitude(self, altitude):
         
-        self.__altitude_dial.setValue(altitude)
-        self.__lcd_altitude.display(str(altitude))
+        self.__altitude_dial.setValue((altitude/1000.0))
+        self.__lcd_altitude.display("%.2f" % altitude)
     
     def updateTemperature(self, temperature):
         
         self.__rocketTemp.updateValue(temperature)
-        self.__lcd_thermo.display(str(temperature))
+        self.__lcd_thermo.display("%.2f" % temperature)
 
 """#
 # La classe Speedometer

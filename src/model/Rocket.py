@@ -129,7 +129,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @coords.setter
     def coords(self,coords):
         self.__coords = coords
-        self.coordsChanged.emit(self.__coords['longitude'], self.__coords['latitude'])
+        self.coordsChanged.emit(self.__coords['latitude'], self.__coords['longitude'])
         
     @property
     def currentState(self):

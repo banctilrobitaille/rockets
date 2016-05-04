@@ -14,7 +14,7 @@ from PyQt4.Qt import QPalette, QColor, QPen, QString
 ##############################################################################"""
 from PyQt4.Qwt5.qplt import SolidLine, DashDotDotLine
 from PyQt4.Qwt5.Qwt import QwtPlotMarker, QwtText
-
+from datetime import datetime
 """#
 # La classe DataFrame
 # Description:    Classe representant un frame contenant des widgets quelconque
@@ -54,7 +54,11 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
     def __init__(self, graphTitle, xAxisTitle, yAxisTitle, curveColor):
         
         PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
-        
+
+        self.xData = [0]
+        self.yData = [0]
+        self.lastDataTimeStamp = None
+
         self.setCanvasBackground(QColor(45,45,45))
         self.palette = QPalette()
         self.palette.setColor(self.palette.Text, QColor(245,245,245))
@@ -68,18 +72,34 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.setXAxisTitle(xAxisTitle, self.plotAxisFont)
         self.setYAxisTitle(yAxisTitle, self.plotAxisFont)
         
-        self.marker = QwtPlotMarker()
+        """self.marker = QwtPlotMarker()
         self.marker.setLabel(QwtText("Peak: 100"))
         self.marker.setLineStyle(QwtPlotMarker.HLine)
         self.marker.setLinePen(QPen(QColor(0,153,204),1.0,DashDotDotLine))
         self.marker.setValue(50,100)
-        self.marker.attach(self)
+        self.marker.attach(self)"""
         
         self.curve = PyQt4.Qwt5.Qwt.QwtPlotCurve()
         self.curve.setPen(QPen(curveColor,3.0,SolidLine))
-        self.curve.setData([1,5,20,30,50,70],[5,10,50,60,200,50])
         self.curve.attach(self)
         self.replot()
+
+    def addData(self, value):
+
+        xvalue = 0
+
+        if self.lastDataTimeStamp is None:
+            xvalue = 0
+            self.lastDataTimeStamp = datetime.now()
+        else:
+            xvalue = float((datetime.now() - self.lastDataTimeStamp).seconds)
+
+        self.xData.append(xvalue)
+        self.yData.append(value)
+        self.curve.setData(self.xData, self.yData)
+        self.replot()
+
+
     """
     #    Methode setGraphTitle
     #    Description: Methode affectant un titre au graphique
@@ -146,7 +166,23 @@ class GraphTab(DataFrame):
         self.addWidget(self.accelPlot, 0, 1)
         self.addWidget(self.altitudePlot, 1, 0)
         self.addWidget(self.temperaturePlot, 1, 1)
-        
+
+
+    def addAccelerationData(self, value):
+
+        self.accelPlot.addData(value)
+
+    def addTemperatureData(self, value):
+
+        self.temperaturePlot.addData(value)
+
+    def addSpeedData(self, value):
+
+        self.speedPlot.addData(value)
+
+    def addAltitudeData(self, value):
+
+        self.altitudePlot.addData(value)
         
 """#
 # La classe GPSTab
