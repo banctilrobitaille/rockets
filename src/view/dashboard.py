@@ -126,7 +126,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
     def updateTemperature(self, temperature):
         
         self.__rocketTemp.updateValue(temperature)
-        
+        self.__lcd_thermo.display(str(temperature))
 
 """#
 # La classe Speedometer

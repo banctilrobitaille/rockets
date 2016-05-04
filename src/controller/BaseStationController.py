@@ -17,16 +17,23 @@ class BaseStationController(PyQt4.QtCore.QObject):
         self.__baseStationModel = BaseStation()
 
         self.__RFD900SerialController = SerialController()
+        self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS1')
+        self.__RFD900SerialController.updateSerialConnectionBaudrate(57600)
+
         self.__XBeeSerialController = SerialController()
         self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS0")
         self.__XBeeSerialController.updateSerialConnectionBaudrate(9600)
+
         self.__globalSatSerialController = SerialController()
-        self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
         self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS3")
+        self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
 
         self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
+        self.__RFD900.connect()
+
         self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
         self.__XBee.connect()
+
         self.__gpsDevice = GlobalSat(self.__globalSatSerialController)
         self.__gpsDevice.connect()
 
@@ -109,9 +116,7 @@ class BaseStationController(PyQt4.QtCore.QObject):
     @pyqtSlot(int)
     def __on_rocketDiscovery(self, rocketID):
 
-        if rocketID not in self.__baseStationModel.availableRocket:
-
-            self.__baseStationModel.availableRocket[rocketID] = Rocket()
+        self.__baseStationModel.addAvailableRocket(Rocket(ID=rocketID, name=Rocket.NAME[rocketID]))
 
     @pyqtSlot(float, float)
     def __on_coordsReceived(self, latitude, longitude):

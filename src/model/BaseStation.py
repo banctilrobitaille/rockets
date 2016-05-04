@@ -47,6 +47,12 @@ class BaseStation(PyQt4.QtCore.QObject):
         self.__availableRocket = availableRocket
         self.availableRocketChanged.emit(self.__availableRocket)
 
+    def addAvailableRocket(self, rocket):
+
+        if rocket.ID not in self.__availableRocket:
+            self.__availableRocket[rocket.ID] = rocket
+            self.availableRocketChanged.emit(self.__availableRocket)
+
     @property
     def temperature(self):
         

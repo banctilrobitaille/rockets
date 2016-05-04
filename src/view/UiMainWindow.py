@@ -226,6 +226,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.__toolbar.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
 
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
+        self.__baseStationController.baseStation.availableRocketChanged.connect(self.__on_AvailableRocketChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
         self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)
 
@@ -247,6 +248,16 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.baseStation.connectedRocket.altitudeChanged.connect(self.__on_AltitudeChanged)
         self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
         self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
+
+    @pyqtSlot(object)
+    def __on_AvailableRocketChanged(self, availableRocket):
+
+        self.__toolbar.resetRocketList()
+
+        for rocketID,rocket in availableRocket.items():
+
+            self.__toolbar.addRocketAction(rocketID, rocket.name)
+            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(lambda: self.__on_Rocket_Clicked(rocket.ID))
 
     @pyqtSlot(object)
     def __on_connectedRocketChanged(self, rocket):
@@ -355,7 +366,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Stream_Clicked(self):
 
-        self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
+        if self.__baseStationController.RFD900.streaming:
+            self.__baseStationController.RFD900.stopStream()
+            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_OFF_ICON_PATH))
+        else:
+            self.__baseStationController.RFD900.startStream()
+            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
+
+
 
     def __on_Rocket_Clicked(self, rocketID):
 

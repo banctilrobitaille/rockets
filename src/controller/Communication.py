@@ -407,19 +407,17 @@ class RFD900Strategy(SerialDeviceStrategy):
     def startRocketDiscovery(self):
 
         self.rocketDiscoveryStreamer = CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.DISCOVERY_ID,
-                                                     ID=self.ID,command=FrameFactory.COMMAND['ROCKET_DISCOVERY'], timeout=5,
-                                                     interval=5)
+                                                     ID=self.ID,command=FrameFactory.COMMAND['ROCKET_DISCOVERY'],
+                                                     interval=1)
         self.addCommandStreamer(self.rocketDiscoveryStreamer)
-        self.rocketDiscoveryStreamer.isRunning = True
-        self.rocketDiscoveryStreamer.rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
-        self.rocketDiscoveryStreamer.start()
         self.isDiscoveringRocket = True
 
     def stopRocketDiscovery(self):
 
         if self.isDiscoveringRocket:
 
-            self.rocketDiscoveryStreamer.isRunning = False
+            self.rocketDiscoveryStreamer.kill()
+            self.rocketDiscoveryStreamer.wait(3000)
             self.rocketDiscoveryStreamer = None
             self.isDiscoveringRocket = False
 
@@ -427,46 +425,50 @@ class RFD900Strategy(SerialDeviceStrategy):
 
         self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['START_STREAM'], ID=self.ID,
-                                              timeout=5, interval=5))
+                                              timeout=15, interval=1))
+        self.__streaming = True
 
     def stopStream(self):
 
         self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['STOP_STREAM'], ID=self.ID,
-                                              timeout=5, interval=5))
+                                              timeout=15, interval=1))
+        self.__streaming = False
 
     @pyqtSlot(object)
     def on_received_data(self, receivedData):
 
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
-        if receivedFrame.isValid():
+        print receivedData
 
-            if receivedFrame.command == FrameFactory.COMMAND['ACK']:
+        if receivedFrame.command == FrameFactory.COMMAND['ACK']:
 
-                if str(receivedFrame.ID) in self.commandStreamer:
+            if str(receivedFrame.ID) in self.commandStreamer:
 
-                    self.commandStreamer[str(receivedFrame.ID)].kill()
-                    del self.commandStreamer[str(receivedFrame.ID)]
+                self.commandStreamer[str(receivedFrame.ID)].kill()
+                del self.commandStreamer[str(receivedFrame.ID)]
 
-            elif receivedFrame.command == FrameFactory.COMMAND['START_STREAM'] or receivedFrame.command \
-                    == FrameFactory.COMMAND['GET_TELEMETRY']:
+        elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
 
-                self.rocketController.updateRocketSpeed(receivedFrame.speed)
-                self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
-                self.rocketController.updateRocketAltitude(receivedFrame.altitude)
-                self.rocketController.updateRocketAltitude(receivedFrame.temperature)
-                self.rocketController.updateRocketCoords([receivedFrame.longitude, receivedFrame.latitude])
+            if str(receivedFrame.ID) in self.commandStreamer:
 
-            elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
+                self.commandStreamer[str(receivedFrame.ID)].kill()
+                del self.commandStreamer[str(receivedFrame.ID)]
 
-                self.rocketDiscovered.emit(receivedFrame.rocketID)
+            self.rocketController.updateRocketState(receivedFrame.state)
+            self.rocketController.updateRocketSpeed(receivedFrame.speed)
+            self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
+            self.rocketController.updateRocketAltitude(receivedFrame.altitude)
+            self.rocketController.updateRocketTemperature(receivedFrame.temperature)
+            self.rocketController.updateRocketCoords({'longitude' : receivedFrame.longitude,
+                                                      'latitude' :receivedFrame.latitude})
 
-            elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
+        elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
-                self.resendLastCommand()
+            self.rocketDiscovered.emit(receivedFrame.rocketID)
 
-        elif self.history.getLastSentFrame().command != FrameFactory.COMMAND['START_STREAM']:
+        elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
 
             self.resendLastCommand()
 
@@ -651,8 +653,10 @@ class CommandStream(PyQt4.QtCore.QThread):
 
     def kill(self):
 
-        self.__timer.stop()
         self.__isRunning = False
+        if self.__timeout is not None:
+            self.__timer.stop()
+
 
     def run(self):
 
@@ -665,8 +669,8 @@ class CommandStream(PyQt4.QtCore.QThread):
 
                 frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'],rocketID=self.__rocketID,
                                             ID=self.ID, command=self.command)
-                self.__serialConnection.write(Frame.FLAG + Frame.FLAG + frame.toByteArray(withCRC=True) +
-                                              Frame.FLAG + Frame.FLAG)
+                test = Frame.FLAG + frame.toByteArray(withCRC=True)
+                self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
                 time.sleep(self.__interval)
 
             except Exception as e:
@@ -702,6 +706,6 @@ class CommunicationHistory(object):
     
     def getLastCommand(self):
         
-        if len(self.self.__commandHistory) is not 0:
+        if len(self.__commandHistory) is not 0:
             
             return self.__commandHistory[-1]

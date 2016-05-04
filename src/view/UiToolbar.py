@@ -106,7 +106,11 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
 
     def resetRocketList(self):
 
+        for rocketID, rocketAction in self.__rocketActionDict.items():
+            self.removeAction(rocketAction)
+
         self.__rocketActionDict.clear()
+
 
     def getActionFromRocketID(self, rocketID):
 

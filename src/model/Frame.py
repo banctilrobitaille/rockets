@@ -212,7 +212,7 @@ class ReceivedFrame(Frame):
 
 class SentFrame(Frame):
 
-    LENGTH = 12
+    LENGTH = 14
 
     def __init__(self, rocketID, command, ID, timestamp, payload):
         Frame.__init__(self, rocketID, command, ID, timestamp, None)

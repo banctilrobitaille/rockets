@@ -30,7 +30,7 @@ class Rocket(PyQt4.QtCore.QObject):
     directionChanged = PyQt4.QtCore.pyqtSignal(int)
     coordsChanged = PyQt4.QtCore.pyqtSignal(float,float)
     idChanged = PyQt4.QtCore.pyqtSignal(int)
-    stateChanged = PyQt4.QtCore.pyqtSignal(str)
+    stateChanged = PyQt4.QtCore.pyqtSignal(int)
     cameraStateChanged = PyQt4.QtCore.pyqtSignal(bool)
 
     DISCOVERY_ID = 0xE0
@@ -43,6 +43,7 @@ class Rocket(PyQt4.QtCore.QObject):
              'MAIN_DESCENT'     : 4,
              'ON_THE_GROUND'    : 5}
 
+    NAME = {32 : "Emerillon IV",}
 
     """The model constructor, default value are provided if not given"""
     def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None, name=""):
@@ -128,7 +129,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @coords.setter
     def coords(self,coords):
         self.__coords = coords
-        self.coordsChanged(self.__coords['longitude'], self.__coords['latitude'])
+        self.coordsChanged.emit(self.__coords['longitude'], self.__coords['latitude'])
         
     @property
     def currentState(self):
@@ -146,6 +147,7 @@ class Rocket(PyQt4.QtCore.QObject):
     @ID.setter
     def ID(self, ID):
         self.__ID = ID
+        self.__name = self.NAME[ID]
         self.idChanged.emit(ID)
         
     @staticmethod
