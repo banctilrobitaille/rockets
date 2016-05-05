@@ -249,6 +249,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
         self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
         self.__baseStationController.baseStation.connectedRocket.coordsChanged.connect(self.__on_RocketCoordsChanged)
+        self.__baseStationController.baseStation.connectedRocket.stateChanged.connect(self.__on_RocketStateChanged)
 
     @pyqtSlot(object)
     def __on_AvailableRocketChanged(self, availableRocket):
@@ -294,6 +295,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         self.__dashboard.updateTemperature(temperature)
         self.__graphTab.addTemperatureData(temperature)
+
+    @pyqtSlot(int)
+    def __on_RocketStateChanged(self, state):
+        self.__statePanel.updateState(state)
 
     @pyqtSlot(str)
     def __on_FixTimeChanged(self, fixTime):

@@ -80,7 +80,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.marker.attach(self)"""
         
         self.curve = PyQt4.Qwt5.Qwt.QwtPlotCurve()
-        self.curve.setPen(QPen(curveColor,3.0,SolidLine))
+        self.curve.setPen(QPen(curveColor,2.0,SolidLine))
         self.curve.attach(self)
         self.replot()
 
