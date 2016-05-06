@@ -57,6 +57,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
 
         self.xData = [0]
         self.yData = [0]
+        self.__maxData = 0
         self.lastDataTimeStamp = None
 
         self.setCanvasBackground(QColor(45,45,45))
@@ -72,12 +73,10 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.setXAxisTitle(xAxisTitle, self.plotAxisFont)
         self.setYAxisTitle(yAxisTitle, self.plotAxisFont)
         
-        """self.marker = QwtPlotMarker()
-        self.marker.setLabel(QwtText("Peak: 100"))
-        self.marker.setLineStyle(QwtPlotMarker.HLine)
-        self.marker.setLinePen(QPen(QColor(0,153,204),1.0,DashDotDotLine))
-        self.marker.setValue(50,100)
-        self.marker.attach(self)"""
+        self.__maxValueMarker = QwtPlotMarker()
+        self.__maxValueMarker.setLineStyle(QwtPlotMarker.HLine)
+        self.__maxValueMarker.setLinePen(QPen(QColor(0,153,204),1.0,DashDotDotLine))
+        self.__maxValueMarker.attach(self)
         
         self.curve = PyQt4.Qwt5.Qwt.QwtPlotCurve()
         self.curve.setPen(QPen(curveColor,2.0,SolidLine))
@@ -93,6 +92,11 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
             self.lastDataTimeStamp = datetime.now()
         else:
             xvalue = float((datetime.now() - self.lastDataTimeStamp).seconds)
+
+        if value > self.__maxData:
+            self.__maxValueMarker.setLabel(QwtText("Peak: "+ str(value)))
+            self.__maxValueMarker.setValue(xvalue,value)
+            self.__maxData = value
 
         self.xData.append(xvalue)
         self.yData.append(value)
@@ -159,7 +163,7 @@ class GraphTab(DataFrame):
         self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)", QColor(255,0,0))
         self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)",QColor(255,0,0))
         self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')",QColor(255,0,0))
-        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(KELVIN)",QColor(255,0,0))
+        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(Celsius)",QColor(255,0,0))
         
         """Ajout des widgets dans le frame selon un gridlayout"""
         self.addWidget(self.speedPlot, 0, 0)

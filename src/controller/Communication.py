@@ -447,6 +447,7 @@ class RFD900Strategy(SerialDeviceStrategy):
             if str(receivedFrame.ID) in self.commandStreamer:
 
                 self.commandStreamer[str(receivedFrame.ID)].kill()
+                self.commandStreamer[str(receivedFrame.ID)].wait(3000)
                 del self.commandStreamer[str(receivedFrame.ID)]
 
         elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
@@ -454,6 +455,7 @@ class RFD900Strategy(SerialDeviceStrategy):
             if str(receivedFrame.ID) in self.commandStreamer:
 
                 self.commandStreamer[str(receivedFrame.ID)].kill()
+                self.commandStreamer[str(receivedFrame.ID)].wait(5000)
                 del self.commandStreamer[str(receivedFrame.ID)]
 
             self.rocketController.updateRocketState(receivedFrame.state)
