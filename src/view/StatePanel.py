@@ -42,6 +42,7 @@ class StatePanel(PyQt4.QtGui.QFrame):
         if self.__curentState is None:
             self.__stateDict[0].status = State.STATUS['COMPLETED']
             self.__curentState = self.__stateDict[stateID]
+            self.__curentState.status = State.STATUS['IN_PROGRESS']
         elif self.__curentState is not self.__stateDict[stateID]:
             self.__curentState.status = State.STATUS['COMPLETED']
             self.__curentState = self.__stateDict[stateID]

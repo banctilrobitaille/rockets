@@ -99,7 +99,7 @@ class ReceivedFrame(Frame):
         frame['ID']            = struct.unpack_from("B", byteArray[1])[0]
         frame['TIMESTAMP']     = struct.unpack_from("f", byteArray[3:7])[0]
         stateAndFix            = struct.unpack_from("B", byteArray[7])[0]
-        frame['STATE']         = stateAndFix & 0b11111000
+        frame['STATE']         = (stateAndFix & 0b11111000) >> 3
         frame['GPSFIX']        = stateAndFix & 0b00000111
         frame['SPEED']         = struct.unpack_from("f", byteArray[11:15])[0]
         frame['ALTITUDE']      = struct.unpack_from("f", byteArray[15:19])[0]

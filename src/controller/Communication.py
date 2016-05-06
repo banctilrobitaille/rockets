@@ -425,14 +425,14 @@ class RFD900Strategy(SerialDeviceStrategy):
 
         self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['START_STREAM'], ID=self.ID,
-                                              timeout=15, interval=1))
+                                              timeout=15, interval=0.5))
         self.__streaming = True
 
     def stopStream(self):
 
         self.addCommandStreamer(CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['STOP_STREAM'], ID=self.ID,
-                                              timeout=15, interval=1))
+                                              timeout=15, interval=0.5))
         self.__streaming = False
 
     @pyqtSlot(object)
@@ -440,7 +440,7 @@ class RFD900Strategy(SerialDeviceStrategy):
 
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
-        print receivedData
+        #print receivedData
 
         if receivedFrame.command == FrameFactory.COMMAND['ACK']:
 
@@ -458,6 +458,7 @@ class RFD900Strategy(SerialDeviceStrategy):
                 self.commandStreamer[str(receivedFrame.ID)].wait(5000)
                 del self.commandStreamer[str(receivedFrame.ID)]
 
+            print receivedFrame.state
             self.rocketController.updateRocketState(receivedFrame.state)
             self.rocketController.updateRocketSpeed(receivedFrame.speed)
             self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
