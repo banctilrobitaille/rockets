@@ -31,37 +31,37 @@ class LogController(object):
 
     def addData(self, timestamp, state, speed, altitude,acceleration, latitude, longitude, temperature, crc):
 
-        root=Element('FlightData')
-        tree=ElementTree(root)
+        root = Element('FlightData')
+        tree = ElementTree(root)
 
-        date=Element('Date')
+        date = Element('Date')
         root.append(date)
 
         ts = time.time()
         date.set('date', datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
 
-        rocketid=ET.SubElement(date,'RocketID')
+        rocketid = ET.SubElement(date,'RocketID')
         rocketid.set('id', id)
 
         timestamp = ET.SubElement(date, 'timestamp')
         timestamp.text = timestamp
 
-        state=ET.SubElement(date,'state')
+        state = ET.SubElement(date,'state')
         state.text = state
         #state.text = '0'
 
 
-        speed=ET.SubElement(date,'speed')
+        speed = ET.SubElement(date,'speed')
         speed.text = speed
         #speed.text = '450'
 
 
-        altitude=ET.SubElement(date,'altitude')
+        altitude = ET.SubElement(date,'altitude')
         altitude.text = altitude
         #altitude.text = '10000'
 
 
-        acceleration=ET.SubElement(date,'acceleration')
+        acceleration = ET.SubElement(date,'acceleration')
         acceleration.text = acceleration
         #acceleration.text = '45'
 
@@ -78,7 +78,7 @@ class LogController(object):
         temperature.text = temperature
         #temperature.text = '20'
 
-        crc=ET.SubElement(date, 'crc')
+        crc = ET.SubElement(date, 'crc')
         crc.text = crc
         #crc.text = '200'
 
