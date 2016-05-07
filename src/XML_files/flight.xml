@@ -1,13 +1,38 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Flight id="1">
-   <RocketID id="1">
-      <timestamp>39432949324</timestamp>
-      <state>connected</state>
-      <speed>450 mph</speed>
-      <altitude>10000</altitude>
-      <acceleration>45</acceleration>
-      <latitude>37.77184</latitude>
-      <longitude>11.500</longitude>
-      <temperature>20</temperature>
-   </RocketID>
-</Flight>
+<FlightData>
+    <Date date="2016-05-07 14:00:42">
+        <RocketID id="1" />
+        <timestamp>2016-05-07 14:00:42</timestamp>
+        <state>0</state>
+        <speed>450</speed>
+        <altitude>10000</altitude>
+        <acceleration>45</acceleration>
+        <latitude>37.77184</latitude>
+        <longitude>11.500</longitude>
+        <temperature>20</temperature>
+        <crc>200</crc>
+    </Date>
+    <Date date="2016-05-07 15:00:42">
+        <RocketID id="1" />
+        <timestamp>2016-05-07 14:00:42</timestamp>
+        <state>0</state>
+        <speed>450</speed>
+        <altitude>10000</altitude>
+        <acceleration>45</acceleration>
+        <latitude>37.77184</latitude>
+        <longitude>11.500</longitude>
+        <temperature>20</temperature>
+        <crc>200</crc>
+    </Date>
+    <Date date="2016-05-07 16:00:42">
+        <RocketID id="1" />
+        <timestamp>2016-05-07 14:00:42</timestamp>
+        <state>0</state>
+        <speed>450</speed>
+        <altitude>10000</altitude>
+        <acceleration>45</acceleration>
+        <latitude>37.77184</latitude>
+        <longitude>11.500</longitude>
+        <temperature>20</temperature>
+        <crc>200</crc>
+    </Date>
+</FlightData>
