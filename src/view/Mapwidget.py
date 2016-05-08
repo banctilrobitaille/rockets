@@ -69,15 +69,17 @@ class Map(PyQt4.QtGui.QWidget):
 
         self.fig = Figure(figsize=(12,12),frameon=False, tight_layout=False)
         self.axes = self.fig.add_axes([0,0,1,1])
-        grid = np.random.rand(10, 10)
+        self.grid = np.random.rand(10, 10)
         self.canvas = FigureCanvas(self.fig)
         self.layout = PyQt4.QtGui.QVBoxLayout()
         self.setLayout(self.layout)
         self.layout.addWidget(self.canvas)
+        #self.m = Basemap(width=6000000,height=4500000,projection='lcc',
+        #    resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
         self.m = Basemap(width=6000000,height=4500000,projection='lcc',
-            resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
+            resolution=None,lat_0=45,lon_0=-73,ax=self.axes)
         self.m.shadedrelief()
-        self.axes.imshow(grid,interpolation="quadric", aspect='auto')
+        self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.canvas.draw()
 
     def __addGPSInfo(self):
@@ -111,6 +113,10 @@ class Map(PyQt4.QtGui.QWidget):
 
         self.__baseStationMarkerLon = lon
         self.__baseStationMarkerLat = lat
+        self.m = Basemap(width=6000,height=4500,projection='lcc',
+            resolution=None,lat_0=lat,lon_0=lon,ax=self.axes)
+        self.m.shadedrelief()
+        self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.__updateMarkers()
 
     def updateRocketMarker(self,lon, lat):

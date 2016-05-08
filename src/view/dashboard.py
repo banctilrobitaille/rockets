@@ -36,7 +36,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         
         """Initilisation du cadran de laltitude, du cadran numerique et label descriptif"""
         self.__lbl_altitude = Label(self, "ALTITUDE")
-        self.__altitude_dial = SpeedoMeter(self,"x1000''",0.0,27.0,0,0,2)
+        self.__altitude_dial = SpeedoMeter(self,"x1000'",0.0,27.0,0,0,2)
         self.__lcd_altitude = DigitalNum(self, 0)
         
         """Initialisation du cadran de lacceleration, du cadran numerique et label descriptif"""

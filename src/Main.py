@@ -27,7 +27,7 @@ class BaseStationApplication(PyQt4.QtGui.QApplication):
         self.mainWindow.show()
 
         splash.showMessage("Loading VTK modules", color=PyQt4.QtGui.QColor(255, 255, 255))
-        self.mainWindow.iren.Initialize()
+        #self.mainWindow.iren.Initialize()
 
         splash.finish(self.mainWindow)
         self.exec_()

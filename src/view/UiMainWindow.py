@@ -9,6 +9,7 @@ from PyQt4.Qt import pyqtSlot
 import StatePanel
 import UiToolbar
 from UiSlidingMessage import SlidingMessage
+from UiClickableRocket import ClickableRocketWidget
 from src.controller.BaseStationController import BaseStationController
 """#############################################################################
 # 
@@ -71,29 +72,30 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         #self.__compass = compass.Compass(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
-        self.__rocket = vtkRendering.rocketRendering(self)
+        #self.__rocket = vtkRendering.rocketRendering(self)
+        self.__clickableRocket = ClickableRocketWidget(self)
         self.__statePanel = StatePanel.StatePanel(self)
 
         self.__slidingMessage = SlidingMessage("Successfully entered in discover mode", self)
 
-        self.ren = vtk.vtkRenderer()
-        self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
-        self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
+        #self.ren = vtk.vtkRenderer()
+        #self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        #self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
  
-        self.reader = vtk.vtkSTLReader()
-        self.reader.SetFileName("VTK_Files/original.stl")
+        #self.reader = vtk.vtkSTLReader()
+        #self.reader.SetFileName("VTK_Files/original.stl")
  
         # Create a mapper
-        mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInputConnection(self.reader.GetOutputPort())
+        #mapper = vtk.vtkPolyDataMapper()
+        #mapper.SetInputConnection(self.reader.GetOutputPort())
  
         # Create an actor
-        actor = vtk.vtkActor()
-        actor.SetMapper(mapper)
+        #actor = vtk.vtkActor()
+        #actor.SetMapper(mapper)
         
-        actor.GetProperty().SetColor(1,0,0)
-        actor.SetOrientation(100,0,0)
-        self.ren.AddActor(actor)
+        #actor.GetProperty().SetColor(1,0,0)
+        #actor.SetOrientation(100,0,0)
+        #self.ren.AddActor(actor)
         
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
@@ -472,7 +474,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_RocketCoordsChanged(self, latitude, longitude):
 
         self.__gpsTab.map.updateRocketMarker(longitude, latitude)
-    
+
+
 class MenuBar(PyQt4.QtGui.QMenuBar):
     
     def __init__(self, parent, objectName):

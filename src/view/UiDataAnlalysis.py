@@ -1,7 +1,7 @@
 import PyQt4.Qwt5
 import Mapwidget
-import MapWidget
-from PyQt4.Qt import QPalette, QColor, QPen, QString
+from PyQt4.Qt import QPalette, QColor, QPen
+from PyQt4.QtCore import pyqtSlot
 """#############################################################################
 # 
 # Nom du module:          UiDataAnalysis
@@ -42,6 +42,8 @@ class DataFrame(PyQt4.QtGui.QFrame):
 #"""   
 class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
 
+    graphClicked = PyQt4.QtCore.pyqtSignal(object)
+
     """
     #    Constructeur
     #    Description: Constructeur de la classe DataGraph
@@ -51,14 +53,17 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
     #           yAxisTitle: Titre de laxe des y
     #    return: None
     """
-    def __init__(self, graphTitle, xAxisTitle, yAxisTitle, curveColor):
-        
-        PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
+    def __init__(self, graphTitle, xAxisTitle, yAxisTitle, curveColor,row, column):
 
+
+        PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
         self.xData = [0]
         self.yData = [0]
         self.__maxData = 0
         self.lastDataTimeStamp = None
+        self.__isFullSize = False
+        self.__row = row
+        self.__column = column
 
         self.setCanvasBackground(QColor(45,45,45))
         self.palette = QPalette()
@@ -82,6 +87,34 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.curve.setPen(QPen(curveColor,2.0,SolidLine))
         self.curve.attach(self)
         self.replot()
+
+    @property
+    def row(self):
+        return self.__row
+
+    @row.setter
+    def row(self, row):
+        self.__row = row
+
+    @property
+    def column(self):
+        return self.__column
+
+    @column.setter
+    def column(self,column):
+        self.__column = column
+
+    @property
+    def isFullSize(self):
+        return self.__isFullSize
+
+    @isFullSize.setter
+    def isFullSize(self, state):
+        self.__isFullSize = state
+
+    def mousePressEvent(self, event):
+
+        self.graphClicked.emit(self)
 
     def addData(self, value):
 
@@ -157,19 +190,43 @@ class GraphTab(DataFrame):
         
         """Initialiation de lobjet parent"""
         DataFrame.__init__(self,parent)
-        
         self.setGeometry(830,15,700,500)
+
         """Initialisation des differents graphiques realtime"""
-        self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)", QColor(255,0,0))
-        self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)",QColor(255,0,0))
-        self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')",QColor(255,0,0))
-        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(Celsius)",QColor(255,0,0))
-        
+        self.speedPlot = DataGraph("Speed over Time", "Time(SEC)","Speed(MPH)", QColor(255,0,0),0,0)
+        self.accelPlot = DataGraph("Acceleration Over Time", "Time(SEC)","Accel.(MS2)",QColor(255,0,0),0,1)
+        self.altitudePlot = DataGraph("Altitude over Time", "Time(SEC)","Alt.(x1000')",QColor(255,0,0),1,0)
+        self.temperaturePlot = DataGraph("Temperature over Time", "Time(SEC)","Temp.(Celsius)",QColor(255,1,0),1,1)
+
+        self.speedPlot.graphClicked.connect(self.updateDisplay)
+        self.accelPlot.graphClicked.connect(self.updateDisplay)
+        self.altitudePlot.graphClicked.connect(self.updateDisplay)
+        self.temperaturePlot.graphClicked.connect(self.updateDisplay)
+
         """Ajout des widgets dans le frame selon un gridlayout"""
         self.addWidget(self.speedPlot, 0, 0)
         self.addWidget(self.accelPlot, 0, 1)
         self.addWidget(self.altitudePlot, 1, 0)
         self.addWidget(self.temperaturePlot, 1, 1)
+
+    @property
+    def graphList(self):
+        return [self.speedPlot, self.accelPlot, self.altitudePlot, self.temperaturePlot]
+
+    @pyqtSlot(object)
+    def updateDisplay(self, clickedGraph):
+
+        if not clickedGraph.isFullSize:
+            for graph in self.graphList:
+                if graph is not clickedGraph:
+                    graph.hide()
+            self.gridLayout.addWidget(graph,0,0,2,2)
+            clickedGraph.isFullSize = True
+        else:
+            clickedGraph.isFullSize = False
+            for graph in self.graphList:
+                self.addWidget(graph, graph.row, graph.column)
+                graph.show()
 
 
     def addAccelerationData(self, value):
