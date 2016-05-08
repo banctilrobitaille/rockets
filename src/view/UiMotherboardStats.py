@@ -8,21 +8,14 @@ class MotherboardStats(PyQt4.QtGui.QWidget):
         super(MotherboardStats,self).__init__(None)
 
         self.__setupUI()
-        self.__motherboardImage = MotherboardFrame(self)
 
-        self.__layout.addWidget(self.__motherboardImage,1)
-        self.__thermoLayout = PyQt4.QtGui.QHBoxLayout()
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoLayout.addWidget(Thermometer(self,0,100,60),1)
-        self.__thermoFrame = PyQt4.QtGui.QFrame()
-        self.__thermoFrame.setLayout(self.__thermoLayout)
-        self.__layout.addWidget(self.__thermoFrame,1)
+        self.__lblTitle = PyQt4.QtGui.QLabel("TEMPERATURE SENSORS")
+        self.__lblTitle.fontChange(PyQt4.Qt.QFont("Arial",20))
+        self.__lblTitle.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
+        self.__layout = PyQt4.QtGui.QVBoxLayout()
+        self.__layout.addWidget(self.__lblTitle,0)
+        self.__layout.addWidget(MotherboardFrame(self),1)
+        self.__layout.addWidget(ThermometerFrame(self),1)
         self.setLayout(self.__layout)
         self.show()
 
@@ -30,11 +23,6 @@ class MotherboardStats(PyQt4.QtGui.QWidget):
 
         self.setGeometry(300,300,1000,600)
         self.setWindowTitle("PCB Stats")
-        self.__lblTitle = PyQt4.QtGui.QLabel("TEMPERATURE SENSORS")
-        self.__lblTitle.fontChange(PyQt4.Qt.QFont("Arial",20))
-        self.__lblTitle.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
-        self.__layout = PyQt4.QtGui.QVBoxLayout()
-        self.__layout.addWidget(self.__lblTitle,0)
         self.setStyleSheet("QWidget {background-color: black; color: white}")
 
 
@@ -103,7 +91,9 @@ class ThermometerFrame(PyQt4.QtGui.QFrame):
     def __init__(self, parent):
         super(ThermometerFrame, self).__init__(parent)
 
-        self.__label = {
+        self.__layout = PyQt4.QtGui.QHBoxLayout()
+
+        self.__label = [
 
             PyQt4.QtGui.QLabel("Switch #1"),
             PyQt4.QtGui.QLabel("Switch #2"),
@@ -113,9 +103,9 @@ class ThermometerFrame(PyQt4.QtGui.QFrame):
             PyQt4.QtGui.QLabel("PCB Temperature"),
             PyQt4.QtGui.QLabel("Station inertielle"),
             PyQt4.QtGui.QLabel("Switch #3"),
-        }
+        ]
 
-        self.__thermometers = {
+        self.__thermometers = [
 
             Thermometer(self,0,100,60),
             Thermometer(self,0,100,60),
@@ -125,7 +115,19 @@ class ThermometerFrame(PyQt4.QtGui.QFrame):
             Thermometer(self,0,100,60),
             Thermometer(self,0,100,60),
             Thermometer(self,0,100,60),
-        }
+        ]
+
+        for i in range(0, len(self.__thermometers)):
+
+            thermometerSensor = PyQt4.QtGui.QFrame()
+            layout = PyQt4.QtGui.QVBoxLayout()
+            self.__label[i].setAlignment(PyQt4.QtCore.Qt.AlignCenter)
+            layout.addWidget(self.__label[i],0)
+            layout.addWidget(self.__thermometers[i],1)
+            thermometerSensor.setLayout(layout)
+            self.__layout.addWidget(thermometerSensor)
+
+        self.setLayout(self.__layout)
 
     @property
     def thermometers(self):
