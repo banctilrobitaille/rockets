@@ -1,18 +1,18 @@
 import PyQt4
 from PyQt4.Qt import pyqtSlot
-from src.controller.RocketController import RocketController
-from src.controller.Communication import SerialController
-from src.controller.Communication import RFD900Strategy, XbeeStrategy, FrameFactory
-from src.model.BaseStation import BaseStation
-from src.model.Rocket import Rocket
-from src.controller.GPS import GlobalSat
+from controller.RocketController import RocketController
+from controller.Communication import SerialController
+from controller.Communication import RFD900Strategy, XbeeStrategy, FrameFactory
+from model.BaseStation import BaseStation
+from model.Rocket import Rocket
+from controller.GPS import GlobalSat
 
 class BaseStationController(PyQt4.QtCore.QObject):
-    
+
     __INSTANCE = None
 
     def __init__(self):
-        
+
         self.__rocketController = RocketController.getInstance()
         self.__baseStationModel = BaseStation()
 
@@ -126,8 +126,8 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
     @staticmethod
     def getInstance():
-        
+
         if BaseStationController.__INSTANCE is None:
             BaseStationController.__INSTANCE = BaseStationController()
-            
+
         return BaseStationController.__INSTANCE

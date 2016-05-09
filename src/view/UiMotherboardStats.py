@@ -1,6 +1,5 @@
 import PyQt4
-from src.view.dashboard import Thermometer
-from PyKDE4.kdeui import KLed
+from view.dashboard import Thermometer
 
 class MotherboardStats(PyQt4.QtGui.QWidget):
 
@@ -47,7 +46,7 @@ class MotherboardFrame(PyQt4.QtGui.QFrame):
         self.show()
 
 
-class TemperatureSensorLed(KLed):
+class TemperatureSensorLed(PyQt4.QtGui.QWidget):
 
     SIZE = 40
 
@@ -82,8 +81,27 @@ class TemperatureSensorLed(KLed):
         self.__status = status
 
     def __updateColor(self):
-
         self.setColor(self.COLOR[self.__status])
+
+    def paintEvent(self, event):
+        paint = PyQt4.QtGui.QPainter()
+        paint.begin(self)
+        # optional
+        paint.setRenderHint(PyQt4.QtGui.QPainter.Antialiasing)
+        # make a white drawing background
+        paint.setBrush(PyQt4.QtGui.Qt.white)
+        paint.drawRect(event.rect())
+        # for circle make the ellipse radii match
+        radx = 100
+        rady = 100
+        # draw red circles
+        paint.setPen(PyQt4.QtGui.Qt.red)
+        for k in range(125, 220, 10):
+            center = PyQt4.QtGui.QPoint(k, k)
+            # optionally fill each circle yellow
+            paint.setBrush(PyQt4.QtGui.Qt.yellow)
+            paint.drawEllipse(center, radx, rady)
+        paint.end()
 
 
 class ThermometerFrame(PyQt4.QtGui.QFrame):

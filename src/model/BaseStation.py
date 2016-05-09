@@ -1,5 +1,5 @@
 import PyQt4
-from src.model.Rocket import Rocket
+from model.Rocket import Rocket
 '''
 Created on 2016-01-04
 
@@ -9,7 +9,7 @@ Created on 2016-01-04
 
 class BaseStation(PyQt4.QtCore.QObject):
 
-    
+
     """
     Comments TODO
     """
@@ -20,13 +20,13 @@ class BaseStation(PyQt4.QtCore.QObject):
 
 
     def __init__(self):
-    
+
         super(PyQt4.QtCore.QObject, self).__init__()
         self.__temperature = 0
         self.__coords = {}
         self.__connectedRocket = None
         self.__availableRocket = {Rocket.DISCOVERY_ID: Rocket(ID=Rocket.DISCOVERY_ID, name="Broadcast"), }
-    
+
 
     @property
     def connectedRocket(self):
@@ -55,23 +55,23 @@ class BaseStation(PyQt4.QtCore.QObject):
 
     @property
     def temperature(self):
-        
+
         return self.__temperature
-    
+
     @temperature.setter
     def temperature(self, temperature):
-        
+
         self.__temperature = temperature
         self.temperatureChanged.emit(self.__temperature)
-        
+
     @property
     def coords(self):
-        
+
         return self.__coords
-    
+
     @coords.setter
     def coords(self, coordsDict):
-        
+
         self.__coords['longitude'] = coordsDict['longitude']
         self.__coords['latitude'] = coordsDict['latitude']
         self.coordsChanged.emit(self.__coords['latitude'], self.__coords['longitude'])

@@ -78,7 +78,7 @@ class Map(PyQt4.QtGui.QWidget):
         #    resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
         self.m = Basemap(width=6000000,height=4500000,projection='lcc',
             resolution=None,lat_0=45,lon_0=-73,ax=self.axes)
-        self.m.shadedrelief()
+        #self.m.shadedrelief()
         self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.canvas.draw()
 

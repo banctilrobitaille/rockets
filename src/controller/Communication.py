@@ -1,11 +1,11 @@
 import serial
 import PyQt4
 import time
-from src.model.Frame import ReceivedFrame, SentFrame, Frame
-from src.model.SerialConnection import SerialConnection
+from model.Frame import ReceivedFrame, SentFrame, Frame
+from model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
 """#############################################################################
-# 
+#
 # Nom du module:          Cummunication.py
 # Auteur:                 Benoit Anctil-Robitaille
 # Date:                   5 janvier 2016
@@ -19,13 +19,13 @@ from PyQt4.Qt import pyqtSlot
 # La classe SerialController
 # Description:    Classe permettant de controller la communication serie,
 #                 commencer la communication avec la fusee, fermer la
-#                 communication avec la fusee, construire les trames de 
+#                 communication avec la fusee, construire les trames de
 #                 donnees avec les donnees recues etc.
 #"""
 
 
 class SerialController(PyQt4.QtCore.QObject):
-    
+
     """Signal to connect the model to the view, has been implemented
     in the controller as the serial connection class uses serial.Serial
     metaclass and cannot inherite from QObject"""
@@ -35,21 +35,21 @@ class SerialController(PyQt4.QtCore.QObject):
     parityChanged = PyQt4.QtCore.pyqtSignal(str)
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
-    
+
     def __init__(self):
-        
+
         super(SerialController, self).__init__()
         self.__serialConnection = SerialConnection()
 
     @property
     def serialConnection(self):
         return self.__serialConnection
-    
+
     @serialConnection.setter
     def serialConnection(self, serialConnection):
-        
+
         self.__serialConnection = serialConnection
-    
+
     """
     #    Methode updateSerialConnectionSettings
     #    Description: Methode du controlleur permettant de mettre a
@@ -63,15 +63,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #                 _parity, la parite ex: serial.PARITY_NONE
     #                 _bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
-    """ 
+    """
     def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
-        
+
         self.updateSerialConnectionPort(port)
         self.updateSerialConnectionBaudrate(baudrate)
         self.updateSerialConnectionStopbits(stopbits)
         self.updateSerialConnectionParity(parity)
         self.updateSerialConnectionByteSize(bytesize)
-    
+
     """
     #    Methode updateSerialConnectionPort
     #    Description: Methode du controlleur permettant de mettre a
@@ -79,12 +79,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #
     #    param:       _port, le _port serie ex: /dev/ttyS0
     #    return: None
-    """ 
+    """
     def updateSerialConnectionPort(self, port):
-        
+
         self.__serialConnection.port = port
         self.portChanged.emit(port)
-    
+
     """
     #    Methode updateSerialConnectionBaudrate
     #    Description: Methode du controlleur permettant de mettre a
@@ -92,12 +92,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #
     #    param:       _baudrate, le _baudrate du _port serie
     #    return: None
-    """ 
+    """
     def updateSerialConnectionBaudrate(self, baudrate):
-        
+
         self.__serialConnection.baudrate = baudrate
         self.baudrateChanged.emit(baudrate)
-    
+
     """
     #    Methode updateSerialConnectionStopbits
     #    Description: Methode du controlleur permettant de mettre a
@@ -105,12 +105,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #
     #    param:       _stopbits, le _stopbits ex: serial.STOPBITS_ONE
     #    return: None
-    """ 
+    """
     def updateSerialConnectionStopbits(self, stopbits):
-        
+
         self.__serialConnection.stopbits = stopbits
         self.stopbitsChanged.emit(stopbits)
-    
+
     """
     #    Methode updateSerialConnectionParity
     #    Description: Methode du controlleur permettant de mettre a
@@ -118,13 +118,13 @@ class SerialController(PyQt4.QtCore.QObject):
     #
     #    param:       _parity, la parite ex: serial.PARITY_NONE
     #    return: None
-    """ 
+    """
     def updateSerialConnectionParity(self, parity):
-        
+
         self.__serialConnection.parity = parity
         self.parityChanged.emit(parity)
-    
-    
+
+
     """
     #    Methode updateSerialConnectionByteSize
     #    Description: Methode du controlleur permettant de mettre a
@@ -132,23 +132,23 @@ class SerialController(PyQt4.QtCore.QObject):
     #
     #    param:       _bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
-    """ 
+    """
     def updateSerialConnectionByteSize(self, bytesize):
-        
+
         self.__serialConnection.bytesize = bytesize
         self.bytesizeChanged.emit(bytesize)
-    
+
     """
     #    Methode updateSerialConnectionState
     #    Description: Methode du controlleur permettant de mettre a
-    #                 jour l'etat de la connexion, True: est connecte, 
+    #                 jour l'etat de la connexion, True: est connecte,
     #                 False: n'est pas connecte
     #
     #    param:       state, l'etat de la connexion
     #    return: None
-    """ 
+    """
     def updateSerialConnectionState(self, state):
-        
+
         self.__serialConnection.isConnected = state
         self.stateChanged.emit(state)
 
@@ -156,18 +156,18 @@ class SerialController(PyQt4.QtCore.QObject):
 """#
 # La classe SerialReader
 # Description:    Classe representant un thread de lecture de donnees
-#                 sur le _port serie. Celle-ci cree des frames et met a 
+#                 sur le _port serie. Celle-ci cree des frames et met a
 #                 jour les attributs du model Rocket selon les donnees
 #                 recues.
 #"""
 
 
 class SerialReader(PyQt4.QtCore.QThread):
-    
+
     __running = False
 
     frameReceived = PyQt4.QtCore.pyqtSignal(object)
-    
+
     def __init__(self, serialConnection):
         super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
@@ -175,7 +175,7 @@ class SerialReader(PyQt4.QtCore.QThread):
     @property
     def running(self):
         return self.__running
-    
+
     @running.setter
     def running(self,value):
         self.__running = value
@@ -185,17 +185,17 @@ class SerialReader(PyQt4.QtCore.QThread):
     #    Description: Ovveride de la methode run de la classe QThread, initilalise la
     #                 la connexion serie et appele les methodes necessaire lors de la
     #                 reception dune quatite suffisante de byte(longueur dune trame)
-    #                 
+    #
     #
     #    param:    None
     #    return:   None
-    """ 
+    """
     def run(self):
-        
+
         self.__serialConnection.flush()
-            
+
         """Tant quon ne tue pas le thread"""
-        while self.__running:    
+        while self.__running:
 
             if self.__serialConnection.inWaiting() >= ReceivedFrame.LENGTH:
             #if self.__serialConnection.inWaiting():
@@ -686,29 +686,29 @@ class CommandStream(PyQt4.QtCore.QThread):
 TO DO
 '''
 class CommunicationHistory(object):
-    
+
     HISTORY_DEEPNESS = 10
-    
+
     def __init__(self):
-        
+
         self.__commandHistory = []
-    
+
     def addSentCommand(self, command):
-        
+
         if len(self.__commandHistory) < 10:
-            
+
             self.__commandHistory.append(command)
-            
+
         else:
-            
+
             for i in range(1, self.HISTORY_DEEPNESS-1):
-                
+
                 self.__commandHistory[i-1] = self.__commandHistory[i]
-            
+
             self.__commandHistory[self.HISTORY_DEEPNESS-1] = command
-    
+
     def getLastCommand(self):
-        
+
         if len(self.__commandHistory) is not 0:
-            
+
             return self.__commandHistory[-1]
