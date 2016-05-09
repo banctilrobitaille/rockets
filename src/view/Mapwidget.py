@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 import numpy as np
 import PyQt4
+import sys
 
 
 class Map(PyQt4.QtGui.QWidget):
@@ -76,9 +77,17 @@ class Map(PyQt4.QtGui.QWidget):
         self.layout.addWidget(self.canvas)
         #self.m = Basemap(width=6000000,height=4500000,projection='lcc',
         #    resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
-        self.m = Basemap(width=6000000,height=4500000,projection='lcc',
+        self.m = Basemap(width=6000000,height=45000000,projection='lcc',
             resolution=None,lat_0=45,lon_0=-73,ax=self.axes)
-        #self.m.shadedrelief()
+
+        # scale down the relief map for 32-bit OS due to lack of RAM available
+        if sys.maxsize > 2**32:
+            # 64-bit system
+            self.m.shadedrelief()
+        else:
+            # 32-bit system
+            self.m.shadedrelief(scale=0.3)
+
         self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.canvas.draw()
 
