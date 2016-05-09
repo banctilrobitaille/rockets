@@ -37,7 +37,7 @@ class MotherboardFrame(PyQt4.QtGui.QFrame):
             TemperatureSensorLed(self,100,50),
             TemperatureSensorLed(self,205,120),
             TemperatureSensorLed(self,310,150),
-            TemperatureSensorLed(self,510,160),
+            TemperatureSensorLed(self,470,150),
             TemperatureSensorLed(self,625,120),
             TemperatureSensorLed(self,720,120),
             TemperatureSensorLed(self,812,120),
