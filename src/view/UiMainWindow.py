@@ -10,9 +10,9 @@ import StatePanel
 import UiToolbar
 from UiSlidingMessage import SlidingMessage
 from UiClickableRocket import ClickableRocketWidget
-from src.controller.BaseStationController import BaseStationController
+from controller.BaseStationController import BaseStationController
 """#############################################################################
-# 
+#
 # Nom du module:          UiMainWindow
 # Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
 # Date:                   8 Septembre 2015
@@ -24,7 +24,7 @@ from src.controller.BaseStationController import BaseStationController
 class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __init__(self,basestationController,parent=None):
-        
+
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
 
         self.__baseStationController    = basestationController
@@ -42,10 +42,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
-    
+    """
+
     def __setupUi(self):
-        
+
         self.setObjectName("MainWindow")
         self.resize(PyQt4.Qt.QDesktopWidget().availableGeometry(self).size())
         self.setMouseTracking(False)
@@ -56,7 +56,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         palette.setColor(PyQt4.QtGui.QPalette.Background,PyQt4.QtCore.Qt.black)
         self.setPalette(palette)
         self.setWindowTitle("Station de Base RockETS v0.1")
-        
+
         """Ajout de la barre de menu"""
         self.__AddMenu()
         """Ajout des actions lies differents menus"""
@@ -81,26 +81,26 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         #self.ren = vtk.vtkRenderer()
         #self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
         #self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
- 
+
         #self.reader = vtk.vtkSTLReader()
         #self.reader.SetFileName("VTK_Files/original.stl")
- 
+
         # Create a mapper
         #mapper = vtk.vtkPolyDataMapper()
         #mapper.SetInputConnection(self.reader.GetOutputPort())
- 
+
         # Create an actor
         #actor = vtk.vtkActor()
         #actor.SetMapper(mapper)
-        
+
         #actor.GetProperty().SetColor(1,0,0)
         #actor.SetOrientation(100,0,0)
         #self.ren.AddActor(actor)
-        
+
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
 
-    
+
     """
     #    Methode __AddMenu
     #    Description: Methode initialisant la barre de menu de linterface
@@ -108,20 +108,20 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
     def __AddMenu(self):
-        
+
         self.menubar = MenuBar(self,"menubar")
-        
+
         """Positionnement de la barre de menu au haut de linterface"""
         self.menubar.setGeometry(PyQt4.QtCore.QRect(0, 0, 800, 26))
-        self.menuFile = Menu(self.menubar, "menuFile", "File")        
+        self.menuFile = Menu(self.menubar, "menuFile", "File")
         self.menuView = Menu(self.menubar, "menuView", "view")
         self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")
-        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")           
+        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
         self.setMenuBar(self.menubar)
-    
+
     """
     #    Methode __AddMenuAction
     #    Description: Methode initialisant les sous menus (action) des menus
@@ -129,17 +129,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
     def __AddMenuAction(self):
-        
+
         """Initialisaiton et ajout du sous menu <Load Log File>"""
         self.actionLoad_Log_File = MenuAction(self,"actionLoad_Log_File", "Load Log File")
         self.menuFile.addAction(self.actionLoad_Log_File)
-        
+
         """Initialisaiton et ajout du sous menu <Display Settings>"""
         self.actionDisplay_Settings = MenuAction(self,"actionDisplay_Settings", "Display Settings")
         self.menuView.addAction(self.actionDisplay_Settings)
-        
+
         """Initialisaiton et ajout du sous menu <Serial Settings>"""
         self.actionRFD900_Settings = MenuAction(self,"actionSerial_Settings", "RFD900 Settings")
         self.menuConnection.addAction(self.actionRFD900_Settings)
@@ -150,26 +150,26 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         """Initialisaiton et ajout du sous menu <Connect>"""
         self.actionConnect = MenuAction(self,"actionConnect", "Connect")
         self.menuConnection.addAction(self.actionConnect)
-        
+
         """Initialisaiton et ajout du sous menu <Disconnect>"""
         self.actionDisconnect = MenuAction(self,"actionDisconnect", "Disconnect")
         self.menuConnection.addAction(self.actionDisconnect)
-        
+
         """Initialisaiton et ajout du sous menu <Set base station position>"""
         self.actionSetLocalPosition = MenuAction(self, "actionSetLocalPosition", "Set base station position")
         self.menuGPS.addAction(self.actionSetLocalPosition)
-        
+
         """Initialisaiton et ajout du sous menu <About>"""
         self.actionAbout = MenuAction(self,"actionAbout","About")
         self.menuAbout.addAction(self.actionAbout)
-        
+
         """Ajout des menus en tant que action dans la barre de menu"""
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuConnection.menuAction())
         self.menubar.addAction(self.menuGPS.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
-    
+
     """
     #    Methode __AddStatusBar
     #    Description: Methode qui initialise et ajoute la barre detat
@@ -177,16 +177,16 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
     def __AddStatusBar(self):
-        
+
         self.statusbar = PyQt4.QtGui.QStatusBar(self)
         self.statusbar.setObjectName("statusbar")
-        
+
         """Par defaut letat est non connecte ecris en rouge"""
         self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
         self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-        
+
         """Ajout de la barre detat"""
         self.statusbar.addWidget(self.lblNotConnected)
         self.setStatusBar(self.statusbar)
@@ -213,9 +213,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
     def __connectSlot(self):
-        
+
         self.connect(self.actionRFD900_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_RFD900_Settings_Clicked)
         self.connect(self.actionXBEE_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_XBEE_Settings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
@@ -276,25 +276,25 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
-        
+
         self.__dashboard.updateSpeed(speed)
         self.__graphTab.addSpeedData(speed)
-    
+
     @pyqtSlot(float)
     def __on_AccelerationChanged(self, acceleration):
-        
+
         self.__dashboard.updateAcceleration(acceleration)
         self.__graphTab.addAccelerationData(acceleration)
-    
+
     @pyqtSlot(float)
     def __on_AltitudeChanged(self, altitude):
-        
+
         self.__dashboard.updateAltitude(altitude)
         self.__graphTab.addAltitudeData(altitude)
-    
+
     @pyqtSlot(float)
     def __on_TemperatureChanged(self, temperature):
-        
+
         self.__dashboard.updateTemperature(temperature)
         self.__graphTab.addTemperatureData(temperature)
 
@@ -325,7 +325,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__gpsTab.map.nbSatellite = nbSatellite
 
     def __slotAbout_Clicked(self):
-        
+
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
         self.__slidingMessage.reveal()
         #self.__gpsTab.map.updateMarker(-90,46.8)
@@ -414,57 +414,57 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
 
     def __on_RFD900_Settings_Clicked(self):
-        
+
         self.__showSerialProperties(self.__rfdSerialController)
 
     def __on_XBEE_Settings_Clicked(self):
 
         self.__showSerialProperties(self.__xbeeSerialController)
 
-    
+
     def __slotConnect_Clicked(self):
         pass
-    
-        
+
+
     def __slotDisconnect_Clicked(self):
         pass
-    
-    
+
+
     def __slotSetLocalPosition_Clicked(self):
-        
+
         self.__showGPSProperties()
 
-    
+
     def __showSerialProperties(self, serialController):
 
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(serialController)
         self.serialProperties.show()
-    
-    
+
+
     def __showGPSProperties(self):
 
         self.gpsProperties = UiGpsSettings.GpsSettingWindow(self.__gpsTab.map)
         self.gpsProperties.show()
-    
-    
+
+
     @pyqtSlot(bool)
     def __on_serialConnectionStateChanged(self, isConnected):
-        
+
         if isConnected:
-            
+
             self.statusbar.removeWidget(self.lblNotConnected)
             self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
             self.lblNotConnected.setStyleSheet('QLabel {color: green}')
             self.statusbar.addWidget(self.lblNotConnected)
             self.statusbar.update()
         else:
-            
+
             self.statusbar.removeWidget(self.lblNotConnected)
             self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
             self.lblNotConnected.setStyleSheet('QLabel {color: red}')
             self.statusbar.addWidget(self.lblNotConnected)
             self.statusbar.update()
-    
+
     @pyqtSlot(float, float)
     def __on_BaseStationCoordsChanged(self,latitude, longitude):
 
@@ -477,26 +477,25 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
 
 class MenuBar(PyQt4.QtGui.QMenuBar):
-    
+
     def __init__(self, parent, objectName):
-        
+
         PyQt4.QtGui.QMenuBar.__init__(self,parent)
         self.setObjectName(objectName)
 
 class Menu(PyQt4.QtGui.QMenu):
-    
+
     def __init__(self, parent, objectName, objectTitle):
-        
+
         PyQt4.QtGui.QMenu.__init__(self,parent)
         self.setObjectName(objectName)
         self.setTitle(objectTitle)
-      
-        
+
+
 class MenuAction(PyQt4.QtGui.QAction):
-    
+
     def __init__(self,parent, objectName, text):
-        
+
         PyQt4.QtGui.QAction.__init__(self,parent)
         self.setObjectName(objectName)
         self.setText(text)
-        

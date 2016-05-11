@@ -1,5 +1,5 @@
 import struct
-from src.controller.CommunicationUtility import CRC16
+from controller.CommunicationUtility import CRC16
 from ctypes import c_ushort
 '''
 Created on 2016-01-04
@@ -77,7 +77,7 @@ class ReceivedFrame(Frame):
 
     def __init__(self, rocketID, command, ID, timestamp, state, gpsFix, speed, altitude,
                  acceleration, latitude, longitude, temperature, crc):
-        
+
         Frame.__init__(self, rocketID, command, ID, timestamp, crc)
         self.__state = state
         self.__gpsFix = gpsFix
@@ -90,7 +90,7 @@ class ReceivedFrame(Frame):
 
     @staticmethod
     def parseByteArray(byteArray):
-        
+
         frame = {}
 
         rocketIDAndCommand     = struct.unpack_from("B", byteArray[0])[0]
@@ -110,16 +110,16 @@ class ReceivedFrame(Frame):
         frame['CRC']           = struct.unpack_from("H", byteArray[35:37])[0]
 
         return frame
-    
+
     @classmethod
     def fromByteArray(cls, byteArray):
-        
+
         frameDict = ReceivedFrame.parseByteArray(byteArray)
         frame = cls(frameDict['ROCKETID'],  frameDict['COMMAND'],       frameDict['ID'],    frameDict['TIMESTAMP'],
                     frameDict['STATE'],     frameDict['GPSFIX'],        frameDict['SPEED'],
                     frameDict['ALTITUDE'],  frameDict['ACCELERATION'],  frameDict['LATITUDE'],
                     frameDict['LONGITUDE'], frameDict['TEMPERATURE'],   frameDict['CRC'])
-        
+
         return frame
 
     def toByteArray(self, withCRC=False):

@@ -1,7 +1,7 @@
-from src.model.Rocket import Rocket
+from model.Rocket import Rocket
 
 """#############################################################################
-# 
+#
 # Nom du module:          RocketController.py
 # Auteur:                 Benoit Anctil-Robitaille
 # Date:                   5 janvier 2016
@@ -20,14 +20,14 @@ from src.model.Rocket import Rocket
 #"""
 
 class RocketController(object):
-    
+
 
     __INSTANCE = None
 
     def __init__(self):
-        
+
         self.__rocketModel = Rocket()
-  
+
 
     @property
     def rocket(self):
@@ -54,9 +54,9 @@ class RocketController(object):
     #                 ID, l'ID unique de la fusee
     #                 state, l'etat de la fusee
     #    return: None
-    """ 
+    """
     def updateRocketData(self,speed, altitude, acceleration, temperature, direction, coords, ID, state ):
-        
+
         self.updateRocketSpeed(speed)
         self.updateRocketAltitude(altitude)
         self.updateRocketAcceleration(acceleration)
@@ -65,7 +65,7 @@ class RocketController(object):
         self.updateRocketCoords(coords)
         self.updateRocketID(ID)
         self.updateRocketState(state)
-   
+
 
     def updateRocketCameraState(self):
 
@@ -82,11 +82,11 @@ class RocketController(object):
     #
     #    param:       speed, la vitesse de la fusee en mph
     #    return: None
-    """ 
+    """
     def updateRocketSpeed(self,speed):
-        
+
         self.__rocketModel.speed = speed
-    
+
     """
     #    Methode updateRocketAltitude
     #    Description: Methode du controlleur permettant de mettre a
@@ -94,11 +94,11 @@ class RocketController(object):
     #
     #    param:       altitude, laltitude en pieds
     #    return: None
-    """ 
+    """
     def updateRocketAltitude(self,altitude):
-        
+
         self.__rocketModel.altitude = altitude
-    
+
     """
     #    Methode updateRocketAcceleration
     #    Description: Methode du controlleur permettant de mettre a
@@ -106,12 +106,12 @@ class RocketController(object):
     #
     #    param:       acceleration, lacceleration de la fusee en G
     #    return: None
-    """ 
+    """
     def updateRocketAcceleration(self,acceleration):
-        
+
         self.__rocketModel.acceleration = acceleration
-    
-    
+
+
     """
     #    Methode updateRocketTemperature
     #    Description: Methode du controlleur permettant de mettre a
@@ -119,11 +119,11 @@ class RocketController(object):
     #
     #    param:       temperature, la temperature interne en Celcius
     #    return: None
-    """ 
+    """
     def updateRocketTemperature(self,temperature):
-        
+
         self.__rocketModel.temperature = temperature
-    
+
     """
     #    Methode updateRocketDirection
     #    Description: Methode du controlleur permettant de mettre a
@@ -131,11 +131,11 @@ class RocketController(object):
     #
     #    param:       direction, la direction 'N', 'E', 'W'
     #    return: None
-    """ 
+    """
     def updateRocketDirection(self,direction):
-        
+
         self.__rocketModel.direction = direction
-    
+
     """
     #    Methode updateRocketCoords
     #    Description: Methode du controlleur permettant de mettre a
@@ -143,11 +143,11 @@ class RocketController(object):
     #
     #    param:       coords, dict ['longitude'], ['latitude']
     #    return: None
-    """ 
+    """
     def updateRocketCoords(self,coords):
-        
+
         self.__rocketModel.coords = coords
-    
+
     """
     #    Methode updateRocketID
     #    Description: Methode du controlleur permettant de mettre a
@@ -155,12 +155,12 @@ class RocketController(object):
     #
     #    param:       ID, identifiant de la fusee
     #    return: None
-    """ 
+    """
     def updateRocketID(self, ID):
-        
+
         self.__rocketModel.ID = ID
-    
-    
+
+
     """
     #    Methode updateRocketState
     #    Description: Methode du controlleur permettant de mettre a
@@ -168,9 +168,9 @@ class RocketController(object):
     #
     #    param:       state, etat de la fusee
     #    return: None
-    """ 
+    """
     def updateRocketState(self,state):
-        
+
         self.__rocketModel.currentState = state
 
 
