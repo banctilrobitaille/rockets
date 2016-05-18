@@ -267,11 +267,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_connectedRocketChanged(self, rocket):
 
         if rocket is not None:
-
             self.__connectRocketSlot()
             self.__toolbar.selectedRocketAction = self.__toolbar.getActionFromRocketID(rocket.ID)
         else:
-
             self.__toolbar.selectedRocketAction = None
 
     @pyqtSlot(int)
@@ -324,19 +322,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__gpsTab.map.nbSatellite = nbSatellite
 
-    def __slotAbout_Clicked(self):
-        
-        PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
-        self.__slidingMessage.reveal()
-        #self.__gpsTab.map.updateMarker(-90,46.8)
-
-    def __on_Discover_Clicked(self):
-
-        if self.__baseStationController.RFD900.isDiscoveringRocket:
-            self.__baseStationController.RFD900.stopRocketDiscovery()
-        else:
-            self.__baseStationController.RFD900.startRocketDiscovery()
-
     @pyqtSlot(bool)
     def __on_DiscoveringRocket_Changed(self, discoveringRocket):
 
@@ -354,6 +339,34 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __on_Error(self, errorMessage):
 
         SlidingMessage(errorMessage, self).reveal()
+
+    @pyqtSlot(bool)
+    def __on_serialConnectionStateChanged(self, isConnected):
+
+        if isConnected:
+
+            self.statusbar.removeWidget(self.lblNotConnected)
+            self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
+            self.lblNotConnected.setStyleSheet('QLabel {color: green}')
+            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.update()
+        else:
+
+            self.statusbar.removeWidget(self.lblNotConnected)
+            self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
+            self.lblNotConnected.setStyleSheet('QLabel {color: red}')
+            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.update()
+
+    @pyqtSlot(float, float)
+    def __on_BaseStationCoordsChanged(self,latitude, longitude):
+
+        self.__gpsTab.map.updateBaseStationMarker(longitude, latitude)
+
+    @pyqtSlot(float, float)
+    def __on_RocketCoordsChanged(self, latitude, longitude):
+
+        self.__gpsTab.map.updateRocketMarker(longitude, latitude)
 
     def __on_Camera_Clicked(self):
 
@@ -385,8 +398,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.__baseStationController.RFD900.startStream()
             self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
 
-
-
     def __on_Rocket_Clicked(self, rocketID):
 
         if self.__baseStationController.baseStation.connectedRocket is \
@@ -412,7 +423,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
             self.__baseStationController.updateConnectedRocket(rocketID)
 
-
     def __on_RFD900_Settings_Clicked(self):
         
         self.__showSerialProperties(self.__rfdSerialController)
@@ -421,60 +431,38 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__showSerialProperties(self.__xbeeSerialController)
 
-    
     def __slotConnect_Clicked(self):
         pass
-    
-        
+
     def __slotDisconnect_Clicked(self):
         pass
-    
-    
+
     def __slotSetLocalPosition_Clicked(self):
         
         self.__showGPSProperties()
 
-    
     def __showSerialProperties(self, serialController):
 
         self.serialProperties = UiSerialProperties.SerialPropertiesWindow(serialController)
         self.serialProperties.show()
-    
-    
+
     def __showGPSProperties(self):
 
         self.gpsProperties = UiGpsSettings.GpsSettingWindow(self.__gpsTab.map)
         self.gpsProperties.show()
-    
-    
-    @pyqtSlot(bool)
-    def __on_serialConnectionStateChanged(self, isConnected):
-        
-        if isConnected:
-            
-            self.statusbar.removeWidget(self.lblNotConnected)
-            self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
-            self.lblNotConnected.setStyleSheet('QLabel {color: green}')
-            self.statusbar.addWidget(self.lblNotConnected)
-            self.statusbar.update()
+
+    def __slotAbout_Clicked(self):
+
+        PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
+        self.__slidingMessage.reveal()
+        #self.__gpsTab.map.updateMarker(-90,46.8)
+
+    def __on_Discover_Clicked(self):
+
+        if self.__baseStationController.RFD900.isDiscoveringRocket:
+            self.__baseStationController.RFD900.stopRocketDiscovery()
         else:
-            
-            self.statusbar.removeWidget(self.lblNotConnected)
-            self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
-            self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-            self.statusbar.addWidget(self.lblNotConnected)
-            self.statusbar.update()
-    
-    @pyqtSlot(float, float)
-    def __on_BaseStationCoordsChanged(self,latitude, longitude):
-
-        self.__gpsTab.map.updateBaseStationMarker(longitude, latitude)
-
-    @pyqtSlot(float, float)
-    def __on_RocketCoordsChanged(self, latitude, longitude):
-
-        self.__gpsTab.map.updateRocketMarker(longitude, latitude)
-
+            self.__baseStationController.RFD900.startRocketDiscovery()
 
 class MenuBar(PyQt4.QtGui.QMenuBar):
     

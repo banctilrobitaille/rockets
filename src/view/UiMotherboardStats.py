@@ -2,6 +2,7 @@ import PyQt4
 from src.view.dashboard import Thermometer
 from PyKDE4.kdeui import KLed
 
+
 class MotherboardStats(PyQt4.QtGui.QWidget):
 
     def __init__(self):
@@ -34,14 +35,14 @@ class MotherboardFrame(PyQt4.QtGui.QFrame):
                            " background-repeat: no-repeat}")
         self.sensorLed = {
 
-            TemperatureSensorLed(self,100,50),
-            TemperatureSensorLed(self,205,120),
-            TemperatureSensorLed(self,310,150),
-            TemperatureSensorLed(self,510,160),
-            TemperatureSensorLed(self,625,120),
-            TemperatureSensorLed(self,720,120),
-            TemperatureSensorLed(self,812,120),
-            TemperatureSensorLed(self,895,30),
+            TemperatureSensorLed(self,100,50,0),
+            TemperatureSensorLed(self,205,120,1),
+            TemperatureSensorLed(self,310,150,2),
+            TemperatureSensorLed(self,510,160,3),
+            TemperatureSensorLed(self,625,120,4),
+            TemperatureSensorLed(self,720,120,5),
+            TemperatureSensorLed(self,812,120,6),
+            TemperatureSensorLed(self,895,30,7),
         }
 
         self.show()
@@ -65,13 +66,21 @@ class TemperatureSensorLed(KLed):
 
     }
 
-    def __init__(self, parent, x, y, status="GOOD"):
+    def __init__(self, parent, x, y, id,status="GOOD"):
         super(TemperatureSensorLed, self).__init__(parent)
 
+        self.__id = id
         self.__status = status
         self.__updateColor()
         self.setGeometry(x,y,self.SIZE,self.SIZE)
 
+    @property
+    def id(self):
+        return self.__id
+
+    @id.setter
+    def id(self, id):
+        self.__id = id
 
     @property
     def status(self):

@@ -128,6 +128,13 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__rocketTemp.updateValue(temperature)
         self.__lcd_thermo.display("%.2f" % temperature)
 
+    def resetValue(self):
+
+        self.updateSpeed(0)
+        self.updateAcceleration(0)
+        self.updateAltitude(0)
+        self.updateTemperature(0)
+
 """#
 # La classe Speedometer
 # Description:    Classe representant un cadrant qui affiche la vitesse de la fusee

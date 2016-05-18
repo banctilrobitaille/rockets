@@ -1,4 +1,5 @@
 import PyQt4
+from src.model.ModelUtils import DataOverTimeHistory
 """#############################################################################
 # 
 # Nom du module:          Rocket
@@ -49,6 +50,12 @@ class Rocket(PyQt4.QtCore.QObject):
     def __init__(self, acceleration=0, speed=0, altitude=0, temperature=0,direction=None,coords=None,ID=None,state=None, name=""):
         
         super(PyQt4.QtCore.QObject, self).__init__()
+
+        self.__accelerationHistory = DataOverTimeHistory()
+        self.__speedHistory = DataOverTimeHistory()
+        self.__altitudeHistory = DataOverTimeHistory()
+        self.__temperatureHistory = DataOverTimeHistory()
+
         self.__acceleration = acceleration
         self.__speed = speed
         self.__altitude = altitude
