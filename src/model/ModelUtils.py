@@ -1,10 +1,12 @@
 import PyQt4
+from datetime import datetime
 
 
 class DataOverTimeHistory(PyQt4.QtCore.QObject):
 
     def __init__(self):
         super(DataOverTimeHistory, self).__init__()
+        self.__referenceTimeStamp = None
         self.__max = 0
         self.__min = 0
         self.__average = 0
@@ -40,9 +42,12 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
     def nbData(self):
         return self.__nbData
 
-    def addData(self, time, value):
+    def addData(self, timestamp, value):
 
-        self.__time.append(time)
+        if self.__referenceTimeStamp is None:
+            self.__referenceTimeStamp = timestamp
+
+        self.__time.append(float((datetime.now() - self.__referenceTimeStamp).seconds))
         self.__value.append(value)
         self.__nbData += 1
 

@@ -1,6 +1,5 @@
 import struct
 from src.controller.CommunicationUtility import CRC16
-from ctypes import c_ushort
 '''
 Created on 2016-01-04
 
