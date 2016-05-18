@@ -35,14 +35,14 @@ class MotherboardFrame(PyQt4.QtGui.QFrame):
                            " background-repeat: no-repeat}")
         self.sensorLed = {
 
-            TemperatureSensorLed(self,100,50,0),
-            TemperatureSensorLed(self,205,120,1),
-            TemperatureSensorLed(self,310,150,2),
-            TemperatureSensorLed(self,510,160,3),
-            TemperatureSensorLed(self,625,120,4),
-            TemperatureSensorLed(self,720,120,5),
-            TemperatureSensorLed(self,812,120,6),
-            TemperatureSensorLed(self,895,30,7),
+            TemperatureSensorLed(self,100,50),
+            TemperatureSensorLed(self,205,120),
+            TemperatureSensorLed(self,310,150),
+            TemperatureSensorLed(self,470,150),
+            TemperatureSensorLed(self,625,120),
+            TemperatureSensorLed(self,720,120),
+            TemperatureSensorLed(self,812,120),
+            TemperatureSensorLed(self,895,30),
         }
 
         self.show()
