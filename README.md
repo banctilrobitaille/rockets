@@ -40,4 +40,18 @@ RFD900 and xbee.
 ##Look and feel
 
 ####Rockets BaseStation V1.0
+#####Overview
 ![GitHub Logo](/image/overview.PNG)
+
+#####Features
+- [X] Live rocket and basestation tracking
+- [X] Live baseStation GPS satellites and fix status
+- [X] Multi rockets support
+- [X] Remote 360 Camera start
+- [X] Remote telemetry stream start
+- [X] Custom animated error messaging system
+- [X] Live graphs and dials
+- [X] Robust multithreaded communication protocol
+- [X] Live rocket state monitoring
+- [ ] Live motherboard temperature sensor monitoring
+- [ ] Live payload data monitoring
