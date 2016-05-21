@@ -26,6 +26,14 @@ RFD900 and xbee.
 - [X] Commit and push
 - [X] Create a pull request
 
+#### Branch naming
+
+##### Feature branch
+> feature/ [Short feature description] [Issue number]
+
+#####Bug branch
+> bugfix/ [Short fix description] [Issue number]
+
 #### Commits syntax:
 
 #####Adding code:
