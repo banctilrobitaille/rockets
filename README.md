@@ -52,5 +52,5 @@ RFD900 and xbee.
 - [X] Custom animated error messaging system
 - [X] Live graphs and dials
 - [X] Robust multithreaded communication protocol
-- [] Live motherboard temperature sensor monitoring
-- [] Live payload data monitoring
+- [ ] Live motherboard temperature sensor monitoring
+- [ ] Live payload data monitoring
