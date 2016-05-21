@@ -1,3 +1,5 @@
+![GitHub Logo](/images/rocketsLogo.png)
+
 #Club RockETS base station
 
 This project is a python project developped for a student club called RockETS at ETS (École de Technologie Supérieure).
