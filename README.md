@@ -43,7 +43,7 @@ RFD900 and xbee.
 #####Overview
 ![GitHub Logo](/image/overview.PNG)
 
-#####Features
+##Features
 - [X] Live rocket and basestation tracking
 - [X] Live baseStation GPS satellites and fix status
 - [X] Multi rockets support
