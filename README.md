@@ -40,4 +40,4 @@ RFD900 and xbee.
 ##Look and feel
 
 ####Rockets BaseStation V1.0
-![GitHub Logo](/image/overview.png)
+![GitHub Logo](/image/overview.PNG)
