@@ -23,7 +23,7 @@ RFD900 and xbee.
 - [X] Install the libs
 - [X] Create a branch by feature and/or bug fix
 - [X] Get the code
-- [X] Commit
+- [X] Commit and push
 - [X] Create a pull request
 
 #### Commits syntax:
