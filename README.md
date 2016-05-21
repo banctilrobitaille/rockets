@@ -18,7 +18,7 @@ RFD900 and xbee.
 
 ##Contributing
 
-### How to contribute ?
+#### How to contribute ?
 - [X] Install Python 2.7.x
 - [X] Install the libs
 - [X] Create a branch
@@ -26,11 +26,13 @@ RFD900 and xbee.
 - [X] Commit
 - [X] Create a pull request
 
-## Commits syntax
+### Commits syntax
 
-###Adding code:
+####Adding code:
 > + Added [Short Description] [Issue Number]
-###Deleting code:
+
+####Deleting code:
 > - Deleted [Short Description] [Issue Number]
-###Modifying code:
+
+####Modifying code:
 > * Changed [Short Description] [Issue Number]
