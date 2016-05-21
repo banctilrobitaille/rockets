@@ -26,7 +26,7 @@ RFD900 and xbee.
 - [X] Commit
 - [X] Create a pull request
 
-### Commits syntax
+#### Commits syntax
 
 ####Adding code:
 > \+ Added [Short Description] [Issue Number]
