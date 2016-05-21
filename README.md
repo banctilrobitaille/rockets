@@ -1,4 +1,4 @@
-![GitHub Logo](/image/rocketsLogo.png)
+![GitHub Logo](/image/logo.png)
 
 #Club RockETS base station
 
