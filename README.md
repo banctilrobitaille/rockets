@@ -29,10 +29,10 @@ RFD900 and xbee.
 ### Commits syntax
 
 ####Adding code:
-> + Added [Short Description] [Issue Number]
+> \+ Added [Short Description] [Issue Number]
 
 ####Deleting code:
-> - Deleted [Short Description] [Issue Number]
+> \- Deleted [Short Description] [Issue Number]
 
 ####Modifying code:
-> * Changed [Short Description] [Issue Number]
+> \* Changed [Short Description] [Issue Number]
