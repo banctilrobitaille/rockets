@@ -55,3 +55,5 @@ RFD900 and xbee.
 - [X] Live rocket state monitoring
 - [ ] Live motherboard temperature sensor monitoring
 - [ ] Live payload data monitoring
+- [ ] Flight report creation
+- [ ] 3D flight data representation
