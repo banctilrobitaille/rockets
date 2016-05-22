@@ -33,16 +33,19 @@ class Dashboard(PyQt4.QtGui.QFrame):
         self.__lbl_speed = Label(self, "SPEED")
         self.__speed_dial = SpeedoMeter(self,"MPH",0.0,700.0,0,3,100)
         self.__lcd_speed = DigitalNum(self, 0)
+        self.__lcd_speed.setDigitCount(7)
         
         """Initilisation du cadran de laltitude, du cadran numerique et label descriptif"""
         self.__lbl_altitude = Label(self, "ALTITUDE")
         self.__altitude_dial = SpeedoMeter(self,"x1000'",0.0,27.0,0,0,2)
         self.__lcd_altitude = DigitalNum(self, 0)
+        self.__lcd_altitude.setDigitCount(8)
         
         """Initialisation du cadran de lacceleration, du cadran numerique et label descriptif"""
         self.__lbl_acceleration = Label(self, "ACCELERATION")
         self.__acceleration_dial = SpeedoMeter(self,"M/S2",0.0,200.0,0,5,50)
         self.__lcd_acceleration = DigitalNum(self, 0)
+        self.__lcd_acceleration.setDigitCount(7)
         
         """Initialisation du cadran numerique et label descriptif"""
         self.__lbl_thermo = Label(self, "TEMPERATURE")
@@ -74,7 +77,7 @@ class Dashboard(PyQt4.QtGui.QFrame):
         """Positionnement des elements daltitude"""
         self.__lbl_altitude.setGeometry(270, 25, 120,15)
         self.__altitude_dial.setGeometry(205,50,220,220)
-        self.__lcd_altitude.setGeometry(250, 300, 130, 50)
+        self.__lcd_altitude.setGeometry(220, 300, 200, 50)
          
         """Positionnement des elements dacceleration"""
         self.__lbl_acceleration.setGeometry(450, 65, 200,15)

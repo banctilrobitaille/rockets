@@ -440,40 +440,43 @@ class RFD900Strategy(SerialDeviceStrategy):
 
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
-        #print receivedData
+        if receivedFrame.rocketID is self.rocketController.rocket.ID or receivedFrame.command\
+            is  FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
-        if receivedFrame.command == FrameFactory.COMMAND['ACK']:
+            if receivedFrame.command == FrameFactory.COMMAND['ACK']:
 
-            if str(receivedFrame.ID) in self.commandStreamer:
+                if str(receivedFrame.ID) in self.commandStreamer:
 
-                self.commandStreamer[str(receivedFrame.ID)].kill()
-                self.commandStreamer[str(receivedFrame.ID)].wait(3000)
-                del self.commandStreamer[str(receivedFrame.ID)]
+                    self.commandStreamer[str(receivedFrame.ID)].kill()
+                    self.commandStreamer[str(receivedFrame.ID)].wait(3000)
+                    del self.commandStreamer[str(receivedFrame.ID)]
 
-        elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
+            elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
 
-            if str(receivedFrame.ID) in self.commandStreamer:
+                if str(receivedFrame.ID) in self.commandStreamer:
 
-                self.commandStreamer[str(receivedFrame.ID)].kill()
-                self.commandStreamer[str(receivedFrame.ID)].wait(5000)
-                del self.commandStreamer[str(receivedFrame.ID)]
+                    self.commandStreamer[str(receivedFrame.ID)].kill()
+                    self.commandStreamer[str(receivedFrame.ID)].wait(5000)
+                    del self.commandStreamer[str(receivedFrame.ID)]
 
-            print receivedFrame.state
-            self.rocketController.updateRocketState(receivedFrame.state)
-            self.rocketController.updateRocketSpeed(receivedFrame.speed)
-            self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
-            self.rocketController.updateRocketAltitude(receivedFrame.altitude)
-            self.rocketController.updateRocketTemperature(receivedFrame.temperature)
-            self.rocketController.updateRocketCoords({'longitude' : receivedFrame.longitude,
-                                                      'latitude' :receivedFrame.latitude})
+                print receivedFrame.state
+                self.rocketController.updateRocketState(receivedFrame.state)
+                #self.rocketController.updateRocketSpeed(receivedFrame.speed)
+                #self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
+                self.rocketController.updateRocketSpeedFromAltitude(receivedFrame.altitude)
+                self.rocketController.updateRocketAltitude(receivedFrame.altitude)
+                self.rocketController.updateRocketAccelerationFromSpeed()
+                self.rocketController.updateRocketTemperature(receivedFrame.temperature)
+                self.rocketController.updateRocketCoords({'longitude' : receivedFrame.longitude,
+                                                          'latitude' :receivedFrame.latitude})
 
-        elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
+            elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
-            self.rocketDiscovered.emit(receivedFrame.rocketID)
+                self.rocketDiscovered.emit(receivedFrame.rocketID)
 
-        elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
+            elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
 
-            self.resendLastCommand()
+                self.resendLastCommand()
 
 
 class XbeeStrategy(SerialDeviceStrategy):

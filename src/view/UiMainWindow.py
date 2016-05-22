@@ -275,14 +275,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
         
-        self.__dashboard.updateSpeed(speed)
-        self.__graphTab.addSpeedData(speed)
+        self.__dashboard.updateSpeed(round(speed/1.46666666666667,2))
+        self.__graphTab.addSpeedData(round(speed/1.46666666666667,2))
     
     @pyqtSlot(float)
     def __on_AccelerationChanged(self, acceleration):
         
-        self.__dashboard.updateAcceleration(acceleration)
-        self.__graphTab.addAccelerationData(acceleration)
+        self.__dashboard.updateAcceleration(round(acceleration*0.3048,2))
+        self.__graphTab.addAccelerationData(round(acceleration*0.3048,2))
     
     @pyqtSlot(float)
     def __on_AltitudeChanged(self, altitude):
@@ -417,6 +417,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             if result == PyQt4.QtGui.QMessageBox.Yes:
                 self.__toolbar.rocketActionDict[rocketID].setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
                 self.__baseStationController.disconnectFromRocket(rocketID)
+                self.__dashboard.resetValue()
+                self.__graphTab = UiDataAnlalysis.GraphTab(self)
             else:
                 rocketMsg.close()
         else:

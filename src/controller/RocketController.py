@@ -1,5 +1,5 @@
 from src.model.Rocket import Rocket
-
+from datetime import datetime
 """#############################################################################
 # 
 # Nom du module:          RocketController.py
@@ -86,7 +86,23 @@ class RocketController(object):
     def updateRocketSpeed(self,speed):
         
         self.__rocketModel.speed = speed
-    
+
+
+    def updateRocketSpeedFromAltitude(self, altitude):
+
+        if not self.__rocketModel.altitudeHistory.isEmpty():
+            try:
+                lastAltitude = self.__rocketModel.altitudeHistory.getLastValue()
+
+                da = abs(altitude - lastAltitude["VALUE"])
+                dt = float((datetime.now() - lastAltitude["TIMESTAMP"]).seconds)
+
+                self.__rocketModel.speed = da/dt
+                self.__rocketModel.speedHistory.addData(datetime.now(), self.__rocketModel.speed)
+            except Exception as ex:
+
+                print(ex.message)
+
     """
     #    Methode updateRocketAltitude
     #    Description: Methode du controlleur permettant de mettre a
@@ -95,9 +111,10 @@ class RocketController(object):
     #    param:       altitude, laltitude en pieds
     #    return: None
     """ 
-    def updateRocketAltitude(self,altitude):
+    def updateRocketAltitude(self, altitude):
         
         self.__rocketModel.altitude = altitude
+        self.__rocketModel.altitudeHistory.addData(datetime.now(), altitude)
     
     """
     #    Methode updateRocketAcceleration
@@ -111,7 +128,23 @@ class RocketController(object):
         
         self.__rocketModel.acceleration = acceleration
     
-    
+
+    def updateRocketAccelerationFromSpeed(self):
+
+        if not self.__rocketModel.speedHistory.isEmpty():
+            try:
+                dv = (self.__rocketModel.speedHistory.getDataAtIndex(-1)["VALUE"] -
+                      self.__rocketModel.speedHistory.getDataAtIndex(-2)["VALUE"])
+
+                dt = float((self.__rocketModel.speedHistory.getDataAtIndex(-1)["TIMESTAMP"] -
+                            self.__rocketModel.speedHistory.getDataAtIndex(-2)["TIMESTAMP"]).seconds)
+
+                self.__rocketModel.acceleration = dv/dt
+
+            except Exception as ex:
+
+                print(ex.message)
+
     """
     #    Methode updateRocketTemperature
     #    Description: Methode du controlleur permettant de mettre a

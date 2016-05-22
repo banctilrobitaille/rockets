@@ -42,12 +42,22 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
     def nbData(self):
         return self.__nbData
 
+    def getDataAtIndex(self, index):
+
+        return {"TIMESTAMP" : self.__time[index],
+                "VALUE"     : self.__value[index]}
+
+    def getLastValue(self):
+
+        return {"TIMESTAMP" : self.__time[-1],
+                "VALUE"     : self.__value[-1],}
+
     def addData(self, timestamp, value):
 
         if self.__referenceTimeStamp is None:
             self.__referenceTimeStamp = timestamp
 
-        self.__time.append(float((datetime.now() - self.__referenceTimeStamp).seconds))
+        self.__time.append(datetime.now())
         self.__value.append(value)
         self.__nbData += 1
 
@@ -60,7 +70,7 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
 
     def isEmpty(self):
 
-        return len(self.__xData) is 0 and len(self.__yData) is 0
+        return len(self.__time) is 0 and len(self.__value) is 0
 
     def clear(self):
 

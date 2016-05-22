@@ -178,6 +178,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.yAxisTitle = PyQt4.Qwt5.Qwt.QwtText(yAxisTitle)
         self.yAxisTitle.setFont(font)
         self.setAxisTitle(0, self.yAxisTitle)
+
         
 """#
 # La classe GraphTab

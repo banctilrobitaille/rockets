@@ -156,7 +156,19 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__ID = ID
         self.__name = self.NAME[ID]
         self.idChanged.emit(ID)
-        
+
+    @property
+    def accelerationHistory(self):
+        return self.__accelerationHistory
+
+    @property
+    def speedHistory(self):
+        return self.__speedHistory
+
+    @property
+    def altitudeHistory(self):
+        return self.__altitudeHistory
+
     @staticmethod
     def getInstance():
         

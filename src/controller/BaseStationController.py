@@ -112,6 +112,7 @@ class BaseStationController(PyQt4.QtCore.QObject):
         if self.__baseStationModel.connectedRocket.ID == rocketID:
 
             self.__baseStationModel.connectedRocket = None
+            self.__rocketController.rocket = self.__baseStationModel.availableRocket[Rocket.DISCOVERY_ID]
 
     @pyqtSlot(int)
     def __on_rocketDiscovery(self, rocketID):
