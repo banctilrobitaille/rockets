@@ -441,7 +441,7 @@ class RFD900Strategy(SerialDeviceStrategy):
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
         if receivedFrame.rocketID is self.rocketController.rocket.ID or receivedFrame.command\
-            is  FrameFactory.COMMAND['ROCKET_DISCOVERY']:
+                is FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
             if receivedFrame.command == FrameFactory.COMMAND['ACK']:
 
@@ -451,24 +451,26 @@ class RFD900Strategy(SerialDeviceStrategy):
                     self.commandStreamer[str(receivedFrame.ID)].wait(3000)
                     del self.commandStreamer[str(receivedFrame.ID)]
 
+                if not self.__streaming and self.rocketController.rocket.isStreaming:
+                    self.rocketController.rocket.isStreaming = False
+
             elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
 
                 if str(receivedFrame.ID) in self.commandStreamer:
-
                     self.commandStreamer[str(receivedFrame.ID)].kill()
                     self.commandStreamer[str(receivedFrame.ID)].wait(5000)
                     del self.commandStreamer[str(receivedFrame.ID)]
 
-                print receivedFrame.state
+                if self.__streaming and not self.rocketController.rocket.isStreaming:
+                    self.rocketController.rocket.isStreaming = True
+
                 self.rocketController.updateRocketState(receivedFrame.state)
-                #self.rocketController.updateRocketSpeed(receivedFrame.speed)
-                #self.rocketController.updateRocketAcceleration(receivedFrame.acceleration)
                 self.rocketController.updateRocketSpeedFromAltitude(receivedFrame.altitude)
                 self.rocketController.updateRocketAltitude(receivedFrame.altitude)
                 self.rocketController.updateRocketAccelerationFromSpeed()
                 self.rocketController.updateRocketTemperature(receivedFrame.temperature)
                 self.rocketController.updateRocketCoords({'longitude' : receivedFrame.longitude,
-                                                          'latitude' :receivedFrame.latitude})
+                                                          'latitude'  : receivedFrame.latitude})
 
             elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 

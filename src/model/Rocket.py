@@ -19,6 +19,7 @@ from src.model.ModelUtils import DataOverTimeHistory
 #                 donnees de la fusee.
 #"""
 
+
 class Rocket(PyQt4.QtCore.QObject):
     
     __INSTANCE = None
@@ -33,6 +34,7 @@ class Rocket(PyQt4.QtCore.QObject):
     idChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(int)
     cameraStateChanged = PyQt4.QtCore.pyqtSignal(bool)
+    streamingStateChanged = PyQt4.QtCore.pyqtSignal(bool)
 
     DISCOVERY_ID = 0xE0
     
@@ -66,6 +68,7 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__currentState = state
         self.__cameraON = False
         self.__name = name
+        self.__isStreaming = False
 
     @property
     def name(self):
@@ -156,6 +159,15 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__ID = ID
         self.__name = self.NAME[ID]
         self.idChanged.emit(ID)
+
+    @property
+    def isStreaming(self):
+        return self.__isStreaming
+
+    @isStreaming.setter
+    def isStreaming(self, isStreaming):
+        self.__isStreaming = isStreaming
+        self.streamingStateChanged.emit(isStreaming)
 
     @property
     def accelerationHistory(self):

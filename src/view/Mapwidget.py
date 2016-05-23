@@ -113,14 +113,16 @@ class Map(PyQt4.QtGui.QWidget):
 
         self.__baseStationMarkerLon = lon
         self.__baseStationMarkerLat = lat
-        self.m = Basemap(width=6000,height=4500,projection='lcc',
-            resolution=None,lat_0=lat,lon_0=lon,ax=self.axes)
-        self.m.shadedrelief()
-        self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
+        #self.m = Basemap(width=6000,height=4500,projection='lcc',
+        #    resolution=None,lat_0=lat,lon_0=lon,ax=self.axes)
+        #self.m.shadedrelief()
+        #self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.__updateMarkers()
 
-    def updateRocketMarker(self,lon, lat):
+    def updateRocketMarker(self, lon, lat):
 
+        print lon
+        print lat
         self.__rocketMarkerLon = lon
         self.__rocketMarketLat = lat
         self.__updateMarkers()

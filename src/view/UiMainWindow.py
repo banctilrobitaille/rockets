@@ -252,6 +252,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
         self.__baseStationController.baseStation.connectedRocket.coordsChanged.connect(self.__on_RocketCoordsChanged)
         self.__baseStationController.baseStation.connectedRocket.stateChanged.connect(self.__on_RocketStateChanged)
+        self.__baseStationController.baseStation.connectedRocket.streamingStateChanged.connect(self.__on_StreamingState_Changed)
 
     @pyqtSlot(object)
     def __on_AvailableRocketChanged(self, availableRocket):
@@ -316,6 +317,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_ON_ICON_PATH))
         else:
             self.__toolbar.cameraAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.CAMERA_OFF_ICON_PATH))
+
+    @pyqtSlot(bool)
+    def __on_StreamingState_Changed(self, state):
+
+        if state:
+            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
+        else:
+            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_OFF_ICON_PATH))
 
     @pyqtSlot(int)
     def __on_SatellitesChanged(self, nbSatellite):
@@ -391,12 +400,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Stream_Clicked(self):
 
-        if self.__baseStationController.RFD900.streaming:
+        if self.__baseStationController.RFD900.streaming or \
+                self.__baseStationController.baseStation.connectedRocket.isStreaming:
             self.__baseStationController.RFD900.stopStream()
-            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_OFF_ICON_PATH))
-        else:
+            #self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_OFF_ICON_PATH))
+        elif not self.__baseStationController.RFD900.streaming or not \
+                self.__baseStationController.baseStation.connectedRocket.isStreaming:
             self.__baseStationController.RFD900.startStream()
-            self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
+            #self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
 
     def __on_Rocket_Clicked(self, rocketID):
 
@@ -466,12 +477,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         else:
             self.__baseStationController.RFD900.startRocketDiscovery()
 
+
 class MenuBar(PyQt4.QtGui.QMenuBar):
     
     def __init__(self, parent, objectName):
         
         PyQt4.QtGui.QMenuBar.__init__(self,parent)
         self.setObjectName(objectName)
+
 
 class Menu(PyQt4.QtGui.QMenu):
     
@@ -489,4 +502,3 @@ class MenuAction(PyQt4.QtGui.QAction):
         PyQt4.QtGui.QAction.__init__(self,parent)
         self.setObjectName(objectName)
         self.setText(text)
-        
