@@ -1,12 +1,13 @@
 import PyQt4
 import serial
+from serial.tools import list_ports
 
 class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     
-    def __init__(self,rfdController,parent=None):
+    def __init__(self, serialController, parent=None):
         
         PyQt4.QtGui.QWidget.__init__(self, parent)
-        self.__rfdController = rfdController
+        self.__serialController = serialController
         self.__setupUi()
     
     def __setupUi(self):
@@ -39,8 +40,17 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.comboCOMPort = PyQt4.QtGui.QComboBox(self.gbConfig)
         self.comboCOMPort.setGeometry(PyQt4.QtCore.QRect(190, 20, 191, 31))
         self.comboCOMPort.setObjectName("comboCOMPort")
-        
-        self.comboCOMPort.addItem("/dev/ttyS0")
+
+        if self.__serialController.serialConnection.port is not None:
+
+            for port in filter(lambda serialport: serialport[0] !=
+                    self.__serialController.serialConnection.port, list_ports.comports()):
+                self.comboCOMPort.addItem(port[0])
+            self.comboCOMPort.addItem(self.__serialController.serialConnection.port)
+            self.comboCOMPort.setCurrentIndex(self.comboCOMPort.findText(self.__serialController.serialConnection.port))
+        else:
+            for port in list_ports.comports():
+                self.comboCOMPort.addItem(port[0])
 
         self.lblListePort = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblListePort.setGeometry(PyQt4.QtCore.QRect(30, 20, 121, 20))
@@ -64,7 +74,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.checkNo.setText("No")
         self.checkNo.setAutoExclusive(True)
     
-        if self.__rfdController.serialConnection._parity != serial.PARITY_NONE:
+        if self.__serialController.serialConnection._parity != serial.PARITY_NONE:
             self.checkYes.setChecked(True)
         else:
             self.checkNo.setChecked(True)
@@ -77,7 +87,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtBaudRate = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtBaudRate.setGeometry(PyQt4.QtCore.QRect(100, 90, 100, 22))
         self.txtBaudRate.setObjectName("txtBaudRate")
-        self.txtBaudRate.setText(str(self.__rfdController.serialConnection._baudrate))
+        self.txtBaudRate.setText(str(self.__serialController.serialConnection._baudrate))
         
         self.lblStopBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblStopBits.setGeometry(PyQt4.QtCore.QRect(220, 90, 60, 22))
@@ -87,7 +97,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtStopBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtStopBits.setGeometry(PyQt4.QtCore.QRect(280, 90, 31, 22))
         self.txtStopBits.setObjectName("txtStopBits")
-        self.txtStopBits.setText(str(self.__rfdController.serialConnection._stopbits))
+        self.txtStopBits.setText(str(self.__serialController.serialConnection._stopbits))
         
         self.lblDataBits = PyQt4.QtGui.QLabel(self.gbConfig)
         self.lblDataBits.setGeometry(PyQt4.QtCore.QRect(320, 90, 60, 22))
@@ -97,7 +107,7 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.txtDataBits = PyQt4.QtGui.QLineEdit(self.gbConfig)
         self.txtDataBits.setGeometry(PyQt4.QtCore.QRect(380, 90, 41, 22))
         self.txtDataBits.setObjectName("txtDataBits")
-        self.txtDataBits.setText(str(self.__rfdController.serialConnection._bytesize))
+        self.txtDataBits.setText(str(self.__serialController.serialConnection._bytesize))
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
         self.__connectSlot()
@@ -109,18 +119,18 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
     
     def __slotBtnSave_Clicked(self):
         
-        
-        self.__rfdController.updateSerialConnectionBaudrate(int(self.txtBaudRate.text())) 
-        self.__rfdController.updateSerialConnectionByteSize(int(self.txtDataBits.text()))
-        self.__rfdController.updateSerialConnectionStopbits(int(self.txtStopBits.text()))
+        self.__serialController.updateSerialConnectionPort(str(self.comboCOMPort.currentText()))
+        self.__serialController.updateSerialConnectionBaudrate(int(self.txtBaudRate.text()))
+        self.__serialController.updateSerialConnectionByteSize(int(self.txtDataBits.text()))
+        self.__serialController.updateSerialConnectionStopbits(int(self.txtStopBits.text()))
         
         if self.checkYes.isChecked():
-            self.__rfdController.updateSerialConnectionParity(serial.PARITY_EVEN)
+            self.__serialController.updateSerialConnectionParity(serial.PARITY_EVEN)
         else:
-            self.__rfdController.updateSerialConnectionParity(serial.PARITY_NONE)
+            self.__serialController.updateSerialConnectionParity(serial.PARITY_NONE)
         
         self.close()
     
     def __slotBtnCancel_Clicked(self):
         self.close()
-    
+

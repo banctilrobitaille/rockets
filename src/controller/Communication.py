@@ -35,7 +35,10 @@ class SerialController(PyQt4.QtCore.QObject):
     parityChanged = PyQt4.QtCore.pyqtSignal(str)
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
-    
+    errorOccured = PyQt4.QtCore.pyqtSignal(str)
+    newInformation = PyQt4.QtCore.pyqtSignal(str)
+    newSuccess = PyQt4.QtCore.pyqtSignal(str)
+
     def __init__(self):
         
         super(SerialController, self).__init__()
@@ -81,9 +84,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionPort(self, port):
-        
-        self.__serialConnection.port = port
-        self.portChanged.emit(port)
+        try:
+            self.__serialConnection.port = port
+            self.portChanged.emit(port)
+            self.newSuccess.emit("Sucessfully updated serial port to: \n" + str(port))
+        except Exception as e:
+            self.errorOccured.emit("Unable to update device serial port to: \n" + port)
     
     """
     #    Methode updateSerialConnectionBaudrate
@@ -94,9 +100,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionBaudrate(self, baudrate):
-        
-        self.__serialConnection.baudrate = baudrate
-        self.baudrateChanged.emit(baudrate)
+        try:
+            self.__serialConnection.baudrate = baudrate
+            self.baudrateChanged.emit(baudrate)
+            self.newSuccess.emit("Sucessfully updated serial port baudrate to: \n" + str(baudrate))
+        except Exception:
+            self.errorOccured("Unable to update serial device baudrate to:\n" + str(baudrate))
     
     """
     #    Methode updateSerialConnectionStopbits
@@ -107,9 +116,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionStopbits(self, stopbits):
-        
-        self.__serialConnection.stopbits = stopbits
-        self.stopbitsChanged.emit(stopbits)
+        try:
+            self.__serialConnection.stopbits = stopbits
+            self.stopbitsChanged.emit(stopbits)
+            self.newSuccess.emit("Sucessfully updated serial port stopbit to: \n" + str(stopbits))
+        except Exception:
+            self.errorOccured("Unable to update serial device stopbits to:\n" + str(stopbits))
     
     """
     #    Methode updateSerialConnectionParity
@@ -120,10 +132,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionParity(self, parity):
-        
-        self.__serialConnection.parity = parity
-        self.parityChanged.emit(parity)
-    
+        try:
+            self.__serialConnection.parity = parity
+            self.parityChanged.emit(parity)
+            self.newSuccess.emit("Sucessfully updated serial port parity to: \n" + str(parity))
+        except Exception:
+            self.errorOccured("Unable to update serial device parity to:\n" + str(parity))
     
     """
     #    Methode updateSerialConnectionByteSize
@@ -134,9 +148,12 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionByteSize(self, bytesize):
-        
-        self.__serialConnection.bytesize = bytesize
-        self.bytesizeChanged.emit(bytesize)
+        try:
+            self.__serialConnection.bytesize = bytesize
+            self.bytesizeChanged.emit(bytesize)
+            self.newSuccess.emit("Sucessfully updated serial port bytesize to: \n" + str(bytesize))
+        except Exception:
+            self.errorOccured("Unable to update serial device bytesize to:\n" + str(bytesize))
     
     """
     #    Methode updateSerialConnectionState
@@ -573,6 +590,7 @@ class CommandStream(PyQt4.QtCore.QThread):
         self.__isRunning = False
         self.__timer = None
         self.__ID = ID
+        self.__inError = False
 
         if timeout is not None:
 
@@ -657,6 +675,7 @@ class CommandStream(PyQt4.QtCore.QThread):
 
                 commandString = command
 
+        self.commandStreamEnded.emit(self.__inError)
         self.rocketDidNotRespond.emit("Rocket did not respond to command: \n" + commandString)
 
     def kill(self):
@@ -665,6 +684,7 @@ class CommandStream(PyQt4.QtCore.QThread):
         if self.__timeout is not None:
             self.__timer.stop()
 
+        self.commandStreamEnded.emit(self.__inError)
 
     def run(self):
 
@@ -672,19 +692,18 @@ class CommandStream(PyQt4.QtCore.QThread):
 
             self.__timer.start(self.__timeout*1000)
 
+        self.commandStreamStarted.emit(True)
+
         while self.__isRunning:
             try:
-
                 frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'],rocketID=self.__rocketID,
                                             ID=self.ID, command=self.command)
-                test = Frame.FLAG + frame.toByteArray(withCRC=True)
                 self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
                 time.sleep(self.__interval)
-
             except Exception as e:
-
                 self.errorOccured.emit("Error while sending command on port: \n" + self.serialConnection.port +
                                        "\n" + e.message)
+                self.__inError = True
                 self.kill()
 
 '''

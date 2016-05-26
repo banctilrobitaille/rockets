@@ -8,8 +8,9 @@ import UiGpsSettings
 from PyQt4.Qt import pyqtSlot
 import StatePanel
 import UiToolbar
-from UiSlidingMessage import SlidingMessage
+from UiSlidingMessage import ErrorSlidingMessage, NotificationSlidingMessage, SuccessSlidingMessage
 from UiClickableRocket import ClickableRocketWidget
+from src.controller.Communication import FrameFactory
 from src.controller.BaseStationController import BaseStationController
 """#############################################################################
 # 
@@ -66,8 +67,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__addToolBar()
 
-
-
         self.__dashboard = dashboard.Dashboard(self)
         #self.__compass = compass.Compass(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
@@ -75,8 +74,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         #self.__rocket = vtkRendering.rocketRendering(self)
         self.__clickableRocket = ClickableRocketWidget(self)
         self.__statePanel = StatePanel.StatePanel(self)
-
-        self.__slidingMessage = SlidingMessage("Successfully entered in discover mode", self)
 
         #self.ren = vtk.vtkRenderer()
         #self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
@@ -227,7 +224,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.__toolbar.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
         self.connect(self.__toolbar.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
 
+        self.__xbeeSerialController.errorOccured.connect(self.__on_Error)
+
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
+        self.__rfdSerialController.errorOccured.connect(self.__on_Error)
+        self.__rfdSerialController.newSuccess.connect(self.__on_Success)
         self.__baseStationController.baseStation.availableRocketChanged.connect(self.__on_AvailableRocketChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
         self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)
@@ -344,10 +345,25 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         commandStreamer.rocketDidNotRespond.connect(self.__on_Error)
 
+        if commandStreamer.command is FrameFactory.COMMAND["START_CAMERA"] or\
+            commandStreamer.command is FrameFactory.COMMAND["STOP_CAMERA"]:
+            commandStreamer.commandStreamEnded.connect(self.__toolbar.cameraAction.stopAnimation)
+        elif commandStreamer.command is FrameFactory.COMMAND["START_STREAM"] or\
+                commandStreamer.command is FrameFactory.COMMAND["STOP_STREAM"]:
+            commandStreamer.commandStreamEnded.connect(self.__toolbar.streamAction.stopAnimation)
+
+
     @pyqtSlot(str)
     def __on_Error(self, errorMessage):
+        ErrorSlidingMessage(errorMessage, self).reveal()
 
-        SlidingMessage(errorMessage, self).reveal()
+    @pyqtSlot(str)
+    def __on_Notif(self, notifMessage):
+        NotificationSlidingMessage(notifMessage, self).reveal()
+
+    @pyqtSlot(str)
+    def __on_Success(self, sucessMessage):
+        SuccessSlidingMessage(sucessMessage, self).reveal()
 
     @pyqtSlot(bool)
     def __on_serialConnectionStateChanged(self, isConnected):
@@ -379,6 +395,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Camera_Clicked(self):
 
+        self.__toolbar.animateToolbarAction(self.__toolbar.cameraAction)
+        self.__toolbar.cameraAction.setDisabled(True)
+
         if self.__baseStationController.baseStation.connectedRocket.cameraON:
 
             cameraMsg = PyQt4.QtGui.QMessageBox( PyQt4.QtGui.QMessageBox.Question, "CAMERA WARNING",
@@ -400,14 +419,15 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     def __on_Stream_Clicked(self):
 
+        self.__toolbar.animateToolbarAction(self.__toolbar.streamAction)
+        self.__toolbar.streamAction.setDisabled(True)
+
         if self.__baseStationController.RFD900.streaming or \
                 self.__baseStationController.baseStation.connectedRocket.isStreaming:
             self.__baseStationController.RFD900.stopStream()
-            #self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_OFF_ICON_PATH))
         elif not self.__baseStationController.RFD900.streaming or not \
                 self.__baseStationController.baseStation.connectedRocket.isStreaming:
             self.__baseStationController.RFD900.startStream()
-            #self.__toolbar.streamAction.setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.STREAM_ON_ICON_PATH))
 
     def __on_Rocket_Clicked(self, rocketID):
 

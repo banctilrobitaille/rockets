@@ -12,10 +12,12 @@ from controller.BaseStationController import BaseStationController
 #                         de lapplication et cree une instance unique de serialConnection
 #                         
 ##############################################################################"""
+
+
 class BaseStationApplication(PyQt4.QtGui.QApplication):
         
     def __init__(self, args):
-        
+
         PyQt4.QtGui.QApplication.__init__(self, args)
 
         splashImage = PyQt4.QtGui.QPixmap('./Image_Files/LogoRocket.png')
