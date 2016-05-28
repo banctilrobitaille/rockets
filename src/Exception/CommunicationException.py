@@ -9,4 +9,3 @@ class BadCRCException(Exception):
     def __init__(self, params):
         
         self.message = params
-        

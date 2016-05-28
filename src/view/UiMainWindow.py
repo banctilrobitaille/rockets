@@ -36,6 +36,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__setupUi()
         self.__connectSlot()
 
+        self.__baseStationController.connectSerialDevices()
+
     """
     #    Methode __setupUi
     #    Description: Methode initialisant les composants graphiques
@@ -229,6 +231,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
         self.__rfdSerialController.errorOccured.connect(self.__on_Error)
         self.__rfdSerialController.newSuccess.connect(self.__on_Success)
+
+        self.__baseStationController.errorOccured.connect(self.__on_Error)
+
         self.__baseStationController.baseStation.availableRocketChanged.connect(self.__on_AvailableRocketChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
         self.__baseStationController.baseStation.coordsChanged.connect(self.__on_BaseStationCoordsChanged)

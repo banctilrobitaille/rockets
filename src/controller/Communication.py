@@ -4,6 +4,7 @@ import time
 from src.model.Frame import ReceivedFrame, SentFrame, Frame
 from src.model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
+from src.Exception import SerialDeviceException
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -393,7 +394,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
 
         except Exception as e:
 
-            print(e.message)
+            raise SerialDeviceException.UnableToConnectException("Unable to connect the serial device {}", self.__class__.__name__)
 
     def disconnect(self):
 

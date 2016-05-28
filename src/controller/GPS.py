@@ -2,7 +2,7 @@ import PyQt4
 import time
 import re
 from PyQt4.Qt import pyqtSlot
-
+from src.Exception import SerialDeviceException
 
 class GPSDevice(PyQt4.QtCore.QThread):
 
@@ -77,8 +77,7 @@ class GlobalSat(GPSDevice):
             self.start()
 
         except Exception as e:
-
-            print e.message
+            raise SerialDeviceException.UnableToConnectException("Unable to connect serial device: \n" +  self.__class__.__name__)
 
     def disconnect(self):
 
