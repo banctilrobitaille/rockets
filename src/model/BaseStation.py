@@ -1,5 +1,5 @@
 import PyQt4
-from src.model.Rocket import Rocket
+from model.Rocket import Rocket
 '''
 Created on 2016-01-04
 

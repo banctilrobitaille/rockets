@@ -1,5 +1,5 @@
 import PyQt4
-from src.view.dashboard import Thermometer
+from view.dashboard import Thermometer
 from PyKDE4.kdeui import KLed
 
 

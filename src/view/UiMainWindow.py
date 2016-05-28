@@ -10,8 +10,8 @@ import StatePanel
 import UiToolbar
 from UiSlidingMessage import ErrorSlidingMessage, NotificationSlidingMessage, SuccessSlidingMessage
 from UiClickableRocket import ClickableRocketWidget
-from src.controller.Communication import FrameFactory
-from src.controller.BaseStationController import BaseStationController
+from controller.Communication import FrameFactory
+from controller.LogController import LogController
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -28,6 +28,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
 
+        self.__LOGGER = LogController.getInstance()
         self.__baseStationController    = basestationController
         self.__rfdSerialController      = self.__baseStationController.RFD900SerialController
         self.__xbeeSerialController     = self.__baseStationController.XBeeSerialController
@@ -56,9 +57,12 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.centralwidget.setObjectName("centralwidget")
         self.setCentralWidget(self.centralwidget)
         palette = PyQt4.QtGui.QPalette()
-        palette.setColor(PyQt4.QtGui.QPalette.Background,PyQt4.QtCore.Qt.black)
+        palette.setColor(PyQt4.QtGui.QPalette.Background, PyQt4.QtCore.Qt.black)
         self.setPalette(palette)
         self.setWindowTitle("Station de Base RockETS v0.1")
+        self.__systemTrayIcon = PyQt4.QtGui.QSystemTrayIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketsLogo32x32.png'), self)
+        self.__systemTrayIcon.show()
+        self.setWindowIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketsLogo32x32.png'))
         
         """Ajout de la barre de menu"""
         self.__AddMenu()
@@ -226,13 +230,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.__toolbar.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
         self.connect(self.__toolbar.cameraAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Camera_Clicked)
 
-        self.__xbeeSerialController.errorOccured.connect(self.__on_Error)
+        self.__LOGGER.errorOccured.connect(self.__on_Error)
+        self.__LOGGER.newInfos.connect(self.__on_Notif)
+        self.__LOGGER.newSuccess.connect(self.__on_Success)
 
         self.__rfdSerialController.stateChanged.connect(self.__on_serialConnectionStateChanged)
-        self.__rfdSerialController.errorOccured.connect(self.__on_Error)
-        self.__rfdSerialController.newSuccess.connect(self.__on_Success)
-
-        self.__baseStationController.errorOccured.connect(self.__on_Error)
 
         self.__baseStationController.baseStation.availableRocketChanged.connect(self.__on_AvailableRocketChanged)
         self.__baseStationController.baseStation.connectedRocketChanged.connect(self.__on_connectedRocketChanged)
@@ -243,11 +245,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__baseStationController.GPS.nbSatellitesChanged.connect(self.__on_SatellitesChanged)
 
         self.__baseStationController.RFD900.newCommandStreamer.connect(self.__on_Command_Sent)
-        self.__baseStationController.RFD900.errorOccured.connect(self.__on_Error)
         self.__baseStationController.RFD900.discoveringRocket.connect(self.__on_DiscoveringRocket_Changed)
 
         self.__baseStationController.XBee.newCommandStreamer.connect(self.__on_Command_Sent)
-        self.__baseStationController.XBee.errorOccured.connect(self.__on_Error)
 
     def __connectRocketSlot(self):
 
@@ -348,10 +348,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     @pyqtSlot(object)
     def __on_Command_Sent(self, commandStreamer):
 
-        commandStreamer.rocketDidNotRespond.connect(self.__on_Error)
-
         if commandStreamer.command is FrameFactory.COMMAND["START_CAMERA"] or\
-            commandStreamer.command is FrameFactory.COMMAND["STOP_CAMERA"]:
+                commandStreamer.command is FrameFactory.COMMAND["STOP_CAMERA"]:
             commandStreamer.commandStreamEnded.connect(self.__toolbar.cameraAction.stopAnimation)
         elif commandStreamer.command is FrameFactory.COMMAND["START_STREAM"] or\
                 commandStreamer.command is FrameFactory.COMMAND["STOP_STREAM"]:
@@ -427,11 +425,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__toolbar.animateToolbarAction(self.__toolbar.streamAction)
         self.__toolbar.streamAction.setDisabled(True)
 
-        if self.__baseStationController.RFD900.streaming or \
-                self.__baseStationController.baseStation.connectedRocket.isStreaming:
+        if self.__baseStationController.baseStation.connectedRocket.isStreaming:
             self.__baseStationController.RFD900.stopStream()
-        elif not self.__baseStationController.RFD900.streaming or not \
-                self.__baseStationController.baseStation.connectedRocket.isStreaming:
+        else:
             self.__baseStationController.RFD900.startStream()
 
     def __on_Rocket_Clicked(self, rocketID):

@@ -1,50 +1,45 @@
 import PyQt4
 from PyQt4.Qt import pyqtSlot
-from src.controller.RocketController import RocketController
-from src.controller.Communication import SerialController
-from src.controller.Communication import RFD900Strategy, XbeeStrategy, FrameFactory
-from src.model.BaseStation import BaseStation
-from src.model.Rocket import Rocket
-from src.controller.GPS import GlobalSat
-from src.Exception import SerialDeviceException
+from controller.RocketController import RocketController
+from controller.Communication import SerialController
+from controller.Communication import RFD900Strategy, XbeeStrategy, FrameFactory
+from model.BaseStation import BaseStation
+from model.Rocket import Rocket
+from controller.GPS import GlobalSat
+from Exception import SerialDeviceException
+from controller.LogController import LogController
+
 
 class BaseStationController(PyQt4.QtCore.QObject):
 
-    errorOccured = PyQt4.QtCore.pyqtSignal(str)
-    newInformation = PyQt4.QtCore.pyqtSignal(str)
-    newSuccess = PyQt4.QtCore.pyqtSignal(str)
     __INSTANCE = None
 
     def __init__(self):
         super(BaseStationController, self).__init__()
+        self.__LOGGER = LogController.getInstance()
+
+        self.__rocketController = RocketController.getInstance()
+        self.__baseStationModel = BaseStation()
+        self.__RFD900SerialController = SerialController()
+        self.__XBeeSerialController = SerialController()
+        self.__globalSatSerialController = SerialController()
+        self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
+        self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
 
         self.setupSerialDevices()
 
+        self.__gpsDevice = GlobalSat(self.__globalSatSerialController)
         self.__RFD900.rocketDiscovered.connect(self.__on_rocketDiscovery)
         self.__gpsDevice.coordsReceived.connect(self.__on_coordsReceived)
 
     def setupSerialDevices(self):
 
-        self.__rocketController = RocketController.getInstance()
-        self.__baseStationModel = BaseStation()
-
-        self.__RFD900SerialController = SerialController()
         self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS1')
         self.__RFD900SerialController.updateSerialConnectionBaudrate(57600)
-
-        self.__XBeeSerialController = SerialController()
         self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS0")
         self.__XBeeSerialController.updateSerialConnectionBaudrate(9600)
-
-        self.__globalSatSerialController = SerialController()
         self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS3")
         self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
-
-        self.__RFD900 = RFD900Strategy(self.__rocketController, self.__RFD900SerialController.serialConnection)
-
-        self.__XBee = XbeeStrategy(self.__rocketController, self.__XBeeSerialController.serialConnection)
-
-        self.__gpsDevice = GlobalSat(self.__globalSatSerialController)
 
     def connectSerialDevices(self):
         try:
@@ -52,7 +47,7 @@ class BaseStationController(PyQt4.QtCore.QObject):
             self.__XBee.connect()
             self.__gpsDevice.connect()
         except SerialDeviceException.UnableToConnectException as e:
-            self.errorOccured.emit(e.message)
+            self.__LOGGER.error(e.message)
 
     @property
     def baseStation(self):

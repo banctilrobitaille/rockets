@@ -1,5 +1,5 @@
 import PyQt4
-from src.model.ModelUtils import DataOverTimeHistory
+from model.ModelUtils import DataOverTimeHistory
 """#############################################################################
 # 
 # Nom du module:          Rocket

@@ -2,7 +2,7 @@ import PyQt4
 import time
 import re
 from PyQt4.Qt import pyqtSlot
-from src.Exception import SerialDeviceException
+from Exception import SerialDeviceException
 
 class GPSDevice(PyQt4.QtCore.QThread):
 

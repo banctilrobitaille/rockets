@@ -1,10 +1,10 @@
-import serial
 import PyQt4
 import time
-from src.model.Frame import ReceivedFrame, SentFrame, Frame
-from src.model.SerialConnection import SerialConnection
+from model.Frame import ReceivedFrame, SentFrame, Frame
+from model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
-from src.Exception import SerialDeviceException
+from Exception import SerialDeviceException
+from controller.LogController import LogController
 """#############################################################################
 # 
 # Nom du module:          Cummunication.py
@@ -36,14 +36,12 @@ class SerialController(PyQt4.QtCore.QObject):
     parityChanged = PyQt4.QtCore.pyqtSignal(str)
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
-    errorOccured = PyQt4.QtCore.pyqtSignal(str)
-    newInformation = PyQt4.QtCore.pyqtSignal(str)
-    newSuccess = PyQt4.QtCore.pyqtSignal(str)
 
     def __init__(self):
         
         super(SerialController, self).__init__()
         self.__serialConnection = SerialConnection()
+        self.__LOGGER = LogController.getInstance()
 
     @property
     def serialConnection(self):
@@ -88,9 +86,9 @@ class SerialController(PyQt4.QtCore.QObject):
         try:
             self.__serialConnection.port = port
             self.portChanged.emit(port)
-            self.newSuccess.emit("Sucessfully updated serial port to: \n" + str(port))
+            self.__LOGGER.success("Sucessfully updated serial port to: \n" + str(port))
         except Exception as e:
-            self.errorOccured.emit("Unable to update device serial port to: \n" + port)
+            self.__LOGGER.error("Unable to update device serial port to: \n" + port)
     
     """
     #    Methode updateSerialConnectionBaudrate
@@ -104,9 +102,9 @@ class SerialController(PyQt4.QtCore.QObject):
         try:
             self.__serialConnection.baudrate = baudrate
             self.baudrateChanged.emit(baudrate)
-            self.newSuccess.emit("Sucessfully updated serial port baudrate to: \n" + str(baudrate))
+            self.__LOGGER.success("Sucessfully updated serial port baudrate to: \n" + str(baudrate))
         except Exception:
-            self.errorOccured("Unable to update serial device baudrate to:\n" + str(baudrate))
+            self.__LOGGER.error("Unable to update serial device baudrate to:\n" + str(baudrate))
     
     """
     #    Methode updateSerialConnectionStopbits
@@ -120,9 +118,9 @@ class SerialController(PyQt4.QtCore.QObject):
         try:
             self.__serialConnection.stopbits = stopbits
             self.stopbitsChanged.emit(stopbits)
-            self.newSuccess.emit("Sucessfully updated serial port stopbit to: \n" + str(stopbits))
+            self.__LOGGER.success("Sucessfully updated serial port stopbit to: \n" + str(stopbits))
         except Exception:
-            self.errorOccured("Unable to update serial device stopbits to:\n" + str(stopbits))
+            self.__LOGGER.error("Unable to update serial device stopbits to:\n" + str(stopbits))
     
     """
     #    Methode updateSerialConnectionParity
@@ -136,9 +134,9 @@ class SerialController(PyQt4.QtCore.QObject):
         try:
             self.__serialConnection.parity = parity
             self.parityChanged.emit(parity)
-            self.newSuccess.emit("Sucessfully updated serial port parity to: \n" + str(parity))
+            self.__LOGGER.success("Sucessfully updated serial port parity to: \n" + str(parity))
         except Exception:
-            self.errorOccured("Unable to update serial device parity to:\n" + str(parity))
+            self.__LOGGER.error("Unable to update serial device parity to:\n" + str(parity))
     
     """
     #    Methode updateSerialConnectionByteSize
@@ -152,9 +150,9 @@ class SerialController(PyQt4.QtCore.QObject):
         try:
             self.__serialConnection.bytesize = bytesize
             self.bytesizeChanged.emit(bytesize)
-            self.newSuccess.emit("Sucessfully updated serial port bytesize to: \n" + str(bytesize))
+            self.__LOGGER.success("Sucessfully updated serial port bytesize to: \n" + str(bytesize))
         except Exception:
-            self.errorOccured("Unable to update serial device bytesize to:\n" + str(bytesize))
+            self.__LOGGER.error("Unable to update serial device bytesize to:\n" + str(bytesize))
     
     """
     #    Methode updateSerialConnectionState
@@ -189,6 +187,7 @@ class SerialReader(PyQt4.QtCore.QThread):
     def __init__(self, serialConnection):
         super(PyQt4.QtCore.QThread, self).__init__()
         self.__serialConnection = serialConnection
+        self.__LOGGER = LogController.getInstance()
 
     @property
     def running(self):
@@ -211,41 +210,38 @@ class SerialReader(PyQt4.QtCore.QThread):
     def run(self):
         
         self.__serialConnection.flush()
-            
-        """Tant quon ne tue pas le thread"""
+
         while self.__running:    
 
             if self.__serialConnection.inWaiting() >= ReceivedFrame.LENGTH:
-            #if self.__serialConnection.inWaiting():
-
-                #"""Waiting for the beginning of a frame and reading the flag"""
                 while self.__serialConnection.read(1) is not Frame.FLAG:
                     pass
 
                 try:
                     self.frameReceived.emit(self.__serialConnection.read(ReceivedFrame.LENGTH-1))
-
                 except Exception as e:
-
-                    print e.message
+                    self.__LOGGER.error(e.message, verbose=False)
 
 
 class CommunicationStrategy(PyQt4.QtCore.QObject):
 
     rocketDiscovered = PyQt4.QtCore.pyqtSignal(int)
-    rocketDidNotRespond = PyQt4.QtCore.pyqtSignal(str)
     newCommandStreamer = PyQt4.QtCore.pyqtSignal(object)
-    errorOccured = PyQt4.QtCore.pyqtSignal(str)
     discoveringRocket = PyQt4.QtCore.pyqtSignal(bool)
 
     def __init__(self, rocketController):
         super(CommunicationStrategy, self).__init__()
+        self.__LOGGER = LogController.getInstance()
         self.__rocketController = rocketController
         self.__history = CommunicationHistory()
         self.__commandStreamer = {}
         self.__ID = 0
         self.__isDiscoveringRocket = False
         self.__rocketDiscoveryStreamer = None
+
+    @property
+    def LOGGER(self):
+        return self.__LOGGER
 
     @property
     def rocketDiscoveryStreamer(self):
@@ -284,8 +280,6 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
 
         self.__commandStreamer[str(self.__ID)] = commandStreamer
         commandStreamer.isRunning = True
-        commandStreamer.rocketDidNotRespond.connect(self.on_Rocket_Did_Not_Respond)
-        commandStreamer.errorOccured.connect(self.errorOccured)
         self.newCommandStreamer.emit(commandStreamer)
         commandStreamer.start()
         self.__ID += 1
@@ -348,16 +342,6 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
 
         raise NotImplementedError
 
-    @pyqtSlot(str)
-    def on_error(self, errorMessage):
-
-        self.errorOccured.emit(errorMessage)
-
-    @pyqtSlot(str)
-    def on_Rocket_Did_Not_Respond(self, errorMessage):
-
-        self.rocketDidNotRespond.emit(errorMessage)
-
 
 class SerialDeviceStrategy(CommunicationStrategy):
 
@@ -393,7 +377,6 @@ class SerialDeviceStrategy(CommunicationStrategy):
             self.__serialReader.start()
 
         except Exception as e:
-
             raise SerialDeviceException.UnableToConnectException("Unable to connect the serial device {}", self.__class__.__name__)
 
     def disconnect(self):
@@ -404,8 +387,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
             self.__serialConnection.isConnected = False
 
         except Exception as e:
-
-            print(e.message)
+            raise SerialDeviceException.UnableToDisconnectException("Unable to connect the serial device {}", self.__class__.__name__)
 
 
 class RFD900Strategy(SerialDeviceStrategy):
@@ -423,21 +405,28 @@ class RFD900Strategy(SerialDeviceStrategy):
         self.__streaming = streaming
 
     def startRocketDiscovery(self):
+        try:
+            self.rocketDiscoveryStreamer = CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.DISCOVERY_ID,
+                                                         ID=self.ID,command=FrameFactory.COMMAND['ROCKET_DISCOVERY'],
+                                                         interval=1)
+            self.addCommandStreamer(self.rocketDiscoveryStreamer)
+            self.isDiscoveringRocket = True
+        except Exception as e:
+            self.LOGGER.error("Unable to enter in rocket discovery mode")
 
-        self.rocketDiscoveryStreamer = CommandStream(self.serialConnection,rocketID=self.rocketController.rocket.DISCOVERY_ID,
-                                                     ID=self.ID,command=FrameFactory.COMMAND['ROCKET_DISCOVERY'],
-                                                     interval=1)
-        self.addCommandStreamer(self.rocketDiscoveryStreamer)
-        self.isDiscoveringRocket = True
+        self.LOGGER.success("Sucessfully entered in rocket discovery mode !")
 
     def stopRocketDiscovery(self):
+        try:
+            if self.isDiscoveringRocket:
+                self.rocketDiscoveryStreamer.kill()
+                self.rocketDiscoveryStreamer.wait(3000)
+                self.rocketDiscoveryStreamer = None
+                self.isDiscoveringRocket = False
+        except Exception as e:
+             self.LOGGER.error("Unable to leave rocket discovery mode")
 
-        if self.isDiscoveringRocket:
-
-            self.rocketDiscoveryStreamer.kill()
-            self.rocketDiscoveryStreamer.wait(3000)
-            self.rocketDiscoveryStreamer = None
-            self.isDiscoveringRocket = False
+        self.LOGGER.success("Sucessfully leaved rocket discovery mode !")
 
     def startStream(self):
 
@@ -493,17 +482,18 @@ class RFD900Strategy(SerialDeviceStrategy):
             elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
                 self.rocketDiscovered.emit(receivedFrame.rocketID)
+                self.LOGGER.infos("New rocket discovered !")
 
             elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
 
                 self.resendLastCommand()
+                self.LOGGER.error("Bad frame sent, received NACK", verbose=False)
 
 
 class XbeeStrategy(SerialDeviceStrategy):
 
     def __init__(self, rocketController, serialConnection):
         super(XbeeStrategy, self).__init__(rocketController, serialConnection)
-
 
     def StartCamera(self):
 
@@ -528,7 +518,6 @@ class XbeeStrategy(SerialDeviceStrategy):
                 del self.commandStreamer[str(receivedFrame.ID)]
 
                 self.rocketController.updateRocketCameraState()
-
             except Exception as e:
                 pass
 
@@ -578,8 +567,6 @@ class CommandStream(PyQt4.QtCore.QThread):
 
     commandStreamStarted    = PyQt4.QtCore.pyqtSignal(bool)
     commandStreamEnded      = PyQt4.QtCore.pyqtSignal(bool)
-    rocketDidNotRespond     = PyQt4.QtCore.pyqtSignal(str)
-    errorOccured            = PyQt4.QtCore.pyqtSignal(str)
 
     def __init__(self, serialConnection, rocketID=None, command=None,ID=None, timeout=None, interval=1):
         super(CommandStream, self).__init__()
@@ -592,6 +579,7 @@ class CommandStream(PyQt4.QtCore.QThread):
         self.__timer = None
         self.__ID = ID
         self.__inError = False
+        self.__LOGGER = LogController.getInstance()
 
         if timeout is not None:
 
@@ -677,7 +665,7 @@ class CommandStream(PyQt4.QtCore.QThread):
                 commandString = command
 
         self.commandStreamEnded.emit(self.__inError)
-        self.rocketDidNotRespond.emit("Rocket did not respond to command: \n" + commandString)
+        self.__LOGGER.error("Rocket did not respond to command: \n" + commandString)
 
     def kill(self):
 
@@ -702,7 +690,7 @@ class CommandStream(PyQt4.QtCore.QThread):
                 self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
                 time.sleep(self.__interval)
             except Exception as e:
-                self.errorOccured.emit("Error while sending command on port: \n" + self.serialConnection.port +
+                self.__LOGGER.error("Error while sending command on port: \n" + self.serialConnection.port +
                                        "\n" + e.message)
                 self.__inError = True
                 self.kill()

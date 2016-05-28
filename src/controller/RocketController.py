@@ -1,4 +1,4 @@
-from src.model.Rocket import Rocket
+from model.Rocket import Rocket
 from datetime import datetime
 """#############################################################################
 # 

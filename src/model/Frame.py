@@ -1,5 +1,5 @@
 import struct
-from src.controller.CommunicationUtility import CRC16
+from controller.CommunicationUtility import CRC16
 '''
 Created on 2016-01-04
 
