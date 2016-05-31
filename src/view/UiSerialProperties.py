@@ -118,17 +118,15 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
         self.connect(self.btnSave, PyQt4.QtCore.SIGNAL("clicked()"), self.__slotBtnSave_Clicked)
     
     def __slotBtnSave_Clicked(self):
-        
-        self.__serialController.updateSerialConnectionPort(str(self.comboCOMPort.currentText()))
-        self.__serialController.updateSerialConnectionBaudrate(int(self.txtBaudRate.text()))
-        self.__serialController.updateSerialConnectionByteSize(int(self.txtDataBits.text()))
-        self.__serialController.updateSerialConnectionStopbits(int(self.txtStopBits.text()))
-        
+
         if self.checkYes.isChecked():
-            self.__serialController.updateSerialConnectionParity(serial.PARITY_EVEN)
+            self.__serialController.updateSerialConnectionSettings(str(self.comboCOMPort.currentText()),
+                                                               int(self.txtBaudRate.text()), int(self.txtStopBits.text()),
+                                                               serial.PARITY_EVEN, int(self.txtDataBits.text()))
         else:
-            self.__serialController.updateSerialConnectionParity(serial.PARITY_NONE)
-        
+            self.__serialController.updateSerialConnectionSettings(str(self.comboCOMPort.currentText()),
+                                                               int(self.txtBaudRate.text()), int(self.txtStopBits.text()),
+                                                               serial.PARITY_NONE, int(self.txtDataBits.text()))
         self.close()
     
     def __slotBtnCancel_Clicked(self):

@@ -121,6 +121,12 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
 
         action.animate()
 
+    def disableAllActions(self):
+        [(lambda action: action.setDisabled(True))(action) for action in self.actions()]
+
+    def enableRocketDiscovery(self):
+        self.discoverAction.setDisabled(False)
+        [(lambda rocketID,action: action.setDisabled(False))(rocketID, action) for rocketID, action in self.rocketActionDict.items()]
 
 class ToolbarAction(PyQt4.QtGui.QAction):
 
@@ -166,3 +172,4 @@ class ToolbarAction(PyQt4.QtGui.QAction):
     @pyqtSlot(int)
     def __setIcon(self, frame):
         self.setIcon(PyQt4.QtGui.QIcon(self.__animatedIcon.currentPixmap()))
+

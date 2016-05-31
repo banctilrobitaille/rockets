@@ -67,12 +67,17 @@ class SerialController(PyQt4.QtCore.QObject):
     #    return: None
     """ 
     def updateSerialConnectionSettings(self, port, baudrate, stopbits, parity, bytesize):
-        
-        self.updateSerialConnectionPort(port)
-        self.updateSerialConnectionBaudrate(baudrate)
-        self.updateSerialConnectionStopbits(stopbits)
-        self.updateSerialConnectionParity(parity)
-        self.updateSerialConnectionByteSize(bytesize)
+
+        try:
+            self.updateSerialConnectionPort(port, verbose=False)
+            self.updateSerialConnectionBaudrate(baudrate, verbose=False)
+            self.updateSerialConnectionStopbits(stopbits, verbose=False)
+            self.updateSerialConnectionParity(parity, verbose=False)
+            self.updateSerialConnectionByteSize(bytesize, verbose=False)
+            self.__LOGGER.success("Sucessfully updated serial devices settings")
+        except SerialDeviceException.UnableToConfigureException as e:
+            raise
+
     
     """
     #    Methode updateSerialConnectionPort
@@ -82,13 +87,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       _port, le _port serie ex: /dev/ttyS0
     #    return: None
     """ 
-    def updateSerialConnectionPort(self, port):
+    def updateSerialConnectionPort(self, port, verbose=True):
         try:
             self.__serialConnection.port = port
             self.portChanged.emit(port)
-            self.__LOGGER.success("Sucessfully updated serial port to: \n" + str(port))
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial port to: \n" + str(port))
         except Exception as e:
             self.__LOGGER.error("Unable to update device serial port to: \n" + port)
+            raise SerialDeviceException.UnableToConfigureException("Unable to update device serial port to:" + port)
     
     """
     #    Methode updateSerialConnectionBaudrate
@@ -98,13 +105,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       _baudrate, le _baudrate du _port serie
     #    return: None
     """ 
-    def updateSerialConnectionBaudrate(self, baudrate):
+    def updateSerialConnectionBaudrate(self, baudrate, verbose=True):
         try:
             self.__serialConnection.baudrate = baudrate
             self.baudrateChanged.emit(baudrate)
-            self.__LOGGER.success("Sucessfully updated serial port baudrate to: \n" + str(baudrate))
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial port baudrate to: \n" + str(baudrate))
         except Exception:
             self.__LOGGER.error("Unable to update serial device baudrate to:\n" + str(baudrate))
+            raise SerialDeviceException.UnableToConfigureException("Unable to update serial device baudrate to: " + str(baudrate))
     
     """
     #    Methode updateSerialConnectionStopbits
@@ -114,13 +123,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       _stopbits, le _stopbits ex: serial.STOPBITS_ONE
     #    return: None
     """ 
-    def updateSerialConnectionStopbits(self, stopbits):
+    def updateSerialConnectionStopbits(self, stopbits, verbose=True):
         try:
             self.__serialConnection.stopbits = stopbits
             self.stopbitsChanged.emit(stopbits)
-            self.__LOGGER.success("Sucessfully updated serial port stopbit to: \n" + str(stopbits))
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial port stopbit to: \n" + str(stopbits))
         except Exception:
             self.__LOGGER.error("Unable to update serial device stopbits to:\n" + str(stopbits))
+            raise SerialDeviceException.UnableToConfigureException("Unable to update serial device stopbits to: " + str(stopbits))
     
     """
     #    Methode updateSerialConnectionParity
@@ -130,13 +141,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       _parity, la parite ex: serial.PARITY_NONE
     #    return: None
     """ 
-    def updateSerialConnectionParity(self, parity):
+    def updateSerialConnectionParity(self, parity, verbose=True):
         try:
             self.__serialConnection.parity = parity
             self.parityChanged.emit(parity)
-            self.__LOGGER.success("Sucessfully updated serial port parity to: \n" + str(parity))
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial port parity to: \n" + str(parity))
         except Exception:
             self.__LOGGER.error("Unable to update serial device parity to:\n" + str(parity))
+            raise SerialDeviceException.UnableToConfigureException("Unable to update serial device parity to: " + str(parity))
     
     """
     #    Methode updateSerialConnectionByteSize
@@ -146,13 +159,15 @@ class SerialController(PyQt4.QtCore.QObject):
     #    param:       _bytesize, le nombre de bits envoye ex: serial.EIGHTBITS
     #    return: None
     """ 
-    def updateSerialConnectionByteSize(self, bytesize):
+    def updateSerialConnectionByteSize(self, bytesize, verbose=True):
         try:
             self.__serialConnection.bytesize = bytesize
             self.bytesizeChanged.emit(bytesize)
-            self.__LOGGER.success("Sucessfully updated serial port bytesize to: \n" + str(bytesize))
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial port bytesize to: \n" + str(bytesize))
         except Exception:
             self.__LOGGER.error("Unable to update serial device bytesize to:\n" + str(bytesize))
+            raise SerialDeviceException.UnableToConfigureException("Unable to update serial device bytesize to: " + str(bytesize))
     
     """
     #    Methode updateSerialConnectionState
@@ -377,7 +392,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
             self.__serialReader.start()
 
         except Exception as e:
-            raise SerialDeviceException.UnableToConnectException("Unable to connect the serial device {}", self.__class__.__name__)
+            raise SerialDeviceException.UnableToConnectException("Unable to connect the serial device: \n" + self.__class__.__name__.replace("Strategy", ""))
 
     def disconnect(self):
 
@@ -387,7 +402,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
             self.__serialConnection.isConnected = False
 
         except Exception as e:
-            raise SerialDeviceException.UnableToDisconnectException("Unable to connect the serial device {}", self.__class__.__name__)
+            raise SerialDeviceException.UnableToDisconnectException("Unable to connect the serial device: \n" + self.__class__.__name__.replace("Strategy", ""))
 
 
 class RFD900Strategy(SerialDeviceStrategy):

@@ -34,11 +34,11 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
     def setupSerialDevices(self):
 
-        self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS1')
+        self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS4')
         self.__RFD900SerialController.updateSerialConnectionBaudrate(57600)
-        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS0")
+        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS5")
         self.__XBeeSerialController.updateSerialConnectionBaudrate(9600)
-        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS3")
+        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS0")
         self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
 
     def connectSerialDevices(self):
@@ -48,6 +48,7 @@ class BaseStationController(PyQt4.QtCore.QObject):
             self.__gpsDevice.connect()
         except SerialDeviceException.UnableToConnectException as e:
             self.__LOGGER.error(e.message)
+            raise
 
     @property
     def baseStation(self):

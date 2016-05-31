@@ -6,7 +6,7 @@ from PyQt4.Qwt5.Qwt import QwtCompass
 # Nom du module:          Compass
 # Auteur:                 Benoit Anctil-Robitaille, Amine Waddah
 # Date:                   8 Septembre 2015
-# Description:            Le module compass.py regroupe les classes necessaire
+# Description:            Le module UICompass.py regroupe les classes necessaire
 #                         a laffichage dun compas. Celui ci affiche la direction
 #                         (Nord-Sud-Est-Ouest)de la fusee durant le vol.
 #
@@ -33,6 +33,5 @@ class Compass(QwtCompass):
         self.needle.setPalette(self.needlePalette)
         self.setPalette(self.compassPalette)
         self.setNeedle(self.needle)
-        self.setGeometry(600,410,140,140) #Positionne le compass
-        self.show() #Affiche le compass
-        
+        self.setGeometry(545,350,125,125)
+        self.show()

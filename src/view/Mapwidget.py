@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 import numpy as np
 import PyQt4
-
+from UICompass import Compass
 
 class Map(PyQt4.QtGui.QWidget):
 
@@ -24,11 +24,10 @@ class Map(PyQt4.QtGui.QWidget):
         self.__rocketMarketLat = 0
 
         self.__gpsFix = PyQt4.QtGui.QLabel("Invalid")
-        #self.__gpsFix.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
         self.__nbSatellite = PyQt4.QtGui.QLabel("0")
-        #self.__nbSatellite.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
 
         self.__addGPSInfo()
+        self.__addCompass()
         self.show()
 
 
@@ -74,8 +73,6 @@ class Map(PyQt4.QtGui.QWidget):
         self.layout = PyQt4.QtGui.QVBoxLayout()
         self.setLayout(self.layout)
         self.layout.addWidget(self.canvas)
-        #self.m = Basemap(width=6000000,height=4500000,projection='lcc',
-        #    resolution=None,lat_0=46,lon_0=-71,ax=self.axes)
         self.m = Basemap(width=6000000,height=4500000,projection='lcc',
             resolution=None,lat_0=45,lon_0=-73,ax=self.axes)
         self.m.shadedrelief()
@@ -85,14 +82,10 @@ class Map(PyQt4.QtGui.QWidget):
     def __addGPSInfo(self):
 
         satelliteIcon = PyQt4.QtGui.QLabel()
-        #satelliteIcon.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
-        #satelliteIcon.setSizePolicy(PyQt4.QtGui.QSizePolicy.Expanding, PyQt4.QtGui.QSizePolicy.Expanding)
         satelliteIcon.setMinimumSize(32,32)
         satelliteIcon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/satellite.png'))
 
         fixIcon = PyQt4.QtGui.QLabel()
-        #fixIcon.setAlignment(PyQt4.QtCore.Qt.AlignLeft)
-        #fixIcon.setSizePolicy(PyQt4.QtGui.QSizePolicy.Expanding, PyQt4.QtGui.QSizePolicy.Expanding)
         fixIcon.setMinimumSize(32,32)
         fixIcon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/fix.png'))
 
@@ -109,14 +102,13 @@ class Map(PyQt4.QtGui.QWidget):
         self.__gpsInfoFrame.setLayout(gpsInfoLayout)
         self.__gpsInfoFrame.show()
 
+    def __addCompass(self):
+        self.__compass = Compass(self)
+
     def updateBaseStationMarker(self, lon, lat):
 
         self.__baseStationMarkerLon = lon
         self.__baseStationMarkerLat = lat
-        #self.m = Basemap(width=6000,height=4500,projection='lcc',
-        #    resolution=None,lat_0=lat,lon_0=lon,ax=self.axes)
-        #self.m.shadedrelief()
-        #self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
         self.__updateMarkers()
 
     def updateRocketMarker(self, lon, lat):

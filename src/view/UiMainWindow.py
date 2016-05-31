@@ -12,6 +12,7 @@ from UiSlidingMessage import ErrorSlidingMessage, NotificationSlidingMessage, Su
 from UiClickableRocket import ClickableRocketWidget
 from controller.Communication import FrameFactory
 from controller.LogController import LogController
+from Exception import SerialDeviceException
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -37,7 +38,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__setupUi()
         self.__connectSlot()
 
-        self.__baseStationController.connectSerialDevices()
+        try:
+            self.__baseStationController.connectSerialDevices()
+        except SerialDeviceException.UnableToConnectException as e:
+            self.__toolbar.disableAllActions()
 
     """
     #    Methode __setupUi
@@ -74,7 +78,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__addToolBar()
 
         self.__dashboard = dashboard.Dashboard(self)
-        #self.__compass = compass.Compass(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
         #self.__rocket = vtkRendering.rocketRendering(self)
@@ -182,17 +185,12 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #    return: None
     """ 
     def __AddStatusBar(self):
-        
-        self.statusbar = PyQt4.QtGui.QStatusBar(self)
-        self.statusbar.setObjectName("statusbar")
-        
-        """Par defaut letat est non connecte ecris en rouge"""
-        self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
-        self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-        
-        """Ajout de la barre detat"""
-        self.statusbar.addWidget(self.lblNotConnected)
-        self.setStatusBar(self.statusbar)
+        self.__statusBar = PyQt4.QtGui.QStatusBar(self)
+
+        self.__statusBarMessage = PyQt4.QtGui.QLabel("")
+
+        self.__statusBar.addWidget(self.__statusBarMessage)
+        self.setStatusBar(self.__statusBar)
 
     def __addToolBar(self):
 
@@ -222,7 +220,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionRFD900_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_RFD900_Settings_Clicked)
         self.connect(self.actionXBEE_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_XBEE_Settings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
-        self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotConnect_Clicked)
+        self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Connect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
         self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
 
@@ -373,17 +371,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         if isConnected:
 
-            self.statusbar.removeWidget(self.lblNotConnected)
-            self.lblNotConnected = PyQt4.QtGui.QLabel("Connected")
-            self.lblNotConnected.setStyleSheet('QLabel {color: green}')
-            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.removeWidget(self.__statusBarMessage)
+            self.__statusBarMessage = PyQt4.QtGui.QLabel("Connected")
+            self.__statusBarMessage.setStyleSheet('QLabel {color: green}')
+            self.statusbar.addWidget(self.__statusBarMessage)
             self.statusbar.update()
         else:
 
-            self.statusbar.removeWidget(self.lblNotConnected)
-            self.lblNotConnected = PyQt4.QtGui.QLabel("Not Connected")
-            self.lblNotConnected.setStyleSheet('QLabel {color: red}')
-            self.statusbar.addWidget(self.lblNotConnected)
+            self.statusbar.removeWidget(self.__statusBarMessage)
+            self.__statusBarMessage = PyQt4.QtGui.QLabel("Not Connected")
+            self.__statusBarMessage.setStyleSheet('QLabel {color: red}')
+            self.statusbar.addWidget(self.__statusBarMessage)
             self.statusbar.update()
 
     @pyqtSlot(float, float)
@@ -465,8 +463,16 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         self.__showSerialProperties(self.__xbeeSerialController)
 
-    def __slotConnect_Clicked(self):
-        pass
+    def __on_Connect_Clicked(self):
+        try:
+            self.__baseStationController.connectSerialDevices()
+            self.__statusBarMessage.setText("Ready to connect !")
+            self.__statusBarMessage.setStyleSheet('QLabel {color: green}')
+            self.__toolbar.enableRocketDiscovery()
+        except SerialDeviceException.UnableToConnectException as e:
+            self.__toolbar.disableAllActions()
+            self.__statusBarMessage.setText("Communication devices not working properly, please configure them and reconnect")
+            self.__statusBarMessage.setStyleSheet('QLabel {color: red}')
 
     def __slotDisconnect_Clicked(self):
         pass
