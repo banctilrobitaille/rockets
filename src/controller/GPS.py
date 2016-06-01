@@ -4,8 +4,8 @@ import re
 from PyQt4.Qt import pyqtSlot
 from Exception import SerialDeviceException
 
-class GPSDevice(PyQt4.QtCore.QThread):
 
+class GPSDevice(PyQt4.QtCore.QThread):
     coordsReceived = PyQt4.QtCore.pyqtSignal(float, float)
     fixChanged = PyQt4.QtCore.pyqtSignal(str)
     fixTimeChanged = PyQt4.QtCore.pyqtSignal(str)
@@ -55,16 +55,13 @@ class GPSDevice(PyQt4.QtCore.QThread):
         self.nbSatellitesChanged.emit(self.__nbSatellite)
 
     def connect(self):
-
         raise NotImplementedError
 
     def disconnect(self):
-
         raise NotImplementedError
 
 
 class GlobalSat(GPSDevice):
-
     def __init__(self, serialController):
         super(GlobalSat, self).__init__()
         self.__serialController = serialController
@@ -77,7 +74,8 @@ class GlobalSat(GPSDevice):
             self.start()
 
         except Exception as e:
-            raise SerialDeviceException.UnableToConnectException("Unable to connect serial device: \n" +  self.__class__.__name__)
+            raise SerialDeviceException.UnableToConnectException(
+                    "Unable to connect serial device: \n" + self.__class__.__name__)
 
     def disconnect(self):
 
@@ -97,33 +95,32 @@ class GlobalSat(GPSDevice):
             if self.__serialController.serialConnection.inWaiting() > 0:
 
                 receivedData = self.__serialController.serialConnection.readline()
-                #print receivedData
+                # print receivedData
 
                 if NMEASentenceFactory.SENTENCE_TYPE["GPGGA"] in receivedData:
 
                     try:
-                        sentence = NMEASentenceFactory.create(NMEASentenceFactory.SENTENCE_TYPE["GPGGA"],receivedData)
+                        sentence = NMEASentenceFactory.create(NMEASentenceFactory.SENTENCE_TYPE["GPGGA"], receivedData)
                         self.altitudeReceived.emit(sentence.altitude)
                         self.coordsReceived.emit(sentence.latitude, sentence.longitude)
 
-                        #if sentence.fix != self.fix:
+                        # if sentence.fix != self.fix:
                         self.fix = sentence.fix
 
-                        #if sentence.nbSatellite != self.nbSatellite:
+                        # if sentence.nbSatellite != self.nbSatellite:
                         self.nbSatellite = sentence.nbSatellite
 
-                        #if sentence.fixTime != self.fixTime:
+                        # if sentence.fixTime != self.fixTime:
                         self.fixTime = sentence.fixTime
 
-                        #print "yess"
+                        # print "yess"
                     except Exception as e:
 
                         pass
-                        #print "NOP"
+                        # print "NOP"
 
 
 class NMEASentenceFactory(PyQt4.QtCore.QObject):
-
     SENTENCE_TYPE = {
         "GPGGA": "GPGGA",
         "GPGSA": "GPGSA",
@@ -137,18 +134,15 @@ class NMEASentenceFactory(PyQt4.QtCore.QObject):
 
     @staticmethod
     def create(sentenceType, sentenceData):
-
         NMEASentence = None
 
         if sentenceType is NMEASentenceFactory.SENTENCE_TYPE['GPGGA']:
-
             NMEASentence = GPGGASentence(sentenceData)
 
         return NMEASentence
 
 
 class NMEASentence(PyQt4.QtCore.QObject):
-
     def __init__(self):
         super(NMEASentence, self).__init__()
         self.__identifier = ""
@@ -163,7 +157,6 @@ class NMEASentence(PyQt4.QtCore.QObject):
 
 
 class GPGGASentence(NMEASentence):
-
     FIX = {
         0: "INVALID FIX",
         1: "GPS FIX",
@@ -175,19 +168,18 @@ class GPGGASentence(NMEASentence):
 
         try:
             sentenceElements = sentenceData.split(",")
-            self.identifier     = sentenceElements[0]
-            self.__fixTime      = sentenceElements[1]
-            self.__latitude     = (float(sentenceElements[2])/100.0)
-            self.__longitude    = -(float(sentenceElements[4])/100.0)
-            self.__fix          = int(sentenceElements[6])
-            self.__nbSatellite  = int(sentenceElements[7])
-            self.__altitude     = float(sentenceElements[9])
+            self.identifier = sentenceElements[0]
+            self.__fixTime = sentenceElements[1]
+            self.__latitude = (float(sentenceElements[2]) / 100.0)
+            self.__longitude = -(float(sentenceElements[4]) / 100.0)
+            self.__fix = int(sentenceElements[6])
+            self.__nbSatellite = int(sentenceElements[7])
+            self.__altitude = float(sentenceElements[9])
 
         except Exception as e:
 
             pass
-            #print e.message
-
+            # print e.message
 
     @property
     def fixTime(self):

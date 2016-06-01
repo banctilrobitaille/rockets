@@ -6,8 +6,8 @@ import numpy as np
 import PyQt4
 from UICompass import Compass
 
-class Map(PyQt4.QtGui.QWidget):
 
+class Map(PyQt4.QtGui.QWidget):
     def __init__(self, parent):
 
         super(Map, self).__init__(parent)
@@ -30,14 +30,12 @@ class Map(PyQt4.QtGui.QWidget):
         self.__addCompass()
         self.show()
 
-
-
     @property
     def baseStationMarker(self):
         self.__baseStationMarker
 
     @baseStationMarker.setter
-    def baseStationMarker(self,marker):
+    def baseStationMarker(self, marker):
         self.__baseStationMarker = marker
 
     @property
@@ -45,7 +43,7 @@ class Map(PyQt4.QtGui.QWidget):
         self.__baseStationMarker
 
     @rocketMarker.setter
-    def rocketMarker(self,marker):
+    def rocketMarker(self, marker):
         self.__rocketMarker = marker
 
     @property
@@ -66,33 +64,34 @@ class Map(PyQt4.QtGui.QWidget):
 
     def __setupMap(self):
 
-        self.fig = Figure(figsize=(12,12),frameon=False, tight_layout=False)
-        self.axes = self.fig.add_axes([0,0,1,1])
+        self.fig = Figure(figsize=(12, 12), frameon=False, tight_layout=False)
+        self.axes = self.fig.add_axes([0, 0, 1, 1])
         self.grid = np.random.rand(10, 10)
         self.canvas = FigureCanvas(self.fig)
         self.layout = PyQt4.QtGui.QVBoxLayout()
         self.setLayout(self.layout)
         self.layout.addWidget(self.canvas)
-        self.m = Basemap(width=6000000,height=4500000,projection='lcc',
-            resolution=None,lat_0=45,lon_0=-73,ax=self.axes)
+        self.m = Basemap(width=6000000, height=4500000, projection='lcc',
+                         resolution=None, lat_0=45, lon_0=-73, ax=self.axes)
         self.m.shadedrelief()
-        self.axes.imshow(self.grid,interpolation="quadric", aspect='auto')
+        self.axes.imshow(self.grid, interpolation="quadric", aspect='auto')
         self.canvas.draw()
 
     def __addGPSInfo(self):
 
         satelliteIcon = PyQt4.QtGui.QLabel()
-        satelliteIcon.setMinimumSize(32,32)
+        satelliteIcon.setMinimumSize(32, 32)
         satelliteIcon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/satellite.png'))
 
         fixIcon = PyQt4.QtGui.QLabel()
-        fixIcon.setMinimumSize(32,32)
+        fixIcon.setMinimumSize(32, 32)
         fixIcon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/fix.png'))
 
         self.__gpsInfoFrame = PyQt4.QtGui.QFrame(self)
-        self.__gpsInfoFrame.setGeometry(450,0,230,60)
+        self.__gpsInfoFrame.setGeometry(450, 0, 230, 60)
         self.__gpsInfoFrame.setStyleSheet("QFrame {background : rgba(0,177,106,230)}"
-                                          "QFrame QLabel {color: white;background : rgba(30,139,195,0);padding-top: 5px;"
+                                          "QFrame QLabel {color: white;background : rgba(30,139,195,0);padding-top: "
+                                          "5px;"
                                           "padding-bottom: 5px;}")
         gpsInfoLayout = PyQt4.QtGui.QHBoxLayout()
         gpsInfoLayout.addWidget(satelliteIcon)
@@ -127,10 +126,10 @@ class Map(PyQt4.QtGui.QWidget):
         if self.__rocketMarker is not None:
             self.__rocketMarker[0].remove()
 
-        x,y = self.m(self.__baseStationMarkerLon,self.__baseStationMarkerLat)
-        self.__baseStationMarker = self.m.plot(x,y, marker="D", markersize=10, color='b')
+        x, y = self.m(self.__baseStationMarkerLon, self.__baseStationMarkerLat)
+        self.__baseStationMarker = self.m.plot(x, y, marker="D", markersize=10, color='b')
 
-        x,y = self.m(self.__rocketMarkerLon,self.__rocketMarketLat)
-        self.__rocketMarker = self.m.plot(x,y, marker="D", markersize=10, color='r')
+        x, y = self.m(self.__rocketMarkerLon, self.__rocketMarketLat)
+        self.__rocketMarker = self.m.plot(x, y, marker="D", markersize=10, color='r')
 
         self.canvas.draw()

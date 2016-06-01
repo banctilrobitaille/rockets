@@ -11,7 +11,6 @@ from controller.LogController import LogController
 
 
 class BaseStationController(PyQt4.QtCore.QObject):
-
     __INSTANCE = None
 
     def __init__(self):
@@ -119,7 +118,6 @@ class BaseStationController(PyQt4.QtCore.QObject):
     def disconnectFromRocket(self, rocketID):
 
         if self.__baseStationModel.connectedRocket.ID == rocketID:
-
             self.__baseStationModel.connectedRocket = None
             self.__rocketController.rocket = self.__baseStationModel.availableRocket[Rocket.DISCOVERY_ID]
 
@@ -133,11 +131,10 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
         self.baseStation.coords = {"latitude": latitude, "longitude": longitude}
 
-
     @staticmethod
     def getInstance():
-        
+
         if BaseStationController.__INSTANCE is None:
             BaseStationController.__INSTANCE = BaseStationController()
-            
+
         return BaseStationController.__INSTANCE

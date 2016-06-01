@@ -1,5 +1,6 @@
 import struct
 from controller.CommunicationUtility import CRC16
+
 '''
 Created on 2016-01-04
 
@@ -8,12 +9,10 @@ Created on 2016-01-04
 
 
 class Frame(object):
-
     FLAG = "~"
     CRC_CALCULATOR = CRC16()
 
     def __init__(self, rocketID, command, ID, timestamp, crc):
-
         self.__rocketID = rocketID
         self.__ID = ID
         self.__command = command
@@ -21,7 +20,6 @@ class Frame(object):
         self.__crc = crc
 
     def toByteArray(self, withCRC=False):
-
         raise NotImplementedError
 
     @property
@@ -30,7 +28,6 @@ class Frame(object):
 
     @rocketID.setter
     def rocketID(self, rocketID):
-
         self.__rocketID = rocketID
 
     @property
@@ -66,17 +63,14 @@ class Frame(object):
         self.__crc = crc
 
     def isValid(self):
-
         raise NotImplementedError
 
 
 class ReceivedFrame(Frame):
-
     LENGTH = 40
 
     def __init__(self, rocketID, command, ID, timestamp, state, gpsFix, speed, altitude,
                  acceleration, latitude, longitude, temperature, crc):
-        
         Frame.__init__(self, rocketID, command, ID, timestamp, crc)
         self.__state = state
         self.__gpsFix = gpsFix
@@ -89,51 +83,48 @@ class ReceivedFrame(Frame):
 
     @staticmethod
     def parseByteArray(byteArray):
-        
         frame = {}
 
-        rocketIDAndCommand     = struct.unpack_from("B", byteArray[0])[0]
-        frame['ROCKETID']      = rocketIDAndCommand & 0b11100000
-        frame['COMMAND']       = rocketIDAndCommand & 0b00011111
-        frame['ID']            = struct.unpack_from("B", byteArray[1])[0]
-        frame['TIMESTAMP']     = struct.unpack_from("f", byteArray[3:7])[0]
-        stateAndFix            = struct.unpack_from("B", byteArray[7])[0]
-        frame['STATE']         = (stateAndFix & 0b11111000) >> 3
-        frame['GPSFIX']        = stateAndFix & 0b00000111
-        frame['SPEED']         = struct.unpack_from("f", byteArray[11:15])[0]
-        frame['ALTITUDE']      = struct.unpack_from("f", byteArray[15:19])[0]
-        frame['ACCELERATION']  = struct.unpack_from("f", byteArray[19:23])[0]
-        frame['LATITUDE']      = struct.unpack_from("f", byteArray[23:27])[0]
-        frame['LONGITUDE']     = struct.unpack_from("f", byteArray[27:31])[0]
-        frame['TEMPERATURE']   = struct.unpack_from("f", byteArray[31:35])[0]
-        frame['CRC']           = struct.unpack_from("H", byteArray[35:37])[0]
+        rocketIDAndCommand = struct.unpack_from("B", byteArray[0])[0]
+        frame['ROCKETID'] = rocketIDAndCommand & 0b11100000
+        frame['COMMAND'] = rocketIDAndCommand & 0b00011111
+        frame['ID'] = struct.unpack_from("B", byteArray[1])[0]
+        frame['TIMESTAMP'] = struct.unpack_from("f", byteArray[3:7])[0]
+        stateAndFix = struct.unpack_from("B", byteArray[7])[0]
+        frame['STATE'] = (stateAndFix & 0b11111000) >> 3
+        frame['GPSFIX'] = stateAndFix & 0b00000111
+        frame['SPEED'] = struct.unpack_from("f", byteArray[11:15])[0]
+        frame['ALTITUDE'] = struct.unpack_from("f", byteArray[15:19])[0]
+        frame['ACCELERATION'] = struct.unpack_from("f", byteArray[19:23])[0]
+        frame['LATITUDE'] = struct.unpack_from("f", byteArray[23:27])[0]
+        frame['LONGITUDE'] = struct.unpack_from("f", byteArray[27:31])[0]
+        frame['TEMPERATURE'] = struct.unpack_from("f", byteArray[31:35])[0]
+        frame['CRC'] = struct.unpack_from("H", byteArray[35:37])[0]
 
         return frame
-    
+
     @classmethod
     def fromByteArray(cls, byteArray):
-        
         frameDict = ReceivedFrame.parseByteArray(byteArray)
-        frame = cls(frameDict['ROCKETID'],  frameDict['COMMAND'],       frameDict['ID'],    frameDict['TIMESTAMP'],
-                    frameDict['STATE'],     frameDict['GPSFIX'],        frameDict['SPEED'],
-                    frameDict['ALTITUDE'],  frameDict['ACCELERATION'],  frameDict['LATITUDE'],
-                    frameDict['LONGITUDE'], frameDict['TEMPERATURE'],   frameDict['CRC'])
-        
+        frame = cls(frameDict['ROCKETID'], frameDict['COMMAND'], frameDict['ID'], frameDict['TIMESTAMP'],
+                    frameDict['STATE'], frameDict['GPSFIX'], frameDict['SPEED'],
+                    frameDict['ALTITUDE'], frameDict['ACCELERATION'], frameDict['LATITUDE'],
+                    frameDict['LONGITUDE'], frameDict['TEMPERATURE'], frameDict['CRC'])
+
         return frame
 
     def toByteArray(self, withCRC=False):
-
         dataByte = ""
-        dataByte   += struct.pack("B", self.rocketID | self.command)
-        dataByte   += struct.pack("B", self.ID)
-        dataByte   += struct.pack("f", self.timestamp)
-        dataByte   += struct.pack("B", self.__state | self.__gpsFix)
-        dataByte   += struct.pack("f", self.__speed)
-        dataByte   += struct.pack("f", self.__altitude)
-        dataByte   += struct.pack("f", self.__acceleration)
-        dataByte   += struct.pack("f", self.__latitude)
-        dataByte   += struct.pack("f", self.__longitude)
-        dataByte   += struct.pack("f", self.__temperature)
+        dataByte += struct.pack("B", self.rocketID | self.command)
+        dataByte += struct.pack("B", self.ID)
+        dataByte += struct.pack("f", self.timestamp)
+        dataByte += struct.pack("B", self.__state | self.__gpsFix)
+        dataByte += struct.pack("f", self.__speed)
+        dataByte += struct.pack("f", self.__altitude)
+        dataByte += struct.pack("f", self.__acceleration)
+        dataByte += struct.pack("f", self.__latitude)
+        dataByte += struct.pack("f", self.__longitude)
+        dataByte += struct.pack("f", self.__temperature)
 
         if withCRC:
             dataByte += struct.pack("H", self.crc)
@@ -141,7 +132,6 @@ class ReceivedFrame(Frame):
         return dataByte
 
     def isValid(self):
-
         return Frame.CRC_CALCULATOR.calculate(self.toByteArray()) == self.crc
 
     @property
@@ -165,7 +155,7 @@ class ReceivedFrame(Frame):
         return self.__speed
 
     @speed.setter
-    def speed(self,speed):
+    def speed(self, speed):
         self.__speed = speed
 
     @property
@@ -173,7 +163,7 @@ class ReceivedFrame(Frame):
         return self.__altitude
 
     @altitude.setter
-    def altitude(self,altitude):
+    def altitude(self, altitude):
         self.__altitude = altitude
 
     @property
@@ -205,12 +195,11 @@ class ReceivedFrame(Frame):
         return self.__temperature
 
     @temperature.setter
-    def temperature(self,temperature):
+    def temperature(self, temperature):
         self.__temperature = temperature
 
 
 class SentFrame(Frame):
-
     LENGTH = 14
 
     def __init__(self, rocketID, command, ID, timestamp, payload):
@@ -219,7 +208,6 @@ class SentFrame(Frame):
         self.crc = Frame.CRC_CALCULATOR.calculate(self.toByteArray())
 
     def toByteArray(self, withCRC=False):
-
         byteData = ""
         byteData += struct.pack('B', self.rocketID | self.command)
         byteData += struct.pack('B', self.ID)
@@ -232,7 +220,6 @@ class SentFrame(Frame):
         return byteData
 
     def isValid(self):
-
         return True
 
     @property

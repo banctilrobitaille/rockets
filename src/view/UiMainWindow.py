@@ -13,6 +13,7 @@ from UiClickableRocket import ClickableRocketWidget
 from controller.Communication import FrameFactory
 from controller.LogController import LogController
 from Exception import SerialDeviceException
+
 """#############################################################################
 # 
 # Nom du module:          UiMainWindow
@@ -23,16 +24,16 @@ from Exception import SerialDeviceException
 #
 ##############################################################################"""
 
-class MainWindow(PyQt4.QtGui.QMainWindow):
 
-    def __init__(self,basestationController,parent=None):
-        
+class MainWindow(PyQt4.QtGui.QMainWindow):
+    def __init__(self, basestationController, parent=None):
+
         PyQt4.QtGui.QMainWindow.__init__(self, parent)
 
         self.__LOGGER = LogController.getInstance()
-        self.__baseStationController    = basestationController
-        self.__rfdSerialController      = self.__baseStationController.RFD900SerialController
-        self.__xbeeSerialController     = self.__baseStationController.XBeeSerialController
+        self.__baseStationController = basestationController
+        self.__rfdSerialController = self.__baseStationController.RFD900SerialController
+        self.__xbeeSerialController = self.__baseStationController.XBeeSerialController
         self.__rocketIDToAction = {}
 
         self.__setupUi()
@@ -50,10 +51,10 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
-    
+    """
+
     def __setupUi(self):
-        
+
         self.setObjectName("MainWindow")
         self.resize(PyQt4.Qt.QDesktopWidget().availableGeometry(self).size())
         self.setMouseTracking(False)
@@ -64,10 +65,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         palette.setColor(PyQt4.QtGui.QPalette.Background, PyQt4.QtCore.Qt.black)
         self.setPalette(palette)
         self.setWindowTitle("Station de Base RockETS v0.1")
-        self.__systemTrayIcon = PyQt4.QtGui.QSystemTrayIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketsLogo32x32.png'), self)
+        self.__systemTrayIcon = PyQt4.QtGui.QSystemTrayIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketsLogo32x32.png'),
+                                                            self)
         self.__systemTrayIcon.show()
         self.setWindowIcon(PyQt4.QtGui.QIcon('./Image_Files/rocketsLogo32x32.png'))
-        
+
         """Ajout de la barre de menu"""
         self.__AddMenu()
         """Ajout des actions lies differents menus"""
@@ -80,33 +82,32 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.__dashboard = dashboard.Dashboard(self)
         self.__gpsTab = UiDataAnlalysis.GpsTab(self)
         self.__graphTab = UiDataAnlalysis.GraphTab(self)
-        #self.__rocket = vtkRendering.rocketRendering(self)
+        # self.__rocket = vtkRendering.rocketRendering(self)
         self.__clickableRocket = ClickableRocketWidget(self)
         self.__statePanel = StatePanel.StatePanel(self)
 
-        #self.ren = vtk.vtkRenderer()
-        #self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
-        #self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
- 
-        #self.reader = vtk.vtkSTLReader()
-        #self.reader.SetFileName("VTK_Files/original.stl")
- 
+        # self.ren = vtk.vtkRenderer()
+        # self.__rocket.vtkWidget.GetRenderWindow().AddRenderer(self.ren)
+        # self.iren = self.__rocket.vtkWidget.GetRenderWindow().GetInteractor()
+
+        # self.reader = vtk.vtkSTLReader()
+        # self.reader.SetFileName("VTK_Files/original.stl")
+
         # Create a mapper
-        #mapper = vtk.vtkPolyDataMapper()
-        #mapper.SetInputConnection(self.reader.GetOutputPort())
- 
+        # mapper = vtk.vtkPolyDataMapper()
+        # mapper.SetInputConnection(self.reader.GetOutputPort())
+
         # Create an actor
-        #actor = vtk.vtkActor()
-        #actor.SetMapper(mapper)
-        
-        #actor.GetProperty().SetColor(1,0,0)
-        #actor.SetOrientation(100,0,0)
-        #self.ren.AddActor(actor)
-        
+        # actor = vtk.vtkActor()
+        # actor.SetMapper(mapper)
+
+        # actor.GetProperty().SetColor(1,0,0)
+        # actor.SetOrientation(100,0,0)
+        # self.ren.AddActor(actor)
+
 
         PyQt4.QtCore.QMetaObject.connectSlotsByName(self)
 
-    
     """
     #    Methode __AddMenu
     #    Description: Methode initialisant la barre de menu de linterface
@@ -114,20 +115,21 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
+
     def __AddMenu(self):
-        
-        self.menubar = MenuBar(self,"menubar")
-        
+
+        self.menubar = MenuBar(self, "menubar")
+
         """Positionnement de la barre de menu au haut de linterface"""
         self.menubar.setGeometry(PyQt4.QtCore.QRect(0, 0, 800, 26))
-        self.menuFile = Menu(self.menubar, "menuFile", "File")        
+        self.menuFile = Menu(self.menubar, "menuFile", "File")
         self.menuView = Menu(self.menubar, "menuView", "view")
         self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")
-        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")           
+        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
         self.setMenuBar(self.menubar)
-    
+
     """
     #    Methode __AddMenuAction
     #    Description: Methode initialisant les sous menus (action) des menus
@@ -135,47 +137,48 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
+
     def __AddMenuAction(self):
-        
+
         """Initialisaiton et ajout du sous menu <Load Log File>"""
-        self.actionLoad_Log_File = MenuAction(self,"actionLoad_Log_File", "Load Log File")
+        self.actionLoad_Log_File = MenuAction(self, "actionLoad_Log_File", "Load Log File")
         self.menuFile.addAction(self.actionLoad_Log_File)
-        
+
         """Initialisaiton et ajout du sous menu <Display Settings>"""
-        self.actionDisplay_Settings = MenuAction(self,"actionDisplay_Settings", "Display Settings")
+        self.actionDisplay_Settings = MenuAction(self, "actionDisplay_Settings", "Display Settings")
         self.menuView.addAction(self.actionDisplay_Settings)
-        
+
         """Initialisaiton et ajout du sous menu <Serial Settings>"""
-        self.actionRFD900_Settings = MenuAction(self,"actionSerial_Settings", "RFD900 Settings")
+        self.actionRFD900_Settings = MenuAction(self, "actionSerial_Settings", "RFD900 Settings")
         self.menuConnection.addAction(self.actionRFD900_Settings)
 
-        self.actionXBEE_Settings = MenuAction(self,"actionSerial_Settings", "XBEE Serial Settings")
+        self.actionXBEE_Settings = MenuAction(self, "actionSerial_Settings", "XBEE Serial Settings")
         self.menuConnection.addAction(self.actionXBEE_Settings)
 
         """Initialisaiton et ajout du sous menu <Connect>"""
-        self.actionConnect = MenuAction(self,"actionConnect", "Connect")
+        self.actionConnect = MenuAction(self, "actionConnect", "Connect")
         self.menuConnection.addAction(self.actionConnect)
-        
+
         """Initialisaiton et ajout du sous menu <Disconnect>"""
-        self.actionDisconnect = MenuAction(self,"actionDisconnect", "Disconnect")
+        self.actionDisconnect = MenuAction(self, "actionDisconnect", "Disconnect")
         self.menuConnection.addAction(self.actionDisconnect)
-        
+
         """Initialisaiton et ajout du sous menu <Set base station position>"""
         self.actionSetLocalPosition = MenuAction(self, "actionSetLocalPosition", "Set base station position")
         self.menuGPS.addAction(self.actionSetLocalPosition)
-        
+
         """Initialisaiton et ajout du sous menu <About>"""
-        self.actionAbout = MenuAction(self,"actionAbout","About")
+        self.actionAbout = MenuAction(self, "actionAbout", "About")
         self.menuAbout.addAction(self.actionAbout)
-        
+
         """Ajout des menus en tant que action dans la barre de menu"""
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuConnection.menuAction())
         self.menubar.addAction(self.menuGPS.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
-    
+
     """
     #    Methode __AddStatusBar
     #    Description: Methode qui initialise et ajoute la barre detat
@@ -183,7 +186,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
+
     def __AddStatusBar(self):
         self.__statusBar = PyQt4.QtGui.QStatusBar(self)
 
@@ -198,15 +202,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.addToolBar(PyQt4.QtCore.Qt.LeftToolBarArea, self.__toolbar)
         self.__updateToolBarRocketList()
 
-
     def __updateToolBarRocketList(self):
 
         self.__toolbar.resetRocketList()
 
         for rocketID, rocket in self.__baseStationController.baseStation.availableRocket.items():
-
             self.__toolbar.addRocketAction(rocket.ID, rocket.name)
-            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(lambda: self.__on_Rocket_Clicked(rocket.ID))
+            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(
+                    lambda: self.__on_Rocket_Clicked(rocket.ID))
 
     """
     #    Methode __connectSlot
@@ -214,15 +217,17 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     #
     #    param:  None
     #    return: None
-    """ 
+    """
+
     def __connectSlot(self):
-        
-        self.connect(self.actionRFD900_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_RFD900_Settings_Clicked)
-        self.connect(self.actionXBEE_Settings, PyQt4.QtCore.SIGNAL("triggered()"),self.__on_XBEE_Settings_Clicked)
+
+        self.connect(self.actionRFD900_Settings, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_RFD900_Settings_Clicked)
+        self.connect(self.actionXBEE_Settings, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_XBEE_Settings_Clicked)
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Connect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
-        self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotSetLocalPosition_Clicked)
+        self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"),
+                     self.__slotSetLocalPosition_Clicked)
 
         self.connect(self.__toolbar.discoverAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Discover_Clicked)
         self.connect(self.__toolbar.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
@@ -250,23 +255,27 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __connectRocketSlot(self):
 
         self.__baseStationController.baseStation.connectedRocket.speedChanged.connect(self.__on_SpeedChanged)
-        self.__baseStationController.baseStation.connectedRocket.accelerationChanged.connect(self.__on_AccelerationChanged)
+        self.__baseStationController.baseStation.connectedRocket.accelerationChanged.connect(
+                self.__on_AccelerationChanged)
         self.__baseStationController.baseStation.connectedRocket.altitudeChanged.connect(self.__on_AltitudeChanged)
-        self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(self.__on_TemperatureChanged)
-        self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(self.__on_CameraState_Changed)
+        self.__baseStationController.baseStation.connectedRocket.temperatureChanged.connect(
+                self.__on_TemperatureChanged)
+        self.__baseStationController.baseStation.connectedRocket.cameraStateChanged.connect(
+                self.__on_CameraState_Changed)
         self.__baseStationController.baseStation.connectedRocket.coordsChanged.connect(self.__on_RocketCoordsChanged)
         self.__baseStationController.baseStation.connectedRocket.stateChanged.connect(self.__on_RocketStateChanged)
-        self.__baseStationController.baseStation.connectedRocket.streamingStateChanged.connect(self.__on_StreamingState_Changed)
+        self.__baseStationController.baseStation.connectedRocket.streamingStateChanged.connect(
+                self.__on_StreamingState_Changed)
 
     @pyqtSlot(object)
     def __on_AvailableRocketChanged(self, availableRocket):
 
         self.__toolbar.resetRocketList()
 
-        for rocketID,rocket in availableRocket.items():
-
+        for rocketID, rocket in availableRocket.items():
             self.__toolbar.addRocketAction(rocketID, rocket.name)
-            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(lambda: self.__on_Rocket_Clicked(rocket.ID))
+            self.__toolbar.getActionFromRocketID(rocket.ID).triggered.connect(
+                    lambda: self.__on_Rocket_Clicked(rocket.ID))
 
     @pyqtSlot(object)
     def __on_connectedRocketChanged(self, rocket):
@@ -279,25 +288,25 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
     @pyqtSlot(int)
     def __on_SpeedChanged(self, speed):
-        
-        self.__dashboard.updateSpeed(round(speed/1.46666666666667,2))
-        self.__graphTab.addSpeedData(round(speed/1.46666666666667,2))
-    
+
+        self.__dashboard.updateSpeed(round(speed / 1.46666666666667, 2))
+        self.__graphTab.addSpeedData(round(speed / 1.46666666666667, 2))
+
     @pyqtSlot(float)
     def __on_AccelerationChanged(self, acceleration):
-        
-        self.__dashboard.updateAcceleration(round(acceleration*0.3048,2))
-        self.__graphTab.addAccelerationData(round(acceleration*0.3048,2))
-    
+
+        self.__dashboard.updateAcceleration(round(acceleration * 0.3048, 2))
+        self.__graphTab.addAccelerationData(round(acceleration * 0.3048, 2))
+
     @pyqtSlot(float)
     def __on_AltitudeChanged(self, altitude):
-        
+
         self.__dashboard.updateAltitude(altitude)
         self.__graphTab.addAltitudeData(altitude)
-    
+
     @pyqtSlot(float)
     def __on_TemperatureChanged(self, temperature):
-        
+
         self.__dashboard.updateTemperature(temperature)
         self.__graphTab.addTemperatureData(temperature)
 
@@ -346,13 +355,12 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     @pyqtSlot(object)
     def __on_Command_Sent(self, commandStreamer):
 
-        if commandStreamer.command is FrameFactory.COMMAND["START_CAMERA"] or\
-                commandStreamer.command is FrameFactory.COMMAND["STOP_CAMERA"]:
+        if commandStreamer.command is FrameFactory.COMMAND["START_CAMERA"] or \
+                        commandStreamer.command is FrameFactory.COMMAND["STOP_CAMERA"]:
             commandStreamer.commandStreamEnded.connect(self.__toolbar.cameraAction.stopAnimation)
-        elif commandStreamer.command is FrameFactory.COMMAND["START_STREAM"] or\
-                commandStreamer.command is FrameFactory.COMMAND["STOP_STREAM"]:
+        elif commandStreamer.command is FrameFactory.COMMAND["START_STREAM"] or \
+                        commandStreamer.command is FrameFactory.COMMAND["STOP_STREAM"]:
             commandStreamer.commandStreamEnded.connect(self.__toolbar.streamAction.stopAnimation)
-
 
     @pyqtSlot(str)
     def __on_Error(self, errorMessage):
@@ -385,7 +393,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.statusbar.update()
 
     @pyqtSlot(float, float)
-    def __on_BaseStationCoordsChanged(self,latitude, longitude):
+    def __on_BaseStationCoordsChanged(self, latitude, longitude):
 
         self.__gpsTab.map.updateBaseStationMarker(longitude, latitude)
 
@@ -401,14 +409,15 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         if self.__baseStationController.baseStation.connectedRocket.cameraON:
 
-            cameraMsg = PyQt4.QtGui.QMessageBox( PyQt4.QtGui.QMessageBox.Question, "CAMERA WARNING",
-                                                 "Do you really want to close connected rocket's cameras ?",
-                                                 PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
+            cameraMsg = PyQt4.QtGui.QMessageBox(PyQt4.QtGui.QMessageBox.Question, "CAMERA WARNING",
+                                                "Do you really want to close connected rocket's cameras ?",
+                                                PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
 
-            cameraMsg.setStyleSheet("QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
-                                    "QMessageBox QLabel {color : rgba(249,105,14);}"
-                                    "QMessageBox QPushButton {background-color : white;}"
-                                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
+            cameraMsg.setStyleSheet(
+                    "QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
+                    "QMessageBox QLabel {color : rgba(249,105,14);}"
+                    "QMessageBox QPushButton {background-color : white;}"
+                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
             result = cameraMsg.exec_()
 
             if result == PyQt4.QtGui.QMessageBox.Yes:
@@ -434,18 +443,20 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
                 self.__baseStationController.baseStation.availableRocket[rocketID]:
 
             rocketMsg = PyQt4.QtGui.QMessageBox(PyQt4.QtGui.QMessageBox.Warning, "ROCKET WARNING",
-                                                 "Do you really want to disconnect from rocket ?",
-                                                 PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
+                                                "Do you really want to disconnect from rocket ?",
+                                                PyQt4.QtGui.QMessageBox.Yes | PyQt4.QtGui.QMessageBox.No)
 
             rocketMsg.setIconPixmap(PyQt4.QtGui.QPixmap(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
-            rocketMsg.setStyleSheet("QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
-                                    "QMessageBox QLabel {color : rgba(249,105,14);}"
-                                    "QMessageBox QPushButton {background-color : white;}"
-                                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
+            rocketMsg.setStyleSheet(
+                    "QMessageBox {color:rgba(249,105,14,100);background-color:rgba(29,29,29,50); border:0px}"
+                    "QMessageBox QLabel {color : rgba(249,105,14);}"
+                    "QMessageBox QPushButton {background-color : white;}"
+                    "QMessageBox QPushButton:hover {background-color: rgb(236,236,236);}")
             result = rocketMsg.exec_()
 
             if result == PyQt4.QtGui.QMessageBox.Yes:
-                self.__toolbar.rocketActionDict[rocketID].setIcon(PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
+                self.__toolbar.rocketActionDict[rocketID].setIcon(
+                        PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
                 self.__baseStationController.disconnectFromRocket(rocketID)
                 self.__dashboard.resetValue()
                 self.__graphTab = UiDataAnlalysis.GraphTab(self)
@@ -456,7 +467,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.__baseStationController.updateConnectedRocket(rocketID)
 
     def __on_RFD900_Settings_Clicked(self):
-        
+
         self.__showSerialProperties(self.__rfdSerialController)
 
     def __on_XBEE_Settings_Clicked(self):
@@ -471,14 +482,15 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.__toolbar.enableRocketDiscovery()
         except SerialDeviceException.UnableToConnectException as e:
             self.__toolbar.disableAllActions()
-            self.__statusBarMessage.setText("Communication devices not working properly, please configure them and reconnect")
+            self.__statusBarMessage.setText(
+                    "Communication devices not working properly, please configure them and reconnect")
             self.__statusBarMessage.setStyleSheet('QLabel {color: red}')
 
     def __slotDisconnect_Clicked(self):
         pass
 
     def __slotSetLocalPosition_Clicked(self):
-        
+
         self.__showGPSProperties()
 
     def __showSerialProperties(self, serialController):
@@ -495,7 +507,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
         self.__slidingMessage.reveal()
-        #self.__gpsTab.map.updateMarker(-90,46.8)
+        # self.__gpsTab.map.updateMarker(-90,46.8)
 
     def __on_Discover_Clicked(self):
 
@@ -506,26 +518,20 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
 
 class MenuBar(PyQt4.QtGui.QMenuBar):
-    
     def __init__(self, parent, objectName):
-        
-        PyQt4.QtGui.QMenuBar.__init__(self,parent)
+        PyQt4.QtGui.QMenuBar.__init__(self, parent)
         self.setObjectName(objectName)
 
 
 class Menu(PyQt4.QtGui.QMenu):
-    
     def __init__(self, parent, objectName, objectTitle):
-        
-        PyQt4.QtGui.QMenu.__init__(self,parent)
+        PyQt4.QtGui.QMenu.__init__(self, parent)
         self.setObjectName(objectName)
         self.setTitle(objectTitle)
-      
-        
+
+
 class MenuAction(PyQt4.QtGui.QAction):
-    
-    def __init__(self,parent, objectName, text):
-        
-        PyQt4.QtGui.QAction.__init__(self,parent)
+    def __init__(self, parent, objectName, text):
+        PyQt4.QtGui.QAction.__init__(self, parent)
         self.setObjectName(objectName)
         self.setText(text)

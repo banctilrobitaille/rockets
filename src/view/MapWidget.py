@@ -1,49 +1,49 @@
 # -*- coding: utf-8 -*-
-#import mapnik
-#import simplekml
+# import mapnik
+# import simplekml
 import PyQt4
 
 
 class MapnikWidget(PyQt4.QtGui.QWidget):
+    def __init__(self, parent, also_build_view=True):
 
-    def __init__(self,parent, also_build_view = True):
-        
         PyQt4.QtGui.QWidget.__init__(self, parent)
-        
+
         self.baseStation_Latitude = 0
         self.baseStation_Longitude = 0
         self.rocket_Latitude = 0
         self.rocket_Longitude = 0
-        
-        self.map = mapnik.Map(15000, 15000, "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs")
+
+        self.map = mapnik.Map(15000, 15000,
+                              "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 "
+                              "+units=m +nadgrids=@null +wktext +no_defs")
         self.basekml = simplekml.Kml()
         self.rocketkml = simplekml.Kml()
         self.baseStationPoint = self.basekml.newpoint(name="BaseStation")
         self.rocketPoint = self.rocketkml.newpoint(name="Rocket")
-        
-        self.qim          = PyQt4.QtGui.QImage()
+
+        self.qim = PyQt4.QtGui.QImage()
         self.startDragPos = PyQt4.QtCore.QPoint()
-        self.endDragPos   = PyQt4.QtCore.QPoint()
-        self.zoomPos      = PyQt4.QtCore.QPoint()
-        self.drag         = False
-        self.scale        = False
-        self.total_scale  = 1.0
-        
-        self.timer        = PyQt4.QtCore.QTimer()
+        self.endDragPos = PyQt4.QtCore.QPoint()
+        self.zoomPos = PyQt4.QtCore.QPoint()
+        self.drag = False
+        self.scale = False
+        self.total_scale = 1.0
+
+        self.timer = PyQt4.QtCore.QTimer()
         self.timer.timeout.connect(self.updateMap)
-        
-        
+
     def open(self, xml):
-        
+
         mapnik.load_map(self.map, xml)
-        self.map.resize(900,600)
+        self.map.resize(900, 600)
         self.map.zoom(145.0)
-        self.map.zoom_to_box(mapnik.Envelope(-74,48,-74,48))
+        self.map.zoom_to_box(mapnik.Envelope(-74, 48, -74, 48))
         self.updateMap()
-        
+
     def setBaseStation(self):
-        
-        #self.kml.newpoint(name="BaseStation", coords=[(self.baseStation_Longitude,self.baseStation_Latitude)])
+
+        # self.kml.newpoint(name="BaseStation", coords=[(self.baseStation_Longitude,self.baseStation_Latitude)])
         try:
             del self.map.layers[1]
         except:
@@ -66,14 +66,13 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         self.map.layers.append(self.baselayer)
         self.updateMap()
 
-        
     def setRocketPosition(self):
-        
+
         try:
             del self.map.layers[2]
         except:
             pass
-        
+
         self.rocketPoint.coords = [(self.rocket_Longitude, self.rocket_Latitude)]
         self.rocketkml.save("GPS_Rocket.kml")
         style = mapnik.Style()
@@ -91,17 +90,17 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         self.rocketlayer.styles.append("GPS_Rocket")
         self.map.layers.append(self.rocketlayer)
         self.updateMap()
-        
+
     def updateMap(self):
-       
+
         if self.drag:
             cx = int(0.5 * self.map.width)
             cy = int(0.5 * self.map.height)
             dpos = self.endDragPos - self.startDragPos
-            self.map.pan(cx - dpos.x() ,cy - dpos.y())
+            self.map.pan(cx - dpos.x(), cy - dpos.y())
             self.drag = False
         elif self.scale:
-            
+
             # scale upon the mouse cursor position
             # build up the transformation matrix
             ma = PyQt4.QtGui.QMatrix()
@@ -117,13 +116,12 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
             self.map.zoom_to_box(self.map.view_transform().backward(env))
 
             self.total_scale = 1.0
-            self.scale       = False
+            self.scale = False
 
         im = mapnik.Image(self.map.width, self.map.height)
         mapnik.render(self.map, im)
         self.qim.loadFromData(PyQt4.QtCore.QByteArray(im.tostring('png')))
         self.update()
-
 
     def paintEvent(self, event):
         painter = PyQt4.QtGui.QPainter(self)
@@ -145,23 +143,21 @@ class MapnikWidget(PyQt4.QtGui.QWidget):
         painter.setPen(PyQt4.QtGui.QColor(0, 0, 0, 100))
         painter.setBrush(PyQt4.QtGui.QColor(0, 0, 0, 100))
         painter.drawRect(0, 0, 256, 26)
-        painter.setPen(PyQt4.QtGui.QColor(0, 255 , 0))
+        painter.setPen(PyQt4.QtGui.QColor(0, 255, 0))
         painter.drawText(10, 19, 'Rockets Position')
 
-
     def wheelEvent(self, event):
-        self.zoomPos     = event.pos()
+        self.zoomPos = event.pos()
         self.total_scale *= 1.0 - event.delta() / (360.0 * 8.0) * 4
         self.scale = True
 
         self.update()
         self.timer.start(400)
 
-
     def mousePressEvent(self, event):
         if event.button() == PyQt4.QtCore.Qt.LeftButton:
             self.startDragPos = event.pos()
-            self.drag         = True
+            self.drag = True
 
     def mouseMoveEvent(self, event):
         if self.drag:

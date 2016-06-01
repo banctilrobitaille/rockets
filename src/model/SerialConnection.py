@@ -1,5 +1,4 @@
-import serial 
-
+import serial
 
 '''
 Created on 2016-01-04
@@ -7,10 +6,10 @@ Created on 2016-01-04
 @author: rockets
 '''
 
-class SerialConnection(serial.Serial):
 
-    def __init__(self, port="/dev/ttyS1", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE, bytesize=serial.EIGHTBITS):
-        
+class SerialConnection(serial.Serial):
+    def __init__(self, port="/dev/ttyS1", baudrate=57600, stopbits=serial.STOPBITS_ONE, parity=serial.PARITY_NONE,
+                 bytesize=serial.EIGHTBITS):
         super(SerialConnection, self).__init__()
         self.port = port
         self.baudrate = baudrate
@@ -18,8 +17,8 @@ class SerialConnection(serial.Serial):
         self.parity = parity
         self.bytesize = bytesize
         self.__isConnected = False
-    
-    #===========================================================================
+
+    # ===========================================================================
     # @property
     # def port(self):
     #     return self._port
@@ -27,8 +26,8 @@ class SerialConnection(serial.Serial):
     # @port.setter
     # def port(self, port):
     #     self._port = port
-    #===========================================================================
-    #===========================================================================
+    # ===========================================================================
+    # ===========================================================================
     #      
     # @property
     # def baudrate(self):
@@ -61,12 +60,12 @@ class SerialConnection(serial.Serial):
     # @bytesize.setter
     # def bytesize(self, bytesize):
     #     self._bytesize = bytesize
-    #===========================================================================
-          
+    # ===========================================================================
+
     @property
     def isConnected(self):
         return self.__isConnected
-    
+
     @isConnected.setter
-    def isConnected(self,isConnected):
+    def isConnected(self, isConnected):
         self.__isConnected = isConnected

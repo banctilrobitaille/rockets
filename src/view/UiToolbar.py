@@ -3,15 +3,14 @@ from PyQt4.QtCore import pyqtSlot
 
 
 class MainToolBar(PyQt4.QtGui.QToolBar):
-
-    ROCKET_ON_ICON_PATH     = './Image_Files/rocketON.png'
-    ROCKET_OFF_ICON_PATH    = './Image_Files/rocketOFF.png'
-    DISCOVER_ON_ICON_PATH  = './Image_Files/discoverON.png'
-    DISCOVER_OFF_ICON_PATH  = './Image_Files/discoverOFF.png'
-    STREAM_ON_ICON_PATH     = './Image_Files/streamON.png'
-    STREAM_OFF_ICON_PATH    = './Image_Files/streamOFF.png'
-    CAMERA_ON_ICON_PATH   = './Image_Files/cameraON.png'
-    CAMERA_OFF_ICON_PATH  = './Image_Files/cameraOFF.png'
+    ROCKET_ON_ICON_PATH = './Image_Files/rocketON.png'
+    ROCKET_OFF_ICON_PATH = './Image_Files/rocketOFF.png'
+    DISCOVER_ON_ICON_PATH = './Image_Files/discoverON.png'
+    DISCOVER_OFF_ICON_PATH = './Image_Files/discoverOFF.png'
+    STREAM_ON_ICON_PATH = './Image_Files/streamON.png'
+    STREAM_OFF_ICON_PATH = './Image_Files/streamOFF.png'
+    CAMERA_ON_ICON_PATH = './Image_Files/cameraON.png'
+    CAMERA_OFF_ICON_PATH = './Image_Files/cameraOFF.png'
 
     def __init__(self):
 
@@ -19,9 +18,12 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
         self.__rocketActionDict = {}
         self.__selectedRocketAction = None
 
-        self.__discoverAction = ToolbarAction(MainToolBar.DISCOVER_OFF_ICON_PATH, MainToolBar.DISCOVER_ON_ICON_PATH, 'Discover', self)
-        self.__streamAction = ToolbarAction(MainToolBar.STREAM_OFF_ICON_PATH, MainToolBar.STREAM_ON_ICON_PATH,'Stream', self)
-        self.__cameraAction = ToolbarAction(MainToolBar.CAMERA_OFF_ICON_PATH, MainToolBar.CAMERA_ON_ICON_PATH,'Start Camera', self)
+        self.__discoverAction = ToolbarAction(MainToolBar.DISCOVER_OFF_ICON_PATH, MainToolBar.DISCOVER_ON_ICON_PATH,
+                                              'Discover', self)
+        self.__streamAction = ToolbarAction(MainToolBar.STREAM_OFF_ICON_PATH, MainToolBar.STREAM_ON_ICON_PATH, 'Stream',
+                                            self)
+        self.__cameraAction = ToolbarAction(MainToolBar.CAMERA_OFF_ICON_PATH, MainToolBar.CAMERA_ON_ICON_PATH,
+                                            'Start Camera', self)
 
         self.setup()
 
@@ -82,12 +84,13 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
 
     def setup(self):
 
-        self.setStyleSheet( "QToolBar {background: rgba(29,29,29,90);}"
-                            "QToolButton { color : white; border-radius: 0px;}"
-                            "QToolButton:hover {color : black; background: white}"
-                            "QToolButton:!enabled {}"
-                            "QLabel {color : white; padding-top : 20px; padding-bottom: 5px; qproperty-alignment: AlignCenter;}")
-        self.setToolButtonStyle(PyQt4.QtCore.Qt.ToolButtonTextBesideIcon|PyQt4.QtCore.Qt.AlignLeading)
+        self.setStyleSheet("QToolBar {background: rgba(29,29,29,90);}"
+                           "QToolButton { color : white; border-radius: 0px;}"
+                           "QToolButton:hover {color : black; background: white}"
+                           "QToolButton:!enabled {}"
+                           "QLabel {color : white; padding-top : 20px; padding-bottom: 5px; qproperty-alignment: "
+                           "AlignCenter;}")
+        self.setToolButtonStyle(PyQt4.QtCore.Qt.ToolButtonTextBesideIcon | PyQt4.QtCore.Qt.AlignLeading)
         self.addAction(self.discoverAction)
         self.addSeparator()
         self.addAction(self.streamAction)
@@ -97,12 +100,12 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
         self.addWidget(PyQt4.QtGui.QLabel("ROCKET LIST"))
         self.cameraAction.setDisabled(True)
         self.streamAction.setDisabled(True)
-        self.setIconSize(PyQt4.QtCore.QSize(80,80))
-
+        self.setIconSize(PyQt4.QtCore.QSize(80, 80))
 
     def addRocketAction(self, rocketID, rocketName):
 
-        rocketAction = ToolbarAction(MainToolBar.ROCKET_OFF_ICON_PATH, MainToolBar.ROCKET_ON_ICON_PATH,rocketName + "\n" + "ID: " + str(hex(rocketID)), self)
+        rocketAction = ToolbarAction(MainToolBar.ROCKET_OFF_ICON_PATH, MainToolBar.ROCKET_ON_ICON_PATH,
+                                     rocketName + "\n" + "ID: " + str(hex(rocketID)), self)
         self.addAction(rocketAction)
         self.__rocketActionDict[rocketID] = rocketAction
 
@@ -126,10 +129,11 @@ class MainToolBar(PyQt4.QtGui.QToolBar):
 
     def enableRocketDiscovery(self):
         self.discoverAction.setDisabled(False)
-        [(lambda rocketID,action: action.setDisabled(False))(rocketID, action) for rocketID, action in self.rocketActionDict.items()]
+        [(lambda rocketID, action: action.setDisabled(False))(rocketID, action) for rocketID, action in
+         self.rocketActionDict.items()]
+
 
 class ToolbarAction(PyQt4.QtGui.QAction):
-
     def __init__(self, offIconPath, onIconPath, iconText, parent):
         super(ToolbarAction, self).__init__(PyQt4.QtGui.QIcon(offIconPath), iconText, parent)
         self.__animatedIcon = PyQt4.QtGui.QMovie('./Image_Files/loader.gif')
@@ -172,4 +176,3 @@ class ToolbarAction(PyQt4.QtGui.QAction):
     @pyqtSlot(int)
     def __setIcon(self, frame):
         self.setIcon(PyQt4.QtGui.QIcon(self.__animatedIcon.currentPixmap()))
-

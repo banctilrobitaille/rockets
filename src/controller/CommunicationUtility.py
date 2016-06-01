@@ -1,12 +1,14 @@
 from ctypes import c_ushort
 
+
 class CRC16(object):
     crc16_tab = []
 
     # The CRC's are computed using polynomials. Here is the most used
     # coefficient for CRC16
     crc16_constant = 0x8005
-    #crc16_constant = 0xA001
+
+    # crc16_constant = 0xA001
 
     def __init__(self, modbus_flag=False):
         # initialize the precalculated tables

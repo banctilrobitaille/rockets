@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class DataOverTimeHistory(PyQt4.QtCore.QObject):
-
     def __init__(self):
         super(DataOverTimeHistory, self).__init__()
         self.__referenceTimeStamp = None
@@ -44,13 +43,13 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
 
     def getDataAtIndex(self, index):
 
-        return {"TIMESTAMP" : self.__time[index],
-                "VALUE"     : self.__value[index]}
+        return {"TIMESTAMP": self.__time[index],
+                "VALUE"    : self.__value[index]}
 
     def getLastValue(self):
 
-        return {"TIMESTAMP" : self.__time[-1],
-                "VALUE"     : self.__value[-1],}
+        return {"TIMESTAMP": self.__time[-1],
+                "VALUE"    : self.__value[-1],}
 
     def addData(self, timestamp, value):
 
@@ -66,7 +65,7 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
         elif value < self.__min:
             self.__min = value
 
-        self.__average = (sum(self.__value)/self.__nbData)
+        self.__average = (sum(self.__value) / self.__nbData)
 
     def isEmpty(self):
 
@@ -80,6 +79,3 @@ class DataOverTimeHistory(PyQt4.QtCore.QObject):
         self.__nbData = 0
         self.__time = []
         self.__value = []
-
-
-

@@ -3,6 +3,7 @@ import PyQt4
 import sys
 from view import UiMainWindow
 from controller.BaseStationController import BaseStationController
+
 """#############################################################################
 # 
 # Nom du module:          MainApplication
@@ -15,9 +16,7 @@ from controller.BaseStationController import BaseStationController
 
 
 class BaseStationApplication(PyQt4.QtGui.QApplication):
-        
     def __init__(self, args):
-
         PyQt4.QtGui.QApplication.__init__(self, args)
 
         splashImage = PyQt4.QtGui.QPixmap('./Image_Files/LogoRocket.png')
@@ -29,12 +28,11 @@ class BaseStationApplication(PyQt4.QtGui.QApplication):
         self.mainWindow.show()
 
         splash.showMessage("Loading VTK modules", color=PyQt4.QtGui.QColor(255, 255, 255))
-        #self.mainWindow.iren.Initialize()
+        # self.mainWindow.iren.Initialize()
 
         splash.finish(self.mainWindow)
         self.exec_()
-        
+
 
 if __name__ == "__main__":
-    
     app = BaseStationApplication(sys.argv)

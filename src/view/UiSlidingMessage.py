@@ -1,8 +1,8 @@
 import PyQt4
 import time
 
-class SlidingMessage(PyQt4.QtGui.QFrame):
 
+class SlidingMessage(PyQt4.QtGui.QFrame):
     def __init__(self, message, parent):
         super(SlidingMessage, self).__init__(parent)
 
@@ -30,7 +30,7 @@ class SlidingMessage(PyQt4.QtGui.QFrame):
 
         self.setLayout(self.__layout)
         self.setAutoFillBackground(True)
-        self.setGeometry(300,0,300,0)
+        self.setGeometry(300, 0, 300, 0)
 
         self.__revealAnimation = PyQt4.QtCore.QPropertyAnimation(self, "geometry")
         self.__revealAnimation.setDuration(250)
@@ -46,34 +46,29 @@ class SlidingMessage(PyQt4.QtGui.QFrame):
         self.mousePressEvent = self.hide
 
     def reveal(self):
-
         self.__revealAnimation.start()
 
     def hide(self, event):
-
         self.__hideAnimation.start()
 
 
 class ErrorSlidingMessage(SlidingMessage):
-
     def __init__(self, message, parent):
-        super(ErrorSlidingMessage,self).__init__(message, parent)
+        super(ErrorSlidingMessage, self).__init__(message, parent)
         self.icon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/SlidingMessage/error.png'))
         self.setStyleSheet("QFrame {background : rgba(207,0,15,230)}"
-                  "QFrame QLabel {background : rgba(207,0,15,0);padding: 10px;}")
+                           "QFrame QLabel {background : rgba(207,0,15,0);padding: 10px;}")
 
 
 class NotificationSlidingMessage(SlidingMessage):
-
     def __init__(self, message, parent):
         super(NotificationSlidingMessage, self).__init__(message, parent)
         self.icon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/SlidingMessage/information.png'))
         self.setStyleSheet("QFrame {background : rgba(30,139,195,230)}"
-                          "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")
+                           "QFrame QLabel {background : rgba(30,139,195,0);padding: 10px;}")
 
 
 class SuccessSlidingMessage(SlidingMessage):
-
     def __init__(self, message, parent):
         super(SuccessSlidingMessage, self).__init__(message, parent)
         self.icon.setPixmap(PyQt4.QtGui.QPixmap('./Image_Files/SlidingMessage/success.png'))

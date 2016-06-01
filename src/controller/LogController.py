@@ -2,6 +2,7 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 import PyQt4
 from PyQt4.QtCore import pyqtSignal
+
 '''
 Created on 2016-01-27
 
@@ -10,7 +11,6 @@ Created on 2016-01-27
 
 
 class LogController(PyQt4.QtCore.QObject):
-
     errorOccured = PyQt4.QtCore.pyqtSignal(str)
     newInfos = PyQt4.QtCore.pyqtSignal(str)
     newSuccess = PyQt4.QtCore.pyqtSignal(str)
@@ -22,12 +22,14 @@ class LogController(PyQt4.QtCore.QObject):
     """
     TO DO
     """
+
     def writeLogToFile(self, path, data):
         pass
-    
+
     """
     TO DO
     """
+
     def readLogFromFile(self, path):
         pass
 
