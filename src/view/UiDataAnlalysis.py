@@ -59,7 +59,7 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
 
     def __init__(self, graphTitle, xAxisTitle, yAxisTitle, curveColor, row, column):
 
-        PyQt4.Qwt5.Qwt.QwtPlot.__init__(self)
+        super(DataGraph, self).__init__()
         self.xData = [0]
         self.yData = [0]
         self.__maxData = 0

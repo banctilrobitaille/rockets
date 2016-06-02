@@ -2,8 +2,8 @@ import unittest
 from controller.GeoTrackingUtils import GeoTrackingUtil
 import math
 
-class GeoTrackingUtilTest(unittest.TestCase):
 
+class GeoTrackingUtilTest(unittest.TestCase):
     DISTANCE_FROM_MONTREAL_TO_TORONTO = 504
     BEARING_FROM_TORONTO_TO_MONTREAL = 63
 
@@ -19,6 +19,7 @@ class GeoTrackingUtilTest(unittest.TestCase):
     def test_distance_calculation(self):
         self.assertAlmostEqual(math.floor(GeoTrackingUtil.distanceBetweenCoordinates(self.__montreal, self.__toronto)),
                                self.DISTANCE_FROM_MONTREAL_TO_TORONTO)
+
 
 if __name__ == "__main__":
     unittest.main()

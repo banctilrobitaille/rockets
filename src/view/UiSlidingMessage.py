@@ -1,5 +1,4 @@
 import PyQt4
-import time
 
 
 class SlidingMessage(PyQt4.QtGui.QFrame):

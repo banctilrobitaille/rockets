@@ -104,8 +104,8 @@ class GpsSettingWindow(PyQt4.QtGui.QWidget):
         """Mise a jour des attributs de la carte selon les donnees entrees"""
         self.map.baseStation_Longitude = int(self.txtLongitude.text())
         self.map.baseStation_Latitude = int(self.txtLatitude.text())
-        self.map.rocket_Longitude = self.map.rocket_Longitude + 5
-        self.map.rocket_Latitude = self.map.rocket_Latitude + 5
+        self.map.rocket_Longitude += 5
+        self.map.rocket_Latitude += 5
         self.map.setBaseStation()
         self.map.setRocketPosition()
 

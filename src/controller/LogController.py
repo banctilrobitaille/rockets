@@ -1,6 +1,6 @@
-import xml.etree.ElementTree as ET
-from datetime import datetime
 import PyQt4
+from datetime import datetime
+
 from PyQt4.QtCore import pyqtSignal
 
 '''

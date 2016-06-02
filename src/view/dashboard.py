@@ -97,7 +97,6 @@ class Dashboard(PyQt4.QtGui.QFrame):
     """
 
     def updateValue(self, speed, acceleration, altitude, temperature):
-        """Mise a jour des valeurs a afficher"""
         self.__speed_dial.setValue(speed)
         self.__acceleration_dial.setValue(acceleration)
         self.__altitude_dial.setValue(altitude)
@@ -248,8 +247,8 @@ class Thermometer(Qwt.QwtThermo):
     #    return: None
     """
 
-    def __init__(self, parent, minCelsius, maxCelsius, alarmLevel):
-        Qwt.QwtDial.__init__(self, parent)
+    def __init__(self, parent, minCelsius, maxCelsius, alarmLevel, *args):
+        super(Qwt.QwtThermo, self).__init__(parent)
         thermoPalette = QPalette()
 
         """Couleur des lignes indicatrices"""

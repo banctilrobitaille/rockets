@@ -1,4 +1,3 @@
-import PyQt4
 import math
 
 

@@ -5,7 +5,7 @@ import PyQt4
 
 
 class MapnikWidget(PyQt4.QtGui.QWidget):
-    def __init__(self, parent, also_build_view=True):
+    def __init__(self, parent):
 
         PyQt4.QtGui.QWidget.__init__(self, parent)
 

@@ -1,9 +1,10 @@
-from mpl_toolkits.basemap import Basemap
-from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
-import numpy as np
 import PyQt4
+
+import numpy as np
+from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+from mpl_toolkits.basemap import Basemap
+
 from UICompass import Compass
 
 

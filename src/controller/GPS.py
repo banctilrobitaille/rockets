@@ -1,7 +1,5 @@
 import PyQt4
-import time
-import re
-from PyQt4.Qt import pyqtSlot
+
 from Exception import SerialDeviceException
 
 
