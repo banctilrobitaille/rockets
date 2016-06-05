@@ -13,6 +13,7 @@ from UiClickableRocket import ClickableRocketWidget
 from controller.Communication import FrameFactory
 from controller.LogController import LogController
 from Exception import SerialDeviceException
+from controller.ReportGenerator import CommunicationAnalyticsReportGenerator
 
 """#############################################################################
 # 
@@ -506,8 +507,11 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     def __slotAbout_Clicked(self):
 
         PyQt4.QtGui.QMessageBox.about(self, "About", "Base Station for RockETS 2015")
-        self.__slidingMessage.reveal()
+
         # self.__gpsTab.map.updateMarker(-90,46.8)
+        reportGeneratot = CommunicationAnalyticsReportGenerator()
+        reportGeneratot.generateReportContent()
+        reportGeneratot.createReportFile()
 
     def __on_Discover_Clicked(self):
 

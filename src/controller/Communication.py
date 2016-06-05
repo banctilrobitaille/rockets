@@ -5,6 +5,7 @@ from model.SerialConnection import SerialConnection
 from PyQt4.Qt import pyqtSlot
 from Exception import SerialDeviceException
 from controller.LogController import LogController
+from controller.AnalyticsController import CommunicationAnalyticsController
 
 """#############################################################################
 # 
@@ -35,6 +36,7 @@ class SerialController(PyQt4.QtCore.QObject):
     parityChanged = PyQt4.QtCore.pyqtSignal(str)
     bytesizeChanged = PyQt4.QtCore.pyqtSignal(int)
     stateChanged = PyQt4.QtCore.pyqtSignal(bool)
+    deviceNameChanged = PyQt4.QtCore.pyqtSignal(str)
 
     def __init__(self):
 
@@ -74,7 +76,7 @@ class SerialController(PyQt4.QtCore.QObject):
             self.updateSerialConnectionStopbits(stopbits, verbose=False)
             self.updateSerialConnectionParity(parity, verbose=False)
             self.updateSerialConnectionByteSize(bytesize, verbose=False)
-            self.__LOGGER.success("Sucessfully updated serial devices settings")
+            self.__LOGGER.success("Sucessfully updated {} settings".format(self.serialConnection.deviceName))
         except SerialDeviceException.UnableToConfigureException as e:
             raise
 
@@ -176,6 +178,17 @@ class SerialController(PyQt4.QtCore.QObject):
             self.__LOGGER.error("Unable to update serial device bytesize to:\n" + str(bytesize))
             raise SerialDeviceException.UnableToConfigureException(
                     "Unable to update serial device bytesize to: " + str(bytesize))
+
+    def updateSerialConnectionDeviceName(self, deviceName, verbose=True):
+        try:
+            self.__serialConnection.deviceName = deviceName
+            self.deviceNameChanged.emit(deviceName)
+            if verbose:
+                self.__LOGGER.success("Sucessfully updated serial device name to: \n" + deviceName)
+        except Exception:
+            self.__LOGGER.error("Unable to update serial device name to:\n" + deviceName)
+            raise SerialDeviceException.UnableToConfigureException(
+                    "Unable to update serial device name to: " + deviceName)
 
     """
     #    Methode updateSerialConnectionState
@@ -328,6 +341,9 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
     def disconnect(self):
         raise NotImplementedError
 
+    def reconnect(self):
+        raise NotImplementedError
+
     def startRocketDiscovery(self):
         raise NotImplementedError
 
@@ -389,7 +405,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
 
         except Exception as e:
             raise SerialDeviceException.UnableToConnectException(
-                    "Unable to connect the serial device: \n" + self.__class__.__name__.replace("Strategy", ""))
+                    "Unable to connect {}: \n".format(self.serialConnection.deviceName))
 
     def disconnect(self):
 
@@ -400,7 +416,7 @@ class SerialDeviceStrategy(CommunicationStrategy):
 
         except Exception as e:
             raise SerialDeviceException.UnableToDisconnectException(
-                    "Unable to connect the serial device: \n" + self.__class__.__name__.replace("Strategy", ""))
+                    "Unable to disconnect {}: \n".format(self.serialConnection.deviceName))
 
 
 class RFD900Strategy(SerialDeviceStrategy):
@@ -458,6 +474,7 @@ class RFD900Strategy(SerialDeviceStrategy):
     @pyqtSlot(object)
     def on_received_data(self, receivedData):
 
+        CommunicationAnalyticsController.getInstance().incrementNbOfFrameReceived()
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
 
         if receivedFrame.rocketID is self.rocketController.rocket.ID or receivedFrame.command \
@@ -472,6 +489,8 @@ class RFD900Strategy(SerialDeviceStrategy):
 
                 if not self.__streaming and self.rocketController.rocket.isStreaming:
                     self.rocketController.rocket.isStreaming = False
+                elif not self.__streaming and not self.rocketController.rocket.isStreaming:
+                    self.rocketController.rocket.isStreaming = True
 
             elif receivedFrame.command == FrameFactory.COMMAND['GET_TELEMETRY']:
 
@@ -695,6 +714,7 @@ class CommandStream(PyQt4.QtCore.QThread):
                 frame = FrameFactory.create(FrameFactory.FRAMETYPES['SENT'], rocketID=self.__rocketID,
                                             ID=self.ID, command=self.command)
                 self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
+                CommunicationAnalyticsController.getInstance().incrementNbOfFrameSent()
                 time.sleep(self.__interval)
             except Exception as e:
                 self.__LOGGER.error("Error while sending command on port: \n" + self.serialConnection.port +

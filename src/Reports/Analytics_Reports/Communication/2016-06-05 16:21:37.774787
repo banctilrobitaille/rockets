@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="utf-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <center><title>Communication Analytics</title></center>
+                        <!-- Bootstrap -->
+                        <link href="../../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                    </head>
+                    <body>
+                        <div class="container">
+                            <div class="jumbotron">
+                                <h1>Communication Analytics</h1>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6">
+                                  <h2 class="text-center">SENT AND RECEIVED FRAME</h2>
+                                  <canvas id="sentReceivedFrame"></canvas>
+                                </div>
+                                 <div class="col-sm-6">
+                                  <h3>Received Frame</h3>
+                                  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+                                  <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+                        <script src="../../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
+                        <!-- Include all compiled plugins (below), or include individual files as needed -->
+                        <script src="../../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
+                        <!-- Include chart  JS -->
+                        <script src="../../../Report_Resources/chartJS/Chart.min.js"></script><script>
+var data ={labels: ["Received Frame","Sent Frame"],datasets: [{data: [<property object at 0x7f6acfe4fdb8>,<property object at 0x7f6acfe4fd60>],backgroundColor: ["#FF6384","#36A2EB"],hoverBackgroundColor: ["#FF6384","#36A2EB"]}]};
+var ctx = document.getElementById("sentReceivedFrame").getContext("2d");
+var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
+</script>
+                    </body>
+                </html>

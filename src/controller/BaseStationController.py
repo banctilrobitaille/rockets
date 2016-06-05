@@ -33,12 +33,16 @@ class BaseStationController(PyQt4.QtCore.QObject):
 
     def setupSerialDevices(self):
 
-        self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS4')
+        self.__RFD900SerialController.updateSerialConnectionDeviceName("RFD 900")
+        self.__RFD900SerialController.updateSerialConnectionPort('/dev/ttyS1')
         self.__RFD900SerialController.updateSerialConnectionBaudrate(57600)
-        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS5")
+        self.__XBeeSerialController.updateSerialConnectionDeviceName("XBEE")
+        self.__XBeeSerialController.updateSerialConnectionPort("/dev/ttyS0")
         self.__XBeeSerialController.updateSerialConnectionBaudrate(9600)
-        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS0")
+        self.__globalSatSerialController.updateSerialConnectionDeviceName("GlobalSat GPS")
+        self.__globalSatSerialController.updateSerialConnectionPort("/dev/ttyS1")
         self.__globalSatSerialController.updateSerialConnectionBaudrate(4800)
+
 
     def connectSerialDevices(self):
         try:

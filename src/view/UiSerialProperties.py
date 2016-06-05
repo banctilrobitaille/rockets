@@ -47,8 +47,8 @@ class SerialPropertiesWindow(PyQt4.QtGui.QWidget):
 
         if self.__serialController.serialConnection.port is not None:
 
-            for port in filter(lambda serialport: serialport[0] !=
-                    self.__serialController.serialConnection.port, list_ports.comports()):
+            for port in filter(lambda serialport: (serialport[0] !=
+                    self.__serialController.serialConnection.port) and ("USB" in serialport[0]), list_ports.comports()):
                 self.comboCOMPort.addItem(port[0])
             self.comboCOMPort.addItem(self.__serialController.serialConnection.port)
             self.comboCOMPort.setCurrentIndex(self.comboCOMPort.findText(self.__serialController.serialConnection.port))
