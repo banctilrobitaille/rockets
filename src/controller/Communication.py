@@ -519,6 +519,9 @@ class RFD900Strategy(SerialDeviceStrategy):
 
                 self.resendLastCommand()
                 self.LOGGER.error("Bad frame sent, received NACK", verbose=False)
+                CommunicationAnalyticsController.incrementNbOfBadFrameSent()
+            else:
+                CommunicationAnalyticsController.incrementNbOfBadFrameReceived()
 
 
 class XbeeStrategy(SerialDeviceStrategy):
@@ -540,6 +543,7 @@ class XbeeStrategy(SerialDeviceStrategy):
     def on_received_data(self, receivedData):
 
         receivedFrame = FrameFactory.create(FrameFactory.FRAMETYPES['RECEIVED'], receivedData=receivedData)
+        CommunicationAnalyticsController.getInstance().incrementNbOfFrameReceived()
 
         if receivedFrame.command is FrameFactory.COMMAND['ACK']:
 
@@ -549,8 +553,11 @@ class XbeeStrategy(SerialDeviceStrategy):
                 del self.commandStreamer[str(receivedFrame.ID)]
 
                 self.rocketController.updateRocketCameraState()
+
             except Exception as e:
                 pass
+        else:
+            CommunicationAnalyticsController.getInstance().incrementNbOfBadFrameReceived()
 
 
 class FrameFactory(object):
@@ -715,7 +722,9 @@ class CommandStream(PyQt4.QtCore.QThread):
                                             ID=self.ID, command=self.command)
                 self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
                 CommunicationAnalyticsController.getInstance().incrementNbOfFrameSent()
+                CommunicationAnalyticsController.getInstance().incrementNbOfRetries()
                 time.sleep(self.__interval)
+                CommunicationAnalyticsController.getInstance().incrementNbOfFrameLost()
             except Exception as e:
                 self.__LOGGER.error("Error while sending command on port: \n" + self.serialConnection.port +
                                     "\n" + e.message)

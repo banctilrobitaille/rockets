@@ -30,6 +30,9 @@ class CommunicationAnalyticsController(PyQt4.QtCore.QObject):
     def incrementNbOfRetries(self):
         self.__communicationAnalyticsModel.nbOfRetries += 1
 
+    def incrementNbOfFrameLost(self):
+        self.__communicationAnalyticsModel.nbOfFrameLost += 1
+
     def updateAverageNbOfRetries(self):
         self.__communicationAnalyticsModel.averageNbOfRetries = (
             self.__communicationAnalyticsModel.nbOfRetries / self.__communicationAnalyticsModel.nbOfRetries)

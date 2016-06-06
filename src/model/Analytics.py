@@ -12,6 +12,7 @@ class CommunicationAnalytics(PyQt4.QtCore.QObject):
         self.__nbOfBadFrameSent = 0
         self.__nbOfRetries = 0
         self.__averageNbOfRetries = 0
+        self.__nbOfFrameLost = 0
         self.__FrameSent = []
         self.__FrameReceived = []
 
@@ -78,6 +79,14 @@ class CommunicationAnalytics(PyQt4.QtCore.QObject):
     @averageNbOfRetries.setter
     def averageNbOfRetries(self, averageNbOfRetries):
         self.__averageNbOfRetries = averageNbOfRetries
+
+    @property
+    def nbOfFrameLost(self):
+        return self.__nbOfFrameLost
+
+    @nbOfFrameLost.setter
+    def nbOfFrameLost(self, nbOfFrameLost):
+        self.__nbOfFrameLost = nbOfFrameLost
 
     @staticmethod
     def getInstance():
