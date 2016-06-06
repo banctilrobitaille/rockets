@@ -460,7 +460,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
                         PyQt4.QtGui.QIcon(UiToolbar.MainToolBar.ROCKET_OFF_ICON_PATH))
                 self.__baseStationController.disconnectFromRocket(rocketID)
                 self.__dashboard.resetValue()
-                self.__graphTab = UiDataAnlalysis.GraphTab(self)
+                self.__graphTab.resetAllGraph()
+                self.__statePanel
             else:
                 rocketMsg.close()
         else:

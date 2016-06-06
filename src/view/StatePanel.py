@@ -46,6 +46,9 @@ class StatePanel(PyQt4.QtGui.QFrame):
             self.__curentState = self.__stateDict[stateID]
             self.__curentState.status = State.STATUS['IN_PROGRESS']
 
+    def reset(self):
+        for state in self.__stateDict.items():
+            state.status = State.STATUS['NOT_DONE']
 
 class State(PyQt4.QtCore.QObject):
     STATUS = {

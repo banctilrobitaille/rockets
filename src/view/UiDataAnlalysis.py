@@ -184,6 +184,15 @@ class DataGraph(PyQt4.Qwt5.Qwt.QwtPlot):
         self.yAxisTitle.setFont(font)
         self.setAxisTitle(0, self.yAxisTitle)
 
+    def reset(self):
+        self.xData = [0]
+        self.yData = [0]
+        self.__maxData = 0
+        self.lastDataTimeStamp = None
+        self.__maxValueMarker.setLabel(QwtText("Peak: " + str(0)))
+        self.__maxValueMarker.setValue(0, 0)
+        self.curve.setData(self.xData, self.yData)
+        self.replot()
 
 """#
 # La classe GraphTab
@@ -252,6 +261,11 @@ class GraphTab(DataFrame):
 
         self.altitudePlot.addData(value)
 
+    def resetAllGraph(self):
+        self.speedPlot.reset()
+        self.accelPlot.reset()
+        self.temperaturePlot.reset()
+        self.altitudePlot.reset()
 
 """#
 # La classe GPSTab
