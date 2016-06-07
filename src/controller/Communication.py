@@ -6,6 +6,7 @@ from PyQt4.Qt import pyqtSlot
 from Exception import SerialDeviceException
 from controller.LogController import LogController
 from controller.AnalyticsController import CommunicationAnalyticsController
+from datetime import datetime
 
 """#############################################################################
 # 
@@ -313,6 +314,7 @@ class CommunicationStrategy(PyQt4.QtCore.QObject):
         self.__commandStreamer = commandStreamer
 
     def addCommandStreamer(self, commandStreamer):
+        CommunicationAnalyticsController.getInstance().incrementNbOfCommandSent(FrameFactory.COMMAND_STRING[commandStreamer.command])
         self.__commandStreamer[str(self.__ID)] = commandStreamer
         commandStreamer.isRunning = True
         self.newCommandStreamer.emit(commandStreamer)
@@ -575,6 +577,18 @@ class FrameFactory(object):
         'ROCKET_DISCOVERY': 0x1F,
     }
 
+    COMMAND_STRING = {
+        0x01 : 'ACK',
+        0x02 : 'GET TELEMETRY',
+        0x03 : 'START STREAM',
+        0x04 : 'STOP STREAM',
+        0x05 : 'START CAMERA',
+        0x06 : 'STOP CAMERA',
+        0x07 : 'GET LOG',
+        0x08 : 'NACK',
+        0x1F : 'ROCKET DISCOVERY',
+    }
+
     """The broadcast ID treated by every rocket"""
     DISCOVERY_ID = 0xE0
 
@@ -722,7 +736,7 @@ class CommandStream(PyQt4.QtCore.QThread):
                                             ID=self.ID, command=self.command)
                 self.__serialConnection.write(Frame.FLAG + frame.toByteArray(withCRC=True))
                 CommunicationAnalyticsController.getInstance().incrementNbOfFrameSent()
-                CommunicationAnalyticsController.getInstance().incrementNbOfRetries()
+                CommunicationAnalyticsController.getInstance().incrementNbOfRetries(datetime.now())
                 time.sleep(self.__interval)
                 CommunicationAnalyticsController.getInstance().incrementNbOfFrameLost()
             except Exception as e:

@@ -13,6 +13,10 @@ class CommunicationAnalytics(PyQt4.QtCore.QObject):
         self.__nbOfRetries = 0
         self.__averageNbOfRetries = 0
         self.__nbOfFrameLost = 0
+        self.__nbOfCommandSent = 0
+        self.__retryHistory = {'Time': [], 'Retry': [0, ]}
+        self.__firstRetryTimeReference = None
+        self.__commandSentDict = {}
         self.__FrameSent = []
         self.__FrameReceived = []
 
@@ -87,6 +91,38 @@ class CommunicationAnalytics(PyQt4.QtCore.QObject):
     @nbOfFrameLost.setter
     def nbOfFrameLost(self, nbOfFrameLost):
         self.__nbOfFrameLost = nbOfFrameLost
+
+    @property
+    def nbOfCommandSent(self):
+        return self.__nbOfCommandSent
+
+    @nbOfCommandSent.setter
+    def nbOfCommandSent(self, nbOfCommandSent):
+        self.__nbOfCommandSent = nbOfCommandSent
+
+    @property
+    def retryHistory(self):
+        return self.__retryHistory
+
+    @retryHistory.setter
+    def retryHistory(self, retryHistory):
+        self.__retryHistory = retryHistory
+
+    @property
+    def firstRetryTimeReference(self):
+        return self.__firstRetryTimeReference
+
+    @firstRetryTimeReference.setter
+    def firstRetryTimeReference(self, firstRetryTimeReference):
+        self.__firstRetryTimeReference = firstRetryTimeReference
+
+    @property
+    def commandSentDict(self):
+        return self.__commandSentDict
+
+    @commandSentDict.setter
+    def commandSentDict(self, commandSentDict):
+        self.__commandSentDict = commandSentDict
 
     @staticmethod
     def getInstance():

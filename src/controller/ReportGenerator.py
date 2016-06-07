@@ -38,6 +38,16 @@ class CommunicationAnalyticsReportGenerator(object):
 
     def generateReportContent(self):
 
+        frameLostPourcentage = str(CommunicationAnalytics.getInstance().nbOfFrameLost /
+                                   CommunicationAnalytics.getInstance().nbOfFrameSent * 100)
+        nbOfFrameSent = str(CommunicationAnalytics.getInstance().nbOfFrameSent)
+        retryAverage = str(CommunicationAnalytics.getInstance().averageNbOfRetries)
+        retryTimeHistory = map(lambda time: str(time), CommunicationAnalytics.getInstance().retryHistory['Time'])
+        retryNbHistory = map(lambda number: str(number), CommunicationAnalytics.getInstance().retryHistory['Retry'])
+        commandSentString = list(CommunicationAnalytics.getInstance().commandSentDict.keys())
+        commandSentNumber = list(CommunicationAnalytics.getInstance().commandSentDict.values())
+
+
         self.__reportContent = \
             '''<!DOCTYPE html>
                 <html lang="en">
@@ -63,12 +73,17 @@ class CommunicationAnalyticsReportGenerator(object):
                                             <div class="col-md-10">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>LOSS %: 100%</h3>
+                                                        <h3>LOSS %: {}%</h3>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>NB OF FRAME SENT: 15</h3>
+                                                        <h3>NB OF FRAME SENT: {}</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>RETRIES/STREAMER: {}</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -76,7 +91,7 @@ class CommunicationAnalyticsReportGenerator(object):
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-8">
                                     <div class="row">
                                         <div class="panel panel-default">
                                             <div class="panel-heading">USAGE</div>
@@ -86,7 +101,7 @@ class CommunicationAnalyticsReportGenerator(object):
                                                   <canvas id="sentReceivedFrame"></canvas>
                                                 </div>
                                                  <div class="col-md-6">
-                                                  <h2 class="text-center">COMMANDS SENT</h2>
+                                                  <h2 class="text-center">COMMAND STREAMER</h2>
                                                   <canvas id="commandSent"></canvas>
                                                 </div>
                                             </div>
@@ -96,13 +111,20 @@ class CommunicationAnalyticsReportGenerator(object):
                                         <div class="panel panel-default">
                                             <div class="panel-heading">QUALITY OF SERVICE</div>
                                             <div class="panel-body">
-                                                <div class="col-md-6">
-                                                  <h2 class="text-center">QUALITY OF SENT FRAMES</h2>
-                                                  <canvas id="sentFrameQA"></canvas>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                      <h2 class="text-center">SENT FRAMES</h2>
+                                                      <canvas id="sentFrameQA"></canvas>
+                                                    </div>
+                                                     <div class="col-md-6">
+                                                      <h2 class="text-center">RECEIVED FRAMES</h2>
+                                                      <canvas id="receivedFrameQA"></canvas>
+                                                    </div>
                                                 </div>
-                                                 <div class="col-md-6">
-                                                  <h2 class="text-center">QUALITY OF RECEIVED FRAMES</h2>
-                                                  <canvas id="receivedFrameQA"></canvas>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <canvas id="retryHistory"></canvas>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -116,16 +138,15 @@ class CommunicationAnalyticsReportGenerator(object):
                         <!-- Include all compiled plugins (below), or include individual files as needed -->
                         {}
                         <!-- Include chart  JS -->
-                        {}'''.format(self.BOOTSTRAP_CSS_INCLUDE, self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE,
-                                  self.CHART_JS_INCLUDE) + \
+                        {}'''.format(self.BOOTSTRAP_CSS_INCLUDE,frameLostPourcentage , nbOfFrameSent , retryAverage,
+                                            self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE, self.CHART_JS_INCLUDE) + \
                         ChartJSUtil.createPieChart(["Received Frame", "Sent Frame"],
                                                    [CommunicationAnalytics.getInstance().nbOfFrameReceived,
                                                     CommunicationAnalytics.getInstance().nbOfFrameSent],
                                                    "sentReceivedFrame") + \
-                        ChartJSUtil.createBarChart(["Rocket Discovery", "Start Camera", "Stop Camera",
-                                                    "Start Stream", "Stop Stream"],
-                                                   "Command Sent",
-                                                   [10, 12, 50, 5, 80],
+                        ChartJSUtil.createBarChart(commandSentString,
+                                                   "STREAMER STARTED",
+                                                   commandSentNumber,
                                                    "commandSent") + \
                         ChartJSUtil.createPieChart(["Good Frame", "Bad Frame"],
                                                    [CommunicationAnalytics.getInstance().nbOfFrameSent -
@@ -137,6 +158,10 @@ class CommunicationAnalyticsReportGenerator(object):
                                                     CommunicationAnalytics.getInstance().nbOfBadFrameReceived,
                                                     CommunicationAnalytics.getInstance().nbOfBadFrameReceived],
                                                    "receivedFrameQA") + \
+                        ChartJSUtil.createLineChart(retryTimeHistory,
+                                                    "Number of retries",
+                                                    retryNbHistory,
+                                                    "retryHistory") + \
                         '''
                     </body>
                 </html>'''
@@ -165,7 +190,7 @@ class ChartJSUtil(object):
 
         data = ChartJSUtil.createBarChartData(barLabels, title, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
-        barChart = '''var myPieChart = new Chart(ctx,{type: 'bar',data: data,});'''
+        barChart = '''var myBarChart = new Chart(ctx,{type: 'bar',data: data,});'''
         return "\n".join(["<script>", data, context, barChart, "</script>"])
 
     @staticmethod
@@ -173,7 +198,15 @@ class ChartJSUtil(object):
 
         data = ChartJSUtil.createDonutChartData(labels, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
-        pieChart = '''var myPieChart = new Chart(ctx,{type: 'doughnut',data: data,});'''
+        pieChart = '''var myDonutChart = new Chart(ctx,{type: 'doughnut',data: data,});'''
+        return "\n".join(["<script>", data, context, pieChart, "</script>"])
+
+    @staticmethod
+    def createLineChart(labels, title, data, canvasId):
+
+        data = ChartJSUtil.createLineChartData(labels, title, data)
+        context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
+        pieChart = '''var myLineChart = new Chart(ctx,{type: 'line',data: data,});'''
         return "\n".join(["<script>", data, context, pieChart, "</script>"])
 
     @staticmethod
@@ -226,3 +259,32 @@ class ChartJSUtil(object):
         datasets = "\n".join(["datasets: [{", label, color, data, "}]"])
 
         return "\n".join(["var data ={", barLabels, datasets, "};"])
+
+    @staticmethod
+    def createLineChartData(lineLabels, title, data):
+
+        lineLabels = '''labels: [{}],'''.format(', '.join('"{0}"'.format(label) for label in lineLabels))
+
+        data = "data: [{}],".format(reduce(lambda x, y: "".join([str(x), ",", str(y)]), data))
+        label = "label: {},".format("".join(['''"''', title, '''"''']))
+        color = '''fill: false,
+                lineTension: 0.1,
+                backgroundColor: "rgba(75,192,192,0.4)",
+                borderColor: "rgba(75,192,192,1)",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "rgba(75,192,192,1)",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 1,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                pointHoverBorderColor: "rgba(220,220,220,1)",
+                pointHoverBorderWidth: 2,
+                pointRadius: 1,
+                pointHitRadius: 10,'''
+
+        datasets = "\n".join(["datasets: [{", label, color, data, "}]"])
+
+        return "\n".join(["var data ={", lineLabels, datasets, "};"])
