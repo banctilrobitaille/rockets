@@ -1,9 +1,10 @@
 from model.Analytics import CommunicationAnalytics
 from datetime import datetime
+from controller.LogController import LogController
 
 
 class ReportGenerator(object):
-    REPORT_RESOURCES_PATH = "../../../Report_Resources/"
+    REPORT_RESOURCES_PATH = "../../Report_Resources/"
     JQUERY_PATH = "jquery/jquery-2.2.4.min.js"
     CHART_JS_PATH = "chartJS/Chart.min.js"
     BOOTSTRAP_CSS_PATH = "bootstrap/css/bootstrap.min.css"
@@ -16,8 +17,103 @@ class ReportGenerator(object):
 
 class FlightReportGenerator(ReportGenerator):
 
+    REPORT_BASE_PATH = "./Reports/Flight_Reports/"
+
     def __init__(self):
         super(FlightReportGenerator, self).__init__()
+        self.__reportContent = None
+
+    def generateReportContent(self):
+
+        self.__reportContent = \
+            '''<!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="utf-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <center><title>Communication Analytics</title></center>
+                        <!-- Bootstrap -->
+                        {}
+                    </head>
+                    <body>
+                        <div class="container-fluid">
+                            <div class="jumbotron">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
+                                        src="../../Report_Resources/Images/rocketsFlight.png">
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h1>Flight Report</h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading">QUICK STATS</div>
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-10">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>{}</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>{}</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>{}</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">USAGE</div>
+                                            <div class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">QUALITY OF SERVICE</div>
+                                            <div class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+                        {}
+                        <!-- Include all compiled plugins (below), or include individual files as needed -->
+                        {}
+                        <!-- Include chart  JS -->
+                        {}'''.format(self.BOOTSTRAP_CSS_INCLUDE,"" , "" , "",
+                                            self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE, self.CHART_JS_INCLUDE) + \
+                        '''
+                    </body>
+                </html>'''
+
+    def createReportFile(self):
+            reportPath = self.REPORT_BASE_PATH + str(datetime.now())
+            f = open(reportPath, 'w')
+            f.write(self.__reportContent)
+            f.close()
+            LogController.getInstance().infos("Flight report now available!")
 
 
 class CommunicationAnalyticsReportGenerator(object):
@@ -47,7 +143,6 @@ class CommunicationAnalyticsReportGenerator(object):
         commandSentString = list(CommunicationAnalytics.getInstance().commandSentDict.keys())
         commandSentNumber = list(CommunicationAnalytics.getInstance().commandSentDict.values())
 
-
         self.__reportContent = \
             '''<!DOCTYPE html>
                 <html lang="en">
@@ -62,7 +157,15 @@ class CommunicationAnalyticsReportGenerator(object):
                     <body>
                         <div class="container-fluid">
                             <div class="jumbotron">
-                                <h1>Telemetry Analytics</h1>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
+                                        src="../../../Report_Resources/Images/rocketsAnalytics.png">
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h1>Telemetry Analytics</h1>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
@@ -167,9 +270,11 @@ class CommunicationAnalyticsReportGenerator(object):
                 </html>'''
 
     def createReportFile(self):
-        f = open(self.REPORT_BASE_PATH + str(datetime.now()), 'w')
+        reportPath = self.REPORT_BASE_PATH + str(datetime.now())
+        f = open(reportPath, 'w')
         f.write(self.__reportContent)
         f.close()
+        LogController.getInstance().infos("Analytics report now available!")
 
 
 class ChartJSUtil(object):

@@ -11,7 +11,15 @@
                     <body>
                         <div class="container-fluid">
                             <div class="jumbotron">
-                                <h1>Telemetry Analytics</h1>
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
+                                        src="../../../Report_Resources/Images/rocketsAnalytics.png">
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h1>Telemetry Analytics</h1>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
@@ -27,12 +35,12 @@
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>NB OF FRAME SENT: 67</h3>
+                                                        <h3>NB OF FRAME SENT: 3</h3>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>RETRIES/STREAMER: 11</h3>
+                                                        <h3>RETRIES/STREAMER: 3</h3>
                                                     </div>
                                                 </div>
                                             </div>
@@ -88,12 +96,12 @@
                         <script src="../../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
                         <!-- Include chart  JS -->
                         <script src="../../../Report_Resources/chartJS/Chart.min.js"></script><script>
-var data ={labels: ["Received Frame", "Sent Frame"],datasets: [{data: [0,67],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
+var data ={labels: ["Received Frame", "Sent Frame"],datasets: [{data: [0,3],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
 var ctx = document.getElementById("sentReceivedFrame").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
 var data ={
-labels: ["START STREAM", "START CAMERA", "ROCKET DISCOVERY"],
+labels: ["ROCKET DISCOVERY"],
 datasets: [{
 label: "STREAMER STARTED",
 backgroundColor: "rgba(255,99,132,0.2)",
@@ -101,13 +109,13 @@ backgroundColor: "rgba(255,99,132,0.2)",
                 borderWidth: 1,
                 hoverBackgroundColor: "rgba(255,99,132,0.4)",
                 hoverBorderColor: "rgba(255,99,132,1)",
-data: [1,2,3],
+data: [1],
 }]
 };
 var ctx = document.getElementById("commandSent").getContext("2d");
 var myBarChart = new Chart(ctx,{type: 'bar',data: data,});
 </script><script>
-var data ={labels: ["Good Frame", "Bad Frame"],datasets: [{data: [0,67],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
+var data ={labels: ["Good Frame", "Bad Frame"],datasets: [{data: [0,3],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
 var ctx = document.getElementById("sentFrameQA").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
@@ -116,7 +124,7 @@ var ctx = document.getElementById("receivedFrameQA").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
 var data ={
-labels: ["2016-06-06 21:59:24.720698", "2016-06-06 21:59:37.640949", "2016-06-06 21:59:48.654642", "2016-06-06 22:00:00.622463"],
+labels: ["2016-06-07 20:20:55.645875"],
 datasets: [{
 label: "Number of retries",
 fill: false,
@@ -136,7 +144,7 @@ fill: false,
                 pointHoverBorderWidth: 2,
                 pointRadius: 1,
                 pointHitRadius: 10,
-data: [7,24,27,9],
+data: [3],
 }]
 };
 var ctx = document.getElementById("retryHistory").getContext("2d");

@@ -13,7 +13,7 @@ from UiClickableRocket import ClickableRocketWidget
 from controller.Communication import FrameFactory
 from controller.LogController import LogController
 from Exception import SerialDeviceException
-from controller.ReportGenerator import CommunicationAnalyticsReportGenerator
+from controller.ReportGenerator import CommunicationAnalyticsReportGenerator, FlightReportGenerator
 
 """#############################################################################
 # 
@@ -124,10 +124,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         """Positionnement de la barre de menu au haut de linterface"""
         self.menubar.setGeometry(PyQt4.QtCore.QRect(0, 0, 800, 26))
-        self.menuFile = Menu(self.menubar, "menuFile", "File")
-        self.menuView = Menu(self.menubar, "menuView", "view")
         self.menuConnection = Menu(self.menubar, "menuConnection", "Connection")
-        self.menuGPS = Menu(self.menubar, "menuGPS", "GPS")
+        self.menuReport = Menu(self.menubar, "menuReport", "Report")
         self.menuAbout = Menu(self.menubar, "menuAbout", "Help")
         self.setMenuBar(self.menubar)
 
@@ -141,14 +139,6 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
     """
 
     def __AddMenuAction(self):
-
-        """Initialisaiton et ajout du sous menu <Load Log File>"""
-        self.actionLoad_Log_File = MenuAction(self, "actionLoad_Log_File", "Load Log File")
-        self.menuFile.addAction(self.actionLoad_Log_File)
-
-        """Initialisaiton et ajout du sous menu <Display Settings>"""
-        self.actionDisplay_Settings = MenuAction(self, "actionDisplay_Settings", "Display Settings")
-        self.menuView.addAction(self.actionDisplay_Settings)
 
         """Initialisaiton et ajout du sous menu <Serial Settings>"""
         self.actionRFD900_Settings = MenuAction(self, "actionSerial_Settings", "RFD900 Settings")
@@ -165,19 +155,19 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.actionDisconnect = MenuAction(self, "actionDisconnect", "Disconnect")
         self.menuConnection.addAction(self.actionDisconnect)
 
-        """Initialisaiton et ajout du sous menu <Set base station position>"""
-        self.actionSetLocalPosition = MenuAction(self, "actionSetLocalPosition", "Set base station position")
-        self.menuGPS.addAction(self.actionSetLocalPosition)
+        self.actionGenerateAnalytics = MenuAction(self, "actionGenerateAnalytics", "Generate Analytics Report")
+        self.menuReport.addAction(self.actionGenerateAnalytics)
+
+        self.actionGenerateFlightReport = MenuAction(self, "actionGenerateFlightReport", "Generate Flight Report")
+        self.menuReport.addAction(self.actionGenerateFlightReport)
 
         """Initialisaiton et ajout du sous menu <About>"""
         self.actionAbout = MenuAction(self, "actionAbout", "About")
         self.menuAbout.addAction(self.actionAbout)
 
         """Ajout des menus en tant que action dans la barre de menu"""
-        self.menubar.addAction(self.menuFile.menuAction())
-        self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuConnection.menuAction())
-        self.menubar.addAction(self.menuGPS.menuAction())
+        self.menubar.addAction(self.menuReport.menuAction())
         self.menubar.addAction(self.menuAbout.menuAction())
 
     """
@@ -227,8 +217,9 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Connect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
-        self.connect(self.actionSetLocalPosition, PyQt4.QtCore.SIGNAL("triggered()"),
-                     self.__slotSetLocalPosition_Clicked)
+        self.connect(self.actionGenerateAnalytics, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_GenerateAnalytics_Clicked)
+        self.connect(self.actionGenerateFlightReport, PyQt4.QtCore.SIGNAL("triggered()"),
+                     self.__on_GenerateFlightReport_Clicked)
 
         self.connect(self.__toolbar.discoverAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Discover_Clicked)
         self.connect(self.__toolbar.streamAction, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Stream_Clicked)
@@ -521,6 +512,15 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         else:
             self.__baseStationController.RFD900.startRocketDiscovery()
 
+    def __on_GenerateAnalytics_Clicked(self):
+        reportGenerator = CommunicationAnalyticsReportGenerator()
+        reportGenerator.generateReportContent()
+        reportGenerator.createReportFile()
+
+    def __on_GenerateFlightReport_Clicked(self):
+        reportGenerator = FlightReportGenerator()
+        reportGenerator.generateReportContent()
+        reportGenerator.createReportFile()
 
 class MenuBar(PyQt4.QtGui.QMenuBar):
     def __init__(self, parent, objectName):
