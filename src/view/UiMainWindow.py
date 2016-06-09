@@ -502,7 +502,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
 
         # self.__gpsTab.map.updateMarker(-90,46.8)
         reportGeneratot = CommunicationAnalyticsReportGenerator()
-        reportGeneratot.generateReportContent()
+        reportGeneratot.generateTelemetryAnalyticReport()
         reportGeneratot.createReportFile()
 
     def __on_Discover_Clicked(self):
@@ -513,9 +513,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
             self.__baseStationController.RFD900.startRocketDiscovery()
 
     def __on_GenerateAnalytics_Clicked(self):
-        reportGenerator = CommunicationAnalyticsReportGenerator()
-        reportGenerator.generateReportContent()
-        reportGenerator.createReportFile()
+        CommunicationAnalyticsReportGenerator().generateTelemetryAnalyticReport()
 
     def __on_GenerateFlightReport_Clicked(self):
         reportGenerator = FlightReportGenerator()

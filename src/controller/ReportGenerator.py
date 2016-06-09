@@ -1,139 +1,37 @@
 from model.Analytics import CommunicationAnalytics
 from datetime import datetime
 from controller.LogController import LogController
+from model.Report import TelemetryAnalyticReport, FlightReport
 
 
-class ReportGenerator(object):
-    REPORT_RESOURCES_PATH = "../../Report_Resources/"
-    JQUERY_PATH = "jquery/jquery-2.2.4.min.js"
-    CHART_JS_PATH = "chartJS/Chart.min.js"
-    BOOTSTRAP_CSS_PATH = "bootstrap/css/bootstrap.min.css"
-    BOOTSTRAP_JS_PATH = "bootstrap/js/bootstrap.min.js"
-    BOOTSTRAP_CSS_INCLUDE = '''<link href="{}" rel="stylesheet">'''.format(REPORT_RESOURCES_PATH + BOOTSTRAP_CSS_PATH)
-    BOOTSTRAP_JS_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + BOOTSTRAP_JS_PATH)
-    JQUERY_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + JQUERY_PATH)
-    CHART_JS_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + CHART_JS_PATH)
-
-
-class FlightReportGenerator(ReportGenerator):
-
+class FlightReportGenerator(object):
     REPORT_BASE_PATH = "./Reports/Flight_Reports/"
 
     def __init__(self):
         super(FlightReportGenerator, self).__init__()
-        self.__reportContent = None
 
-    def generateReportContent(self):
+    @staticmethod
+    def generateReportContent():
+        report =FlightReport().build()
+        FlightReportGenerator.createReportFile(report)
 
-        self.__reportContent = \
-            '''<!DOCTYPE html>
-                <html lang="en">
-                    <head>
-                        <meta charset="utf-8">
-                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                        <meta name="viewport" content="width=device-width, initial-scale=1">
-                        <center><title>Communication Analytics</title></center>
-                        <!-- Bootstrap -->
-                        {}
-                    </head>
-                    <body>
-                        <div class="container-fluid">
-                            <div class="jumbotron">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
-                                        src="../../Report_Resources/Images/rocketsFlight.png">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <h1>Flight Report</h1>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="panel panel-info">
-                                        <div class="panel-heading">QUICK STATS</div>
-                                        <div class="row">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-10">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>{}</h3>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>{}</h3>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>{}</h3>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">USAGE</div>
-                                            <div class="panel-body">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">QUALITY OF SERVICE</div>
-                                            <div class="panel-body">
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-                        {}
-                        <!-- Include all compiled plugins (below), or include individual files as needed -->
-                        {}
-                        <!-- Include chart  JS -->
-                        {}'''.format(self.BOOTSTRAP_CSS_INCLUDE,"" , "" , "",
-                                            self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE, self.CHART_JS_INCLUDE) + \
-                        '''
-                    </body>
-                </html>'''
-
-    def createReportFile(self):
-            reportPath = self.REPORT_BASE_PATH + str(datetime.now())
-            f = open(reportPath, 'w')
-            f.write(self.__reportContent)
-            f.close()
-            LogController.getInstance().infos("Flight report now available!")
+    @staticmethod
+    def createReportFile(report):
+        reportPath = FlightReportGenerator.REPORT_BASE_PATH + str(datetime.now())
+        f = open(reportPath, 'w')
+        f.write(report)
+        f.close()
+        LogController.getInstance().infos("Flight report now available!")
 
 
 class CommunicationAnalyticsReportGenerator(object):
-    REPORT_BASE_PATH = "./Reports/Analytics_Reports/Communication/"
-    REPORT_RESOURCES_PATH = "../../../Report_Resources/"
-    JQUERY_PATH = "jquery/jquery-2.2.4.min.js"
-    CHART_JS_PATH = "chartJS/Chart.min.js"
-    BOOTSTRAP_CSS_PATH = "bootstrap/css/bootstrap.min.css"
-    BOOTSTRAP_JS_PATH = "bootstrap/js/bootstrap.min.js"
-    BOOTSTRAP_CSS_INCLUDE = '''<link href="{}" rel="stylesheet">'''.format(REPORT_RESOURCES_PATH + BOOTSTRAP_CSS_PATH)
-    BOOTSTRAP_JS_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + BOOTSTRAP_JS_PATH)
-    JQUERY_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + JQUERY_PATH)
-    CHART_JS_INCLUDE = '''<script src="{}"></script>'''.format(REPORT_RESOURCES_PATH + CHART_JS_PATH)
+    REPORT_BASE_PATH = "./Reports/Analytics_Reports/"
 
     def __init__(self):
         self.__communicationAnalyticModel = CommunicationAnalytics.getInstance()
-        self.__reportContent = None
 
-    def generateReportContent(self):
-
+    @staticmethod
+    def generateTelemetryAnalyticReport():
         frameLostPourcentage = str(CommunicationAnalytics.getInstance().nbOfFrameLost /
                                    CommunicationAnalytics.getInstance().nbOfFrameSent * 100)
         nbOfFrameSent = str(CommunicationAnalytics.getInstance().nbOfFrameSent)
@@ -143,148 +41,63 @@ class CommunicationAnalyticsReportGenerator(object):
         commandSentString = list(CommunicationAnalytics.getInstance().commandSentDict.keys())
         commandSentNumber = list(CommunicationAnalytics.getInstance().commandSentDict.values())
 
-        self.__reportContent = \
-            '''<!DOCTYPE html>
-                <html lang="en">
-                    <head>
-                        <meta charset="utf-8">
-                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-                        <meta name="viewport" content="width=device-width, initial-scale=1">
-                        <center><title>Communication Analytics</title></center>
-                        <!-- Bootstrap -->
-                        {}
-                    </head>
-                    <body>
-                        <div class="container-fluid">
-                            <div class="jumbotron">
-                                <div class="row">
-                                    <div class="col-md-2">
-                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
-                                        src="../../../Report_Resources/Images/rocketsAnalytics.png">
-                                    </div>
-                                    <div class="col-md-10">
-                                        <h1>Telemetry Analytics</h1>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="panel panel-info">
-                                        <div class="panel-heading">QUICK STATS</div>
-                                        <div class="row">
-                                            <div class="col-md-1"></div>
-                                            <div class="col-md-10">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>LOSS %: {}%</h3>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>NB OF FRAME SENT: {}</h3>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <h3>RETRIES/STREAMER: {}</h3>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-1"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="row">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">USAGE</div>
-                                            <div class="panel-body">
-                                                <div class="col-md-6">
-                                                  <h2 class="text-center">SENT AND RECEIVED FRAMES</h2>
-                                                  <canvas id="sentReceivedFrame"></canvas>
-                                                </div>
-                                                 <div class="col-md-6">
-                                                  <h2 class="text-center">COMMAND STREAMER</h2>
-                                                  <canvas id="commandSent"></canvas>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">QUALITY OF SERVICE</div>
-                                            <div class="panel-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                      <h2 class="text-center">SENT FRAMES</h2>
-                                                      <canvas id="sentFrameQA"></canvas>
-                                                    </div>
-                                                     <div class="col-md-6">
-                                                      <h2 class="text-center">RECEIVED FRAMES</h2>
-                                                      <canvas id="receivedFrameQA"></canvas>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <canvas id="retryHistory"></canvas>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        sentReceivedFrameRatioPie = ChartJSUtil.createPieChart(["Received Frame", "Sent Frame"],
+                                                               [CommunicationAnalytics.getInstance().nbOfFrameReceived,
+                                                                CommunicationAnalytics.getInstance().nbOfFrameSent],
+                                                               "sentReceivedFrame")
 
-                        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-                        {}
-                        <!-- Include all compiled plugins (below), or include individual files as needed -->
-                        {}
-                        <!-- Include chart  JS -->
-                        {}'''.format(self.BOOTSTRAP_CSS_INCLUDE,frameLostPourcentage , nbOfFrameSent , retryAverage,
-                                            self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE, self.CHART_JS_INCLUDE) + \
-                        ChartJSUtil.createPieChart(["Received Frame", "Sent Frame"],
-                                                   [CommunicationAnalytics.getInstance().nbOfFrameReceived,
-                                                    CommunicationAnalytics.getInstance().nbOfFrameSent],
-                                                   "sentReceivedFrame") + \
-                        ChartJSUtil.createBarChart(commandSentString,
-                                                   "STREAMER STARTED",
-                                                   commandSentNumber,
-                                                   "commandSent") + \
-                        ChartJSUtil.createPieChart(["Good Frame", "Bad Frame"],
-                                                   [CommunicationAnalytics.getInstance().nbOfFrameSent -
-                                                    CommunicationAnalytics.getInstance().nbOfFrameLost,
-                                                    CommunicationAnalytics.getInstance().nbOfFrameLost],
-                                                   "sentFrameQA") + \
-                        ChartJSUtil.createPieChart(["Good Frame", "Bad Frame"],
-                                                   [CommunicationAnalytics.getInstance().nbOfFrameReceived -
-                                                    CommunicationAnalytics.getInstance().nbOfBadFrameReceived,
-                                                    CommunicationAnalytics.getInstance().nbOfBadFrameReceived],
-                                                   "receivedFrameQA") + \
-                        ChartJSUtil.createLineChart(retryTimeHistory,
-                                                    "Number of retries",
-                                                    retryNbHistory,
-                                                    "retryHistory") + \
-                        '''
-                    </body>
-                </html>'''
+        commandStreamerBar = ChartJSUtil.createBarChart(commandSentString,
+                                                        "STREAMER STARTED",
+                                                        commandSentNumber,
+                                                        "commandSent")
 
-    def createReportFile(self):
-        reportPath = self.REPORT_BASE_PATH + str(datetime.now())
+        goodBadSentFrameRatioPie = ChartJSUtil.createPieChart(["Good Frame", "Bad Frame"],
+                                                              [CommunicationAnalytics.getInstance().nbOfFrameSent -
+                                                               CommunicationAnalytics.getInstance().nbOfFrameLost,
+                                                               CommunicationAnalytics.getInstance().nbOfFrameLost],
+                                                              "sentFrameQA")
+
+        goodBadReceivedFrameRatioPie = ChartJSUtil.createPieChart(["Good Frame", "Bad Frame"],
+                                                                  [
+                                                                      CommunicationAnalytics.getInstance().nbOfFrameReceived -
+                                                                      CommunicationAnalytics.getInstance().nbOfBadFrameReceived,
+                                                                      CommunicationAnalytics.getInstance().nbOfBadFrameReceived],
+                                                                  "receivedFrameQA")
+
+        retriesHistoryLine = ChartJSUtil.createLineChart(retryTimeHistory,
+                                                         "Number of retries",
+                                                         retryNbHistory,
+                                                         "retryHistory")
+
+        report = TelemetryAnalyticReport() \
+            .withTitle("Telemetry Analytics")\
+            .withFrameLostPourcentage(frameLostPourcentage) \
+            .withNbOfFrameSent(nbOfFrameSent) \
+            .withRetryAverage(retryAverage) \
+            .withCharts("".join([sentReceivedFrameRatioPie,
+                                 commandStreamerBar,
+                                 goodBadSentFrameRatioPie,
+                                 goodBadReceivedFrameRatioPie,
+                                 retriesHistoryLine]))\
+            .build()
+
+        CommunicationAnalyticsReportGenerator.createReportFile(report)
+
+    @staticmethod
+    def createReportFile(report):
+        reportPath = CommunicationAnalyticsReportGenerator.REPORT_BASE_PATH + str(datetime.now())
         f = open(reportPath, 'w')
-        f.write(self.__reportContent)
+        f.write(report)
         f.close()
         LogController.getInstance().infos("Analytics report now available!")
 
 
 class ChartJSUtil(object):
-
     COLOR = ['''"#FFCE56"''', '''"#36A2EB"''', '''"#FF6384"''']
-    HOVER_COLOR = ['''"#FFCE56"''' , '''"#36A2EB"''', '''"#FF6384"''']
+    HOVER_COLOR = ['''"#FFCE56"''', '''"#36A2EB"''', '''"#FF6384"''']
 
     @staticmethod
     def createPieChart(labels, data, canvasId):
-
         data = ChartJSUtil.createPieChartData(labels, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
         pieChart = '''var myPieChart = new Chart(ctx,{type: 'pie',data: data,});'''
@@ -292,7 +105,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createBarChart(barLabels, title, data, canvasId):
-
         data = ChartJSUtil.createBarChartData(barLabels, title, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
         barChart = '''var myBarChart = new Chart(ctx,{type: 'bar',data: data,});'''
@@ -300,7 +112,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createDonutChart(labels, data, canvasId):
-
         data = ChartJSUtil.createDonutChartData(labels, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
         pieChart = '''var myDonutChart = new Chart(ctx,{type: 'doughnut',data: data,});'''
@@ -308,7 +119,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createLineChart(labels, title, data, canvasId):
-
         data = ChartJSUtil.createLineChartData(labels, title, data)
         context = '''var ctx = document.getElementById("{}").getContext("2d");'''.format(canvasId)
         pieChart = '''var myLineChart = new Chart(ctx,{type: 'line',data: data,});'''
@@ -316,7 +126,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createPieChartData(labels, data):
-
         labels = '''labels: [{}],'''.format(', '.join('"{0}"'.format(label) for label in labels))
 
         data = "data: [{}],".format(reduce(lambda x, y: "".join([str(x), ",", str(y)]), data))
@@ -333,7 +142,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createDonutChartData(labels, data):
-
         labels = '''labels: [{}],'''.format(', '.join('"{0}"'.format(label) for label in labels))
 
         data = "data: [{}],".format(reduce(lambda x, y: "".join([str(x), ",", str(y)]), data))
@@ -350,7 +158,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createBarChartData(barLabels, title, data):
-
         barLabels = '''labels: [{}],'''.format(', '.join('"{0}"'.format(label) for label in barLabels))
 
         data = "data: [{}],".format(reduce(lambda x, y: "".join([str(x), ",", str(y)]), data))
@@ -367,7 +174,6 @@ class ChartJSUtil(object):
 
     @staticmethod
     def createLineChartData(lineLabels, title, data):
-
         lineLabels = '''labels: [{}],'''.format(', '.join('"{0}"'.format(label) for label in lineLabels))
 
         data = "data: [{}],".format(reduce(lambda x, y: "".join([str(x), ",", str(y)]), data))

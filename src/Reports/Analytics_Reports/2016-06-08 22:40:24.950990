@@ -6,7 +6,7 @@
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <center><title>Communication Analytics</title></center>
                         <!-- Bootstrap -->
-                        <link href="../../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                        <link href="../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
                     </head>
                     <body>
                         <div class="container-fluid">
@@ -14,10 +14,10 @@
                                 <div class="row">
                                     <div class="col-md-2">
                                         <img alt=" " style="max-width: 100%; max-height: 100%;"
-                                        src="../../../Report_Resources/Images/rocketsAnalytics.png">
+                                        src="../../Report_Resources/Images/rocketsAnalytics.png">
                                     </div>
                                     <div class="col-md-10">
-                                        <h1>Telemetry Analytics</h1>
+                                        <h1>None</h1>
                                     </div>
                                 </div>
                             </div>
@@ -91,11 +91,13 @@
                         </div>
 
                         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-                        <script src="../../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
+                        <script src="../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
                         <!-- Include all compiled plugins (below), or include individual files as needed -->
-                        <script src="../../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
+                        <script src="../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
                         <!-- Include chart  JS -->
-                        <script src="../../../Report_Resources/chartJS/Chart.min.js"></script><script>
+                        <script src="../../Report_Resources/chartJS/Chart.min.js"></script>
+                        <!-- Chart -->
+                        <script>
 var data ={labels: ["Received Frame", "Sent Frame"],datasets: [{data: [0,2],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
 var ctx = document.getElementById("sentReceivedFrame").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
@@ -124,7 +126,7 @@ var ctx = document.getElementById("receivedFrameQA").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
 var data ={
-labels: ["2016-06-06 23:13:53.318606"],
+labels: ["2016-06-08 22:40:15.148688"],
 datasets: [{
 label: "Number of retries",
 fill: false,
@@ -150,5 +152,5 @@ data: [2],
 var ctx = document.getElementById("retryHistory").getContext("2d");
 var myLineChart = new Chart(ctx,{type: 'line',data: data,});
 </script>
-                    </body>
+                        </body>
                 </html>

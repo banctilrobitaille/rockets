@@ -17,7 +17,7 @@
                                         src="../../../Report_Resources/Images/rocketsAnalytics.png">
                                     </div>
                                     <div class="col-md-10">
-                                        <h1>Telemetry Analytics</h1>
+                                        <h1>None</h1>
                                     </div>
                                 </div>
                             </div>
@@ -95,7 +95,9 @@
                         <!-- Include all compiled plugins (below), or include individual files as needed -->
                         <script src="../../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
                         <!-- Include chart  JS -->
-                        <script src="../../../Report_Resources/chartJS/Chart.min.js"></script><script>
+                        <script src="../../../Report_Resources/chartJS/Chart.min.js"></script>
+                        <!-- Chart -->
+                        <script>
 var data ={labels: ["Received Frame", "Sent Frame"],datasets: [{data: [0,3],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
 var ctx = document.getElementById("sentReceivedFrame").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
@@ -124,7 +126,7 @@ var ctx = document.getElementById("receivedFrameQA").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
 var data ={
-labels: ["2016-06-07 20:20:55.645875"],
+labels: ["2016-06-08 22:38:09.983085"],
 datasets: [{
 label: "Number of retries",
 fill: false,
@@ -150,5 +152,5 @@ data: [3],
 var ctx = document.getElementById("retryHistory").getContext("2d");
 var myLineChart = new Chart(ctx,{type: 'line',data: data,});
 </script>
-                    </body>
+                        </body>
                 </html>
