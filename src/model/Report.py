@@ -58,17 +58,21 @@ class TelemetryAnalyticReport(Report):
                                             <div class="col-md-10">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>LOSS %: {}%</h3>
+                                                        <hr>
+                                                        <h4><strong>LOSS %:</strong> {}%</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>NB OF FRAME SENT: {}</h3>
+                                                        <h4><strong>NB OF FRAME SENT:</strong> {}</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>RETRIES/STREAMER: {}</h3>
+                                                        <h4><strong>RETRIES/STREAMER:</strong> {}</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                             </div>
@@ -200,17 +204,51 @@ class FlightReport(Report):
                                             <div class="col-md-10">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>ROCKET NAME: {}</h3>
+                                                        <hr>
+                                                        <h4><strong>ROCKET NAME:</strong> {}</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>APOGEE: {}FEET</h3>
+                                                        <h4><strong>CONNECTION TIME:</strong> </h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>MAXIMUM SPEED: {}MPH</h3>
+                                                        <h4><strong>APOGEE:</strong> {} FEET</h4>
+                                                        <hr>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h4><strong>TIME TO APOGEE:</strong>  SEC</h4>
+                                                        <hr>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h4><strong>MAXIMUM SPEED:</strong> {} MPH</h4>
+                                                        <hr>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h4><strong>MAXIMUM ACCEL:</strong>  M/S2</h4>
+                                                        <hr>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h4><strong>MAXIMUM TEMPERATURE:</strong>  C</h4>
+                                                        <hr>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h4><strong>MINIMUM TEMPERATURE:</strong>  C</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                             </div>
@@ -223,7 +261,26 @@ class FlightReport(Report):
                                         <div class="panel panel-default">
                                             <div class="panel-heading">FLIGHT</div>
                                             <div class="panel-body">
-
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                      <h2 class="text-center">ALTITUDE</h2>
+                                                      <canvas id="altitude"></canvas>
+                                                    </div>
+                                                     <div class="col-md-6">
+                                                      <h2 class="text-center">ACCELERATION</h2>
+                                                      <canvas id="acceleration"></canvas>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                      <h2 class="text-center">SPEED</h2>
+                                                      <canvas id="speed"></canvas>
+                                                    </div>
+                                                     <div class="col-md-6">
+                                                      <h2 class="text-center">TEMPERATURE</h2>
+                                                      <canvas id="temperature"></canvas>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

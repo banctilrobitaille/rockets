@@ -6,7 +6,7 @@
                         <meta name="viewport" content="width=device-width, initial-scale=1">
                         <center><title>Communication Analytics</title></center>
                         <!-- Bootstrap -->
-                        <link href="../../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                        <link href="../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
                     </head>
                     <body>
                         <div class="container-fluid">
@@ -14,10 +14,10 @@
                                 <div class="row">
                                     <div class="col-md-2">
                                         <img alt=" " style="max-width: 100%; max-height: 100%;"
-                                        src="../../../Report_Resources/Images/rocketsAnalytics.png">
+                                        src="../../Report_Resources/Images/rocketsAnalytics.png">
                                     </div>
                                     <div class="col-md-10">
-                                        <h1>None</h1>
+                                        <h1>Telemetry Analytics</h1>
                                     </div>
                                 </div>
                             </div>
@@ -30,17 +30,21 @@
                                             <div class="col-md-10">
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>LOSS %: 100%</h3>
+                                                        <hr>
+                                                        <h4><strong>LOSS %:</strong> 100%</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>NB OF FRAME SENT: 3</h3>
+                                                        <h4><strong>NB OF FRAME SENT:</strong> 3</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h3>RETRIES/STREAMER: 3</h3>
+                                                        <h4><strong>RETRIES/STREAMER:</strong> 3</h4>
+                                                        <hr>
                                                     </div>
                                                 </div>
                                             </div>
@@ -91,11 +95,11 @@
                         </div>
 
                         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-                        <script src="../../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
+                        <script src="../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
                         <!-- Include all compiled plugins (below), or include individual files as needed -->
-                        <script src="../../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
+                        <script src="../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
                         <!-- Include chart  JS -->
-                        <script src="../../../Report_Resources/chartJS/Chart.min.js"></script>
+                        <script src="../../Report_Resources/chartJS/Chart.min.js"></script>
                         <!-- Chart -->
                         <script>
 var data ={labels: ["Received Frame", "Sent Frame"],datasets: [{data: [0,3],backgroundColor: ["#FFCE56","#36A2EB","#FF6384"],hoverBackgroundColor: ["#FFCE56","#36A2EB","#FF6384"]}]};
@@ -126,7 +130,7 @@ var ctx = document.getElementById("receivedFrameQA").getContext("2d");
 var myPieChart = new Chart(ctx,{type: 'pie',data: data,});
 </script><script>
 var data ={
-labels: ["2016-06-08 22:38:09.983085"],
+labels: ["2016-06-10 14:29:15.387715"],
 datasets: [{
 label: "Number of retries",
 fill: false,

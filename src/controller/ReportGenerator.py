@@ -13,8 +13,32 @@ class FlightReportGenerator(object):
 
     @staticmethod
     def generateFlightReport():
+        apogeeLine = ChartJSUtil.createLineChart([0],
+                                                 "Altitude",
+                                                 [0],
+                                                 "altitude")
+
+        accelerationLine = ChartJSUtil.createLineChart([0],
+                                                       "Acceleration",
+                                                       [0],
+                                                       "acceleration")
+
+        speedLine = ChartJSUtil.createLineChart([0],
+                                                "Speed",
+                                                [0],
+                                                "speed")
+
+        temperatureLine = ChartJSUtil.createLineChart([0],
+                                                      "Temperature",
+                                                      [0],
+                                                      "temperature")
+
         report = FlightReport() \
+            .withTitle("Flight Report") \
             .withRocketName(FlightController.getInstance().flightModel.rocket.name) \
+            .withApogee(FlightController.getInstance().flightModel.apogee) \
+            .withMaximumSpeed(FlightController.getInstance().flightModel.maxSpeed) \
+            .withCharts("".join([apogeeLine, accelerationLine, speedLine, temperatureLine])) \
             .build()
         FlightReportGenerator.createReportFile(report)
 
