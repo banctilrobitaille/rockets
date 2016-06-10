@@ -2,6 +2,7 @@ from model.Analytics import CommunicationAnalytics
 from datetime import datetime
 from controller.LogController import LogController
 from model.Report import TelemetryAnalyticReport, FlightReport
+from controller.FlightController import FlightController
 
 
 class FlightReportGenerator(object):
@@ -11,8 +12,10 @@ class FlightReportGenerator(object):
         super(FlightReportGenerator, self).__init__()
 
     @staticmethod
-    def generateReportContent():
-        report =FlightReport().build()
+    def generateFlightReport():
+        report = FlightReport() \
+            .withRocketName(FlightController.getInstance().flightModel.rocket.name) \
+            .build()
         FlightReportGenerator.createReportFile(report)
 
     @staticmethod
@@ -70,7 +73,7 @@ class CommunicationAnalyticsReportGenerator(object):
                                                          "retryHistory")
 
         report = TelemetryAnalyticReport() \
-            .withTitle("Telemetry Analytics")\
+            .withTitle("Telemetry Analytics") \
             .withFrameLostPourcentage(frameLostPourcentage) \
             .withNbOfFrameSent(nbOfFrameSent) \
             .withRetryAverage(retryAverage) \
@@ -78,7 +81,7 @@ class CommunicationAnalyticsReportGenerator(object):
                                  commandStreamerBar,
                                  goodBadSentFrameRatioPie,
                                  goodBadReceivedFrameRatioPie,
-                                 retriesHistoryLine]))\
+                                 retriesHistoryLine])) \
             .build()
 
         CommunicationAnalyticsReportGenerator.createReportFile(report)

@@ -6,6 +6,7 @@ from PyQt4.Qt import pyqtSlot
 from Exception import SerialDeviceException
 from controller.LogController import LogController
 from controller.AnalyticsController import CommunicationAnalyticsController
+from controller.FlightController import FlightController
 from datetime import datetime
 
 """#############################################################################
@@ -511,6 +512,20 @@ class RFD900Strategy(SerialDeviceStrategy):
                 self.rocketController.updateRocketTemperature(receivedFrame.temperature)
                 self.rocketController.updateRocketCoords({'longitude': receivedFrame.longitude,
                                                           'latitude' : receivedFrame.latitude})
+
+                FlightController.getInstance().updateStateTime(receivedFrame.state)
+                FlightController.getInstance().updateApogee(receivedFrame.altitude)
+                FlightController.getInstance().updateMaxSpeed(self.rocketController.rocket.speed)
+                FlightController.getInstance().updateMaxAcceleration(self.rocketController.rocket.acceleration)
+                FlightController.getInstance().updateMinTemperature(receivedFrame.temperature)
+                FlightController.getInstance().updateMaxTemperature(receivedFrame.temperature)
+
+                if self.rocketController.rocket.currentState is self.rocketController.rocket.STATE['ON_THE_PAD']:
+                    FlightController.getInstance().updateLaunchCoordinate({'longitude': receivedFrame.longitude,
+                                                                           'latitude' : receivedFrame.latitude})
+                elif self.rocketController.rocket.currentState is self.rocketController.rocket.STATE['ON_THE_GROUND']:
+                    FlightController.getInstance().updateLandCoordinate({'longitude': receivedFrame.longitude,
+                                                                         'latitude' : receivedFrame.latitude})
 
             elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 

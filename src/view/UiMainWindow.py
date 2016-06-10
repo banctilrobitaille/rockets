@@ -14,6 +14,8 @@ from controller.Communication import FrameFactory
 from controller.LogController import LogController
 from Exception import SerialDeviceException
 from controller.ReportGenerator import CommunicationAnalyticsReportGenerator, FlightReportGenerator
+from controller.FlightController import FlightController
+from model.Flight import Flight
 
 """#############################################################################
 # 
@@ -217,7 +219,8 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         self.connect(self.actionAbout, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotAbout_Clicked)
         self.connect(self.actionConnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_Connect_Clicked)
         self.connect(self.actionDisconnect, PyQt4.QtCore.SIGNAL("triggered()"), self.__slotDisconnect_Clicked)
-        self.connect(self.actionGenerateAnalytics, PyQt4.QtCore.SIGNAL("triggered()"), self.__on_GenerateAnalytics_Clicked)
+        self.connect(self.actionGenerateAnalytics, PyQt4.QtCore.SIGNAL("triggered()"),
+                     self.__on_GenerateAnalytics_Clicked)
         self.connect(self.actionGenerateFlightReport, PyQt4.QtCore.SIGNAL("triggered()"),
                      self.__on_GenerateFlightReport_Clicked)
 
@@ -452,12 +455,14 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
                 self.__baseStationController.disconnectFromRocket(rocketID)
                 self.__dashboard.resetValue()
                 self.__graphTab.resetAllGraph()
-                self.__statePanel
+                self.__statePanel.reset()
+                FlightReportGenerator().generateFlightReport()
             else:
                 rocketMsg.close()
         else:
-
             self.__baseStationController.updateConnectedRocket(rocketID)
+            FlightController.getInstance().withFlight(
+                Flight(rocket=self.__baseStationController.baseStation.connectedRocket))
 
     def __on_RFD900_Settings_Clicked(self):
 
@@ -519,6 +524,7 @@ class MainWindow(PyQt4.QtGui.QMainWindow):
         reportGenerator = FlightReportGenerator()
         reportGenerator.generateReportContent()
         reportGenerator.createReportFile()
+
 
 class MenuBar(PyQt4.QtGui.QMenuBar):
     def __init__(self, parent, objectName):

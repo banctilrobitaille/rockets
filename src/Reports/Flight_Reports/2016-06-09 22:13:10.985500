@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+                <html lang="en">
+                    <head>
+                        <meta charset="utf-8">
+                        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <center><title>Communication Analytics</title></center>
+                        <!-- Bootstrap -->
+                        <link href="../../Report_Resources/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+                    </head>
+                    <body>
+                        <div class="container-fluid">
+                            <div class="jumbotron">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <img alt=" " style="max-width: 100%; max-height: 100%;"
+                                        src="../../Report_Resources/Images/rocketsFlight.png">
+                                    </div>
+                                    <div class="col-md-10">
+                                        <h1></h1>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="panel panel-info">
+                                        <div class="panel-heading">QUICK STATS</div>
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-10">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>ROCKET NAME: Broadcast</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>APOGEE: FEET</h3>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <h3>MAXIMUM SPEED: MPH</h3>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-1"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="row">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">FLIGHT</div>
+                                            <div class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">TELEMETRY</div>
+                                            <div class="panel-body">
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+                        <script src="../../Report_Resources/jquery/jquery-2.2.4.min.js"></script>
+                        <!-- Include all compiled plugins (below), or include individual files as needed -->
+                        <script src="../../Report_Resources/bootstrap/js/bootstrap.min.js"></script>
+                        <!-- Include chart  JS -->
+                        <script src="../../Report_Resources/chartJS/Chart.min.js"></script>
+                        <!-- Charts -->
+                        
+                    </body>
+                </html>
