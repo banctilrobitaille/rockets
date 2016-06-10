@@ -68,6 +68,7 @@ class Rocket(PyQt4.QtCore.QObject):
         self.__currentState = state
         self.__cameraON = False
         self.__name = name
+        self.__flights = []
         self.__isStreaming = False
 
     @property
@@ -180,6 +181,19 @@ class Rocket(PyQt4.QtCore.QObject):
     @property
     def altitudeHistory(self):
         return self.__altitudeHistory
+
+    @property
+    def flights(self):
+        return self.__flights
+
+    @flights.setter
+    def flights(self, flights):
+        self.__flights = flights
+
+    def getLastFligth(self):
+        if len(self.__flights) is not 0:
+            return self.__flights[-1]
+
 
     @staticmethod
     def getInstance():

@@ -1,6 +1,6 @@
 from model.Rocket import Rocket
 from datetime import datetime
-
+from model.Flight import Flight
 """#############################################################################
 # 
 # Nom du module:          RocketController.py
@@ -203,10 +203,12 @@ class RocketController(object):
     #    param:       state, etat de la fusee
     #    return: None
     """
-
     def updateRocketState(self, state):
 
         self.__rocketModel.currentState = state
+
+    def addFlights(self):
+        self.__rocketModel.flights.append(Flight(rocket=self.__rocketModel))
 
     @staticmethod
     def getInstance():

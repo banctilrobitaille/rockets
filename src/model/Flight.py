@@ -1,20 +1,27 @@
 import PyQt4
+from datetime import datetime
 
 
 class Flight(PyQt4.QtCore.QObject):
-    def __init__(self):
+    def __init__(self, rocket=None):
         super(Flight, self).__init__()
-        self.__startTime = None
+        self.__startTime = datetime.now()
         self.__endTime = None
-        self.__rocket = None
+        self.__rocket = rocket
         self.__launchCoordinate = None
         self.__landCoordinate = None
         self.__timeToApogee = None
-        self.__apogee = None
-        self.__maxSpeed = None
-        self.__maxAcceleration = None
-        self.__maxTemperature = None
-        self.__minTemperature = None
+        self.__apogee = 0
+        self.__maxSpeed = 0
+        self.__maxAcceleration = 0
+        self.__maxTemperature = 0
+        self.__minTemperature = 0
+        self.__stateTime = {'INITIALIZING'  : None,
+                            'ON THE PAD'    : None,
+                            'IN FLIGHT'     : None,
+                            'DROGUE DESCENT': None,
+                            'MAIN DESCENT'  : None,
+                            'ON THE GROUND' : None}
 
     @property
     def startTime(self):
@@ -103,3 +110,11 @@ class Flight(PyQt4.QtCore.QObject):
     @minTemperature.setter
     def minTemperature(self, minTemperature):
         self.__minTemperature = minTemperature
+
+    @property
+    def stateTime(self):
+        return self.__stateTime
+
+    @stateTime.setter
+    def stateTime(self, stateTime):
+        self.__stateTime = stateTime
