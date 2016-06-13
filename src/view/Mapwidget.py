@@ -4,6 +4,7 @@ import numpy as np
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from mpl_toolkits.basemap import Basemap
+from controller.GeoTrackingUtils import GeoTrackingUtil
 
 from UICompass import Compass
 
@@ -28,6 +29,7 @@ class Map(PyQt4.QtGui.QWidget):
         self.__nbSatellite = PyQt4.QtGui.QLabel("0")
 
         self.__addGPSInfo()
+        self.__addGeoTrackingInfo()
         self.__addCompass()
         self.show()
 
@@ -102,6 +104,35 @@ class Map(PyQt4.QtGui.QWidget):
         self.__gpsInfoFrame.setLayout(gpsInfoLayout)
         self.__gpsInfoFrame.show()
 
+    def __addGeoTrackingInfo(self):
+
+        self.geoTrackingInfosFrame = PyQt4.QtGui.QFrame(self)
+        self.geoTrackingInfosFrame.setGeometry(0, 430, 500, 60)
+        self.geoTrackingInfosFrame.setStyleSheet("QFrame {background : transparent}"
+                                                 "QFrame QLabel {color: black;background : rgba(30,139,195,"
+                                                 "0);padding-top: "
+                                                 "5px;"
+                                                 "padding-bottom: 5px;}")
+        geoTrackingInfoLayout = PyQt4.QtGui.QHBoxLayout()
+        geoTrackingInfoLayout.addWidget(PyQt4.QtGui.QLabel("Rocket Long.: {}".format(self.__rocketMarkerLon)))
+        geoTrackingInfoLayout.addWidget(PyQt4.QtGui.QLabel("Rocket Lat.: {}".format(self.__rocketMarketLat)))
+        geoTrackingInfoLayout.addWidget(PyQt4.QtGui.QLabel("Distance: {}KM".format(
+            str(GeoTrackingUtil.distanceBetweenCoordinates({'longitude': self.__baseStationMarkerLon,
+                                                            'latitude' :
+                                                                self.__baseStationMarkerLat},
+                                                           {'longitude': self.__rocketMarkerLon,
+                                                            'latitude' :
+                                                                self.__rocketMarketLat})))))
+        geoTrackingInfoLayout.addWidget(PyQt4.QtGui.QLabel("Bearing: {}Degrees".format(
+            str(GeoTrackingUtil.bearingFromCoordinates({'longitude': self.__baseStationMarkerLon,
+                                                            'latitude' :
+                                                                self.__baseStationMarkerLat},
+                                                           {'longitude': self.__rocketMarkerLon,
+                                                            'latitude' :
+                                                                self.__rocketMarketLat})))))
+        self.geoTrackingInfosFrame.setLayout(geoTrackingInfoLayout)
+        self.geoTrackingInfosFrame.show()
+
     def __addCompass(self):
         self.__compass = Compass(self)
 
@@ -133,4 +164,12 @@ class Map(PyQt4.QtGui.QWidget):
         x, y = self.m(self.__rocketMarkerLon, self.__rocketMarketLat)
         self.__rocketMarker = self.m.plot(x, y, marker="D", markersize=10, color='r')
 
+        self.__updateCompass()
+
         self.canvas.draw()
+
+    def __updateCompass(self):
+        self.__compass.setValue(GeoTrackingUtil.bearingFromCoordinates({'longitude': self.__baseStationMarkerLon,
+                                                                        'latitude' : self.__baseStationMarkerLat},
+                                                                       {'longitude': self.__rocketMarkerLon,
+                                                                        'latitude' : self.__rocketMarketLat}))

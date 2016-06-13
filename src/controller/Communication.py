@@ -440,7 +440,7 @@ class RFD900Strategy(SerialDeviceStrategy):
             self.rocketDiscoveryStreamer = CommandStream(self.serialConnection,
                                                          rocketID=self.rocketController.rocket.DISCOVERY_ID,
                                                          ID=self.ID, command=FrameFactory.COMMAND['ROCKET_DISCOVERY'],
-                                                         interval=1)
+                                                         interval=0.1)
             self.addCommandStreamer(self.rocketDiscoveryStreamer)
             self.isDiscoveringRocket = True
         except Exception as e:
@@ -464,14 +464,14 @@ class RFD900Strategy(SerialDeviceStrategy):
 
         self.addCommandStreamer(CommandStream(self.serialConnection, rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['START_STREAM'], ID=self.ID,
-                                              timeout=15, interval=0.5))
+                                              timeout=15, interval=0.1))
         self.__streaming = True
 
     def stopStream(self):
 
         self.addCommandStreamer(CommandStream(self.serialConnection, rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['STOP_STREAM'], ID=self.ID,
-                                              timeout=15, interval=0.5))
+                                              timeout=15, interval=0.1))
         self.__streaming = False
 
     @pyqtSlot(object)
@@ -530,7 +530,6 @@ class RFD900Strategy(SerialDeviceStrategy):
             elif receivedFrame.command == FrameFactory.COMMAND['ROCKET_DISCOVERY']:
 
                 self.rocketDiscovered.emit(receivedFrame.rocketID)
-                self.LOGGER.infos("New rocket discovered !")
 
             elif receivedFrame.command == FrameFactory.COMMAND['NACK']:
 
@@ -549,13 +548,13 @@ class XbeeStrategy(SerialDeviceStrategy):
 
         self.addCommandStreamer(CommandStream(self.serialConnection, rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['START_CAMERA'], ID=self.ID, timeout=15,
-                                              interval=1))
+                                              interval=0.1))
 
     def StopCamera(self):
 
         self.addCommandStreamer(CommandStream(self.serialConnection, rocketID=self.rocketController.rocket.ID,
                                               command=FrameFactory.COMMAND['STOP_CAMERA'], ID=self.ID, timeout=5,
-                                              interval=1))
+                                              interval=0.1))
 
     def on_received_data(self, receivedData):
 

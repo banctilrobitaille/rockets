@@ -1,6 +1,6 @@
 import PyQt4
 from model.Rocket import Rocket
-
+from controller.LogController import LogController
 '''
 Created on 2016-01-04
 
@@ -22,7 +22,8 @@ class BaseStation(PyQt4.QtCore.QObject):
         self.__temperature = 0
         self.__coords = {}
         self.__connectedRocket = None
-        self.__availableRocket = {Rocket.DISCOVERY_ID: Rocket(ID=Rocket.DISCOVERY_ID, name="Broadcast"),}
+        self.__LOGGER = LogController.getInstance()
+        self.__availableRocket = {Rocket.DISCOVERY_ID: Rocket(ID=Rocket.DISCOVERY_ID, name="Broadcast"), }
 
     @property
     def connectedRocket(self):
@@ -45,6 +46,7 @@ class BaseStation(PyQt4.QtCore.QObject):
     def addAvailableRocket(self, rocket):
         if rocket.ID not in self.__availableRocket:
             self.__availableRocket[rocket.ID] = rocket
+            self.LOGGER.infos("New rocket discovered !")
             self.availableRocketChanged.emit(self.__availableRocket)
 
     @property

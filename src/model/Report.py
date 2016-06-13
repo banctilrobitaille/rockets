@@ -168,8 +168,13 @@ class FlightReport(Report):
         super(FlightReport, self).__init__()
         self.__title = ""
         self.__rocketName = ""
-        self.__apogee = ""
-        self.__maximumSpeed = ""
+        self.__connectionTime = "N/A"
+        self.__apogee = "N/A"
+        self.__timeToApogee = "N/A"
+        self.__maximumSpeed = "N/A"
+        self.__maximumAccel = "N/A"
+        self.__maximumTemperature = "N/A"
+        self.__minimumTemperature = "N/A"
         self.__charts = ""
         self.__content =\
             '''<!DOCTYPE html>
@@ -211,7 +216,7 @@ class FlightReport(Report):
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h4><strong>CONNECTION TIME:</strong> </h4>
+                                                        <h4><strong>CONNECTION TIME:</strong> {}</h4>
                                                         <hr>
                                                     </div>
                                                 </div>
@@ -223,7 +228,7 @@ class FlightReport(Report):
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h4><strong>TIME TO APOGEE:</strong>  SEC</h4>
+                                                        <h4><strong>TIME TO APOGEE:</strong> {} SEC</h4>
                                                         <hr>
                                                     </div>
                                                 </div>
@@ -241,13 +246,13 @@ class FlightReport(Report):
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h4><strong>MAXIMUM TEMPERATURE:</strong>  C</h4>
+                                                        <h4><strong>MAXIMUM TEMPERATURE:</strong> {} C</h4>
                                                         <hr>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-12">
-                                                        <h4><strong>MINIMUM TEMPERATURE:</strong>  C</h4>
+                                                        <h4><strong>MINIMUM TEMPERATURE:</strong> {} C</h4>
                                                         <hr>
                                                     </div>
                                                 </div>
@@ -315,12 +320,32 @@ class FlightReport(Report):
         self.__rocketName = rocketName
         return self
 
+    def withConnectionTime(self, connectionTime):
+        self.__connectionTime = connectionTime
+        return self
+
     def withApogee(self, apogee):
         self.__apogee = apogee
         return self
 
+    def withTimeToApogee(self, timeToApogee):
+        self.__timeToApogee = timeToApogee
+        return self
+
     def withMaximumSpeed(self, maximumSpeed):
         self.__maximumSpeed = maximumSpeed
+        return self
+
+    def withMaximumAccel(self, maximumAccel):
+        self.__maximumAccel = maximumAccel
+        return self
+
+    def withMaximumTemperature(self, maximumTemperature):
+        self.__maximumTemperature = maximumTemperature
+        return self
+
+    def withMinimumTemperature(self, minimumTemperature):
+        self.__minimumTemperature = minimumTemperature
         return self
 
     def withCharts(self, charts):
@@ -329,6 +354,8 @@ class FlightReport(Report):
 
     def build(self):
         return self.__content.format(self.BOOTSTRAP_CSS_INCLUDE, "".join([self.REPORT_RESOURCES_PATH, self.LOGO]),
-                                     self.__title, self.__rocketName, self.__apogee,
-                                     self.__maximumSpeed, self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE,
-                                     self.CHART_JS_INCLUDE, self.__charts)
+                                     self.__title, self.__rocketName, self.__connectionTime, self.__apogee,
+                                     self.__timeToApogee, self.__maximumSpeed, self.__maximumTemperature,
+                                     self.__minimumTemperature,
+                                     self.JQUERY_INCLUDE, self.BOOTSTRAP_JS_INCLUDE, self.CHART_JS_INCLUDE,
+                                     self.__charts)
