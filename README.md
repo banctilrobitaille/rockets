@@ -1,6 +1,6 @@
 # Club RockETS base station <img src="/image/logo.png" width="60" vertical-align="bottom">
 
-This project is a python project developped for a student club called RockETS at ETS (École de Technologie Supérieure).
+>This project is a python project developped for a student club called RockETS at ETS (École de Technologie Supérieure).
 RockETS participate anually to the IREC (Intercollegiate Rocket Engineering Competition). 
 The goal of the competition is to develop, build and launch a sounding rocket, reach a precise altitude,
 perform a scientific experience during the flight and recover the rocket in good shape. To do so, tracking the 
