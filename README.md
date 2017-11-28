@@ -1,6 +1,4 @@
-![GitHub Logo](/image/logo.png)
-
-#Club RockETS base station
+# Club RockETS base station <img src="/image/logo.png" width="60" vertical-align="bottom">
 
 This project is a python project developped for a student club called RockETS at ETS (École de Technologie Supérieure).
 RockETS participate anually to the IREC (Intercollegiate Rocket Engineering Competition). 
@@ -10,13 +8,13 @@ rocket is essential. This project is the base station that will be used to track
 send command to the rocket, get telemetry data, review the logs, etc., using different serial devices such as 
 RFD900 and xbee.
 
-##Libraries
+## Libraries
 * PyQt4
 * PyQwt
 * Basemap
 * Matplotlib
 
-##Contributing
+## Contributing
 
 #### How to contribute ?
 - [X] Install Python 2.7.x
@@ -31,7 +29,7 @@ RFD900 and xbee.
 ##### Feature branch
 > feature/ [Short feature description] [Issue number]
 
-#####Bug branch
+##### Bug branch
 > bugfix/ [Short fix description] [Issue number]
 
 #### Commits syntax:
@@ -39,19 +37,19 @@ RFD900 and xbee.
 #####Adding code:
 > \+ Added [Short Description] [Issue Number]
 
-#####Deleting code:
+##### Deleting code:
 > \- Deleted [Short Description] [Issue Number]
 
-#####Modifying code:
+##### Modifying code:
 > \* Changed [Short Description] [Issue Number]
 
-##Look and feel
+## Look and feel
 
-####Rockets BaseStation V1.0
-#####Overview
+#### Rockets BaseStation V1.0
+##### Overview
 ![GitHub Logo](/image/overview.PNG)
 
-##Features
+## Features
 - [X] Live rocket and basestation tracking
 - [X] Live baseStation GPS satellites and fix status
 - [X] Multi rockets support
